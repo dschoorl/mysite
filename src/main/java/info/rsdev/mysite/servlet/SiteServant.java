@@ -25,7 +25,7 @@ public class SiteServant implements Servlet {
     
     private ServletConfig config  = null;
     
-    private final Map<String, File> contextLocationByAlias = new HashMap<>();
+    private Map<String, File> contextLocationByAlias = null;
     
     private File contentRoot = null;
     
@@ -35,8 +35,13 @@ public class SiteServant implements Servlet {
         logger.info(String.format("Initializing Servlet %s", getClass().getName()));
         this.config = config;
         String webinfDir = config.getServletContext().getRealPath("/WEB-INF");
+        logger.info(String.format("WEB-INF-directory is located at: %s", webinfDir));
         contentRoot = new File(new File(webinfDir, "classes"), "sites");
-        File aliasesFile = new File(contentRoot, "aliases.properties");
+        this.contextLocationByAlias = getAliasesContextRoots(contentRoot, new File(contentRoot, "aliases.properties"));
+    }
+    
+    protected Map<String, File> getAliasesContextRoots(File contentRoot, File aliasesFile) {
+        Map<String, File> contextLocationByAlias = new HashMap<>();
         Properties aliases = new Properties();
         try (FileReader reader = new FileReader(aliasesFile)) {
             aliases.load(reader);
@@ -46,7 +51,7 @@ public class SiteServant implements Servlet {
         
         //verify that the target directories from the mappings exist
         for (Entry<Object, Object> aliasMapping: aliases.entrySet()) {
-            String alias = (String)aliasMapping.getKey();
+            String alias = ((String)aliasMapping.getKey()).trim().toLowerCase();
             String subdirectory = (String)aliasMapping.getValue();
             File location = new File(contentRoot, subdirectory);
             if (!location.isDirectory()) {
@@ -54,12 +59,13 @@ public class SiteServant implements Servlet {
                         aliasesFile, subdirectory, contentRoot, alias));
                 continue;
             }
-            if (this.contextLocationByAlias.containsKey(alias)) {
+            if (contextLocationByAlias.containsKey(alias)) {
                 logger.warn(String.format("Alias %s is defined multiple times in %s: using new value %s, dropping previous value %s",
                         alias, aliasesFile, subdirectory, this.contextLocationByAlias.get(alias).getName()));
             }
-            this.contextLocationByAlias.put(alias, location);
+            contextLocationByAlias.put(alias, location);
         }
+        return contextLocationByAlias;
     }
     
     @Override
@@ -69,7 +75,7 @@ public class SiteServant implements Servlet {
     
     @Override
     public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
-        String hostname = request.getServerName();
+        String hostname = request.getServerName().toLowerCase();
         File siteLocation = new File(contentRoot, hostname);
         if (!siteLocation.isDirectory()) {
             if (this.contextLocationByAlias.containsKey(hostname)) {

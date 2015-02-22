@@ -1,0 +1,78 @@
+Project structure SAS
+
+  SAS : Suwinet Application Suite
+
+  In order to keep the project-structure organized functionality has been splitted over projects.
+  
+  Rules:
+  
+  * services project within the services-webapp should not include broker-childprojects
+  
+  []
+  
+      
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| <<War-Project>>        | <<Jar projects>>              	 | <<Agreements>>
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| sas-pom                | 								     | The parent pom for all projects.\
+|                        |                                   | All projects will use the pom.xml as the parent pom\
+|                        |                                   | If a child-project uses a framework that is not in the parent-pom and is (not yet) expected to used in other projects: 
+|                        |                                   |   add the dependency and the version only to the pom of the child-project.
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| broker-webapp          |                                   | The main broker project\
+|                        |                                   | The synapse specific configurations for all messages. Contains all the integration-tests for the broker\
+|                        |                                   | Delivers the suwibroker.war         
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| 						 | <<broker>>-commons                | Common classes for the broker and used within all broker-projects
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|						 | <<broker>>-configurator           | Functionality to modify the default Synapse Configuration elements with dynamic values where appropriate
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | <<broker>>-mediators              | Mediators called by synapse during the handling of request.\
+|                        |                                   | Contains generic mediators (like whitelist) and message-specific mediators (like SngBomTransformer)
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        |                                   | ...
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | module-audit-logging              | Generic functionality to log access information for an Axis2 SOAP client or an Axis2 SOAP webservice.
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | suwiml-header-module              | Generic functionality for handling SuwiMLHeader-elements in SOAP messages as defined in the SuwiML Transactionstandaard\
+|                        |                                   | Will be renamed to module-suwiml-header
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| services-webapp        |                                   | The main project that includes all the internal services. Every internal service is a seperate project\
+|                        |                                   | Delivers the services.war
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | services-commons                  | Commons classes only used by services-YYY projects
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | services-utils                    | ........
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | services-<Axis2>                  | Service with specific functionality is implemented with Axis2
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | services-brokeradmin              | This services-<Axis2> processes all changes to the broker configuration that it receives through SOAP messages (Whitelists-v0100).\
+|                        |                                   | Contains the vaadin GUI.
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| stub-webapp            |                                   | The main project for the stub that contains all functionality to support testing especially integrationtest\
+|                        |                                   | Delivers the stub.war
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | services-stub                     | Service that simulates all external services 
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | services-tester                   | Utility code to run an Axis2 webservice from the junit testframework and fire requests on it
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        |                                   | ...
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | <<shared>>-commons                | Common classes used by <<all>> projects. It contains global domain classes like SuwiMLHeader, FWI and Exception-classes
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | <<shared>>-utils                  | Command line tooling. This project is never used by another project. 
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | <<shared>>-hibernate	             | Common classes for the data-layer (hibernate) and only to be used by projects that contains a data-layer
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | <<shared>>-vaadin                 | Common classes for the presentation-layer (vaadin) and only to be used by projects that contains a presentation-layer
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        | <<shared>>-clustering             | Classes that facilitate web services to join the Apache Tribes communication cluster and share data with fellow applications.
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+|                        |                                   | ...
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+| openam-das             |                                   | The functionality to authenticate with the use of OpenAM and OpenDJ\
+|                        |                                   | Delivers the openam-das.war
+*------------------------+-----------------------------------+----------------------------------------------------------------------------------------------------------------------------------+
+
+
+  
