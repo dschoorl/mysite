@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class SiteServantTest {
     
     private SiteServant servlet = null;
-    File contentRoot = new File("src/main/resources/sites");
+    File contentRoot = new File("src/test/resources/sites");
     
     @Before
     public void setup() {
@@ -23,7 +23,7 @@ public class SiteServantTest {
         File aliasesFile = new File(contentRoot, "aliases.properties");
         Map<String, File> contentPerAlias = servlet.getAliasesContextRoots(contentRoot, aliasesFile);
         assertNotNull(contentPerAlias);
-        assertTrue(contentPerAlias.containsKey("www.cyber-d.com"));
+        assertTrue(contentPerAlias.containsKey("www.nightsite.net"));
     }
     
 }

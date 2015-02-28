@@ -23,6 +23,8 @@ public class SiteServant implements Servlet {
     
     private static final Logger logger = LoggerFactory.getLogger(SiteServant.class);
     
+    private static final String DATA_DIR_ENVVAR = "MYSITE_DATA_DIR";
+    
     private ServletConfig config  = null;
     
     private Map<String, File> contextLocationByAlias = null;
@@ -34,10 +36,27 @@ public class SiteServant implements Servlet {
         //Currently this servlet is not configurable -- this may change in the future
         logger.info(String.format("Initializing Servlet %s", getClass().getName()));
         this.config = config;
-        String webinfDir = config.getServletContext().getRealPath("/WEB-INF");
-        logger.info(String.format("WEB-INF-directory is located at: %s", webinfDir));
-        contentRoot = new File(new File(webinfDir, "classes"), "sites");
+        
+        contentRoot = getContentRoot();
+        logger.info(String.format("Using '%s' as data directory", contentRoot.getAbsolutePath()));
         this.contextLocationByAlias = getAliasesContextRoots(contentRoot, new File(contentRoot, "aliases.properties"));
+    }
+    
+    private File getContentRoot() {
+        File contentRoot  = null;
+        String dataDir = System.getenv(DATA_DIR_ENVVAR);
+        if (dataDir == null) {
+            dataDir = System.getProperty(DATA_DIR_ENVVAR);
+            if (dataDir == null) {
+                throw new IllegalStateException(String.format("%s is not set. Check setup documentation.", DATA_DIR_ENVVAR));
+            }
+        }
+        contentRoot = new File(dataDir);
+        if (!contentRoot.isDirectory()) {
+            throw new IllegalStateException(String.format("Directory '%s' pointed to by %s does not exist. Please create it manually.", 
+                    dataDir, DATA_DIR_ENVVAR));
+        }
+        return contentRoot;
     }
     
     protected Map<String, File> getAliasesContextRoots(File contentRoot, File aliasesFile) {
