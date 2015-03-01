@@ -8,7 +8,8 @@
 
    <servlet>
       <servlet-name>SiteServant</servlet-name>
-      <servlet-class>info.rsdev.mysite.servlet.SiteServant</servlet-class>
+      <servlet-class>info.rsdev.mysite.common.SiteServant</servlet-class>
+      <load-on-startup>1</load-on-startup>
    </servlet>
    <servlet-mapping>
       <servlet-name>SiteServant</servlet-name>

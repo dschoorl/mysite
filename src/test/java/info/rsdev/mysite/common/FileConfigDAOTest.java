@@ -1,4 +1,4 @@
-package info.rsdev.mysite.servlet;
+package info.rsdev.mysite.common;
 
 import java.io.File;
 import java.util.Map;
@@ -8,20 +8,20 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class SiteServantTest {
+public class FileConfigDAOTest {
     
-    private SiteServant servlet = null;
+    private FileConfigDAO dao = null;
     File contentRoot = new File("src/test/resources/sites");
     
     @Before
     public void setup() {
-        servlet = new SiteServant();
+        dao = new FileConfigDAO();
     }
     
     @Test
     public void testService() {
         File aliasesFile = new File(contentRoot, "aliases.properties");
-        Map<String, File> contentPerAlias = servlet.getAliasesContextRoots(contentRoot, aliasesFile);
+        Map<String, SiteConfig> contentPerAlias = dao.getSiteConfigByAlias(contentRoot, aliasesFile);
         assertNotNull(contentPerAlias);
         assertTrue(contentPerAlias.containsKey("www.nightsite.net"));
     }

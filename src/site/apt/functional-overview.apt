@@ -5,13 +5,15 @@
  -----
 
   The MySite application is a web application that supports serving multiple sites, each using their own 
-hostname. The application offers various functionalities, E.g. blogging, photo galary, story telling etc.
-Each site chooses the functionality that it wants and the url path that must be used to access the 
-functionality. Each piece of functionality has it's own site specific configuration.
+hostname and configuration. The application offers various functionalities, organized in modules, E.g. meshup, 
+blogging, photo gallery, story telling etc. 
+Each site chooses the modules that it wants and the url path that it is mounted on. Each module has it's own 
+site specific configuration.
 
-  Each piece of functionality is highly configurable and the configuration determines the information that
-is made available to the web page. Which information is used on a page and how it is used, is determined 
-by the configured page template. One or more page templates are supplied per function, but each site can 
-use it's own template if it so desires.
+  A module is highly configurable and the configuration determines which information is made available
+to the web page. How much of that information is used on a page and how, is determined 
+by the configured page template. One or more page templates are supplied per module, but each site can 
+use it's own custom template if it so desires. The same goes for css stylesheets. Which template and which 
+stylesheet to use, is configured in the module's site specific configuration.
 
   
