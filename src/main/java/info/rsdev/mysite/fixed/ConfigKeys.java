@@ -1,6 +1,6 @@
 package info.rsdev.mysite.fixed;
 
-import info.rsdev.mysite.common.FileConfigDAO.DefaultConfigKeys;
+import info.rsdev.mysite.common.DefaultConfigKeys;
 
 /**
  * This class defines the property keys that are understood by the fixed/static content module.
