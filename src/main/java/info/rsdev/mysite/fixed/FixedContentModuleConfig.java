@@ -17,11 +17,11 @@ public class FixedContentModuleConfig implements ModuleConfig, ConfigKeys {
     
     private Path siteRoot = null;
     
-    private Properties configProperties = null;
+    private Properties properties = null;
     
     public FixedContentModuleConfig(Properties configProperties) {
         //TODO: validate presence and correctness of important properties
-        this.configProperties = configProperties;
+        this.properties = configProperties;
         this.requestHandler = new FixedContentServant(this);
     }
     
@@ -32,7 +32,7 @@ public class FixedContentModuleConfig implements ModuleConfig, ConfigKeys {
     
     @Override
     public boolean hasHandlerFor(String path) {
-        return path.startsWith(configProperties.getProperty(MOUNTPOINT_KEY));
+        return path.startsWith(properties.getProperty(MOUNTPOINT_KEY));
     }
     
     /**
@@ -41,7 +41,7 @@ public class FixedContentModuleConfig implements ModuleConfig, ConfigKeys {
      */
     public Path getSiteRoot() {
         if (this.siteRoot == null) {
-            String siteDataDir = configProperties.getProperty(SITE_DATA_DIR_KEY);
+            String siteDataDir = properties.getProperty(SITE_DATA_DIR_KEY);
             if (siteDataDir == null) {
                 throw new ConfigurationException(String.format("Property not defined: %s", SITE_DATA_DIR_KEY));
             }
@@ -52,6 +52,14 @@ public class FixedContentModuleConfig implements ModuleConfig, ConfigKeys {
             this.siteRoot = siteRoot;
         }
         return this.siteRoot;
+    }
+
+    public String getIndexFilename() {
+        String indexFilename = properties.getProperty(INDEX_FILE_NAME_KEY);
+        if (indexFilename != null) {
+            return indexFilename;
+        }
+        return "index.html";
     }
     
 }

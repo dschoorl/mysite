@@ -42,7 +42,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             resourceLocation = resourceLocation.resolve(request.getPathInfo());
         }
         if (resourceLocation.toFile().isDirectory()) {
-            resourceLocation = resourceLocation.resolve("index.html");
+            resourceLocation = resourceLocation.resolve(fixedConfig.getIndexFilename());
         }
         if (!resourceLocation.toFile().isFile()) {
             response.sendError(404, String.format("Resource %s does not exist", resourceLocation));
