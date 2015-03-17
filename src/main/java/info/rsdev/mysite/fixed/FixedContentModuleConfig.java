@@ -22,7 +22,7 @@ public class FixedContentModuleConfig implements ModuleConfig, ConfigKeys {
     public FixedContentModuleConfig(Properties configProperties) {
         //TODO: validate presence and correctness of important properties
         this.properties = configProperties;
-        this.requestHandler = new FixedContentServant(this);
+        this.requestHandler = new FixedContentServant();
     }
     
     @Override
