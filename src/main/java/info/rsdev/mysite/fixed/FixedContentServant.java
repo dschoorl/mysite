@@ -42,10 +42,6 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         }
         FixedContentModuleConfig fixedConfig = (FixedContentModuleConfig)config;
         Path resourceLocation = fixedConfig.getSiteRoot();
-        String pathInfo = request.getPathInfo();
-        String contextPath = request.getContextPath();
-        String requestUri = request.getRequestURI();
-        String queryString = request.getQueryString();
         String servletPath = request.getServletPath();
         if (servletPath.length() > 1) {
             resourceLocation = resourceLocation.resolve(servletPath.substring(1));
@@ -73,8 +69,9 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         ServletOutputStream out = response.getOutputStream();
         try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream(resourceLocation.toFile()), 2048)) {
             byte[] buffer = new byte[2048];
-            while (reader.read(buffer) != -1) {
-                out.write(buffer);
+            int bytesRead = 0;
+            while ((bytesRead = reader.read(buffer)) != -1) {
+                out.write(buffer, 0, bytesRead);
             }
         } catch (IOException e) {
             logger.error(String.format("Error reading %s file", resourceLocation), e);
