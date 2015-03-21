@@ -31,16 +31,15 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
     private static final List<String> knownTextMimeTypes = Arrays.asList("text/html", "text/css");
     
     @Override
-    public void handle(ModuleConfig config, HttpServletRequest request, HttpServletResponse response) throws ServletException,
-            IOException {
+    public void handle(ModuleConfig config, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (config == null) {
             throw new ConfigurationException(String.format("%s cannot be null", ModuleConfig.class.getSimpleName()));
         }
         if (!(config instanceof FixedContentModuleConfig)) {
-            throw new ConfigurationException(String.format("Expected was config of type %, but encountered was %s",
-                    FixedContentModuleConfig.class.getSimpleName(), config));
+            throw new ConfigurationException(String.format("Expected was config of type %, but encountered was %s", 
+                FixedContentModuleConfig.class.getSimpleName(), config));
         }
-        FixedContentModuleConfig fixedConfig = (FixedContentModuleConfig) config;
+        FixedContentModuleConfig fixedConfig = (FixedContentModuleConfig)config;
         Path resourceLocation = fixedConfig.getSiteRoot();
         String pathInfo = request.getPathInfo();
         String contextPath = request.getContextPath();
@@ -88,8 +87,8 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             }
         } catch (IOException e) {
             logger.error(String.format("Error reading %s file", resourceLocation), e);
-            String msg = String.format("...OMG. Something went horribly wrong while serving resource %s for you. Sorry. "
-                    + "Let us know if the error keeps occuring.", resourceLocation);
+            String msg = String.format("...OMG. Something went horribly wrong while serving resource %s for you. Sorry. " +
+                    "Let us know if the error keeps occuring.", resourceLocation);
             if (!response.isCommitted()) {
                 response.sendError(500, msg);
             } else {
@@ -102,27 +101,26 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
     private boolean isBinary(String mimeType) {
         return !knownTextMimeTypes.contains(mimeType);
     }
-    
+
     protected String getMimeType(Path resource) {
-        String mimeType = URLConnection.guessContentTypeFromName(resource.toFile().getName());
-        if (mimeType == null) {
-            try {
-                mimeType = Files.probeContentType(resource);
-                if (mimeType == null) {
-                    try (FileInputStream stream = new FileInputStream(resource.toFile())) {
-                        mimeType = URLConnection.guessContentTypeFromStream(stream);
-                    }
-                    if ((mimeType != null) && logger.isDebugEnabled()) {
-                        logger.debug(String.format("MimeType resolved to %s by URLConnection.guessContentTypeFromStream(%s)",
-                                mimeType, resource));
-                    }
-                } else if (logger.isDebugEnabled()) {
-                    logger.debug(String.format("MimeType resolved to %s by Files.probeContentType(%s)", mimeType, resource));
+        String mimeType = null;
+        try {
+            mimeType = Files.probeContentType(resource);
+            if (mimeType == null) {
+                try (FileInputStream stream = new FileInputStream(resource.toFile())) {
+                    mimeType = URLConnection.guessContentTypeFromStream(stream);
                 }
-            } catch (IOException e) {
-                logger.error(String.format("Cannot determine mime type from content for %s", resource), e);
+                if ((mimeType != null) && logger.isDebugEnabled()) {
+                    logger.debug(String.format("MimeType resolved to %s by URLConnection.guessContentTypeFromStream(%s)", mimeType, resource));
+                }
+            } else if (logger.isDebugEnabled()) {
+                logger.debug(String.format("MimeType resolved to %s by Files.probeContentType(%s)", mimeType, resource));
             }
-        } else if (logger.isDebugEnabled()) {
+        } catch (IOException e) {
+            logger.error(String.format("Cannot determine mime type from content for %s", resource), e);
+        }
+        if (mimeType == null) {
+            mimeType = URLConnection.guessContentTypeFromName(resource.toFile().getName());
             logger.debug(String.format("MimeType resolved to %s by URLConnection.guessContentTypeFromName(%s)", mimeType, resource));
         }
         return mimeType;
