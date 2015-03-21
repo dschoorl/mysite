@@ -58,12 +58,12 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             return;
         }
         String mimeType = getMimeType(resourceLocation);
+        response.setContentType(mimeType);
         if (isBinary(mimeType)) {
             writeBinary(response, resourceLocation);
         } else {
             writeText(response, resourceLocation);
         }
-        response.setContentType(mimeType);
     }
     
     private void writeBinary(HttpServletResponse response, Path resourceLocation) throws IOException {
