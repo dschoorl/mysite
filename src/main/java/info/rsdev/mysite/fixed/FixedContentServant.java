@@ -7,8 +7,8 @@ import info.rsdev.mysite.exception.ConfigurationException;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URLConnection;
 import java.nio.file.Files;
@@ -87,10 +87,11 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             logger.debug(String.format("Write TEXT response for %s", resourceLocation));
         }
         PrintWriter out = response.getWriter();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(resourceLocation.toFile()), "UTF-8"), 2048)) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(resourceLocation.toFile()), 2048)) {
             char[] buffer = new char[2048];
-            while (reader.read(buffer) != -1) {
-                out.write(buffer);
+            int charsRead = 0;
+            while ((charsRead = reader.read(buffer)) != -1) {
+                out.write(buffer, 0, charsRead);
             }
         } catch (IOException e) {
             logger.error(String.format("Error reading %s file", resourceLocation), e);
