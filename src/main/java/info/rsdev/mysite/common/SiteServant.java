@@ -1,6 +1,7 @@
 package info.rsdev.mysite.common;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -27,6 +28,7 @@ public class SiteServant implements Servlet {
         logger.info(String.format("Initializing Servlet %s", getClass().getName()));
         this.servletConfig = config;
         this.configDai = new FileConfigDAO();
+        logger.info(String.format("Platform default encoding: %s", Charset.defaultCharset()));
     }
     
     @Override
