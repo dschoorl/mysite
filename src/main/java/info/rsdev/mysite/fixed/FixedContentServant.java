@@ -28,7 +28,8 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
     
     private static final Logger logger = LoggerFactory.getLogger(FixedContentServant.class);
     
-    private static final List<String> knownTextMimeTypes = Arrays.asList("text/html", "text/css");
+    private static final List<String> knownTextMimeTypes = Arrays.asList("text/html", "text/css", "text/plain", "text/javascript",
+            "application/javascript");
     
     @Override
     public void handle(ModuleConfig config, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -66,6 +67,9 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
     }
     
     private void writeBinary(HttpServletResponse response, Path resourceLocation) throws IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Write BINARY response for %s", resourceLocation));
+        }
         ServletOutputStream out = response.getOutputStream();
         try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream(resourceLocation.toFile()), 2048)) {
             byte[] buffer = new byte[2048];
@@ -79,6 +83,9 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
     }
     
     private void writeText(HttpServletResponse response, Path resourceLocation) throws IOException {
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("Write TEXT response for %s", resourceLocation));
+        }
         PrintWriter out = response.getWriter();
         try (BufferedReader reader = new BufferedReader(new FileReader(resourceLocation.toFile()), 2048)) {
             char[] buffer = new char[2048];
