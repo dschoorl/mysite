@@ -1,0 +1,32 @@
+    -----
+    Photo Gallery
+    -----
+    Red Star Developement, Dave Schoorl
+    -----
+    -----
+    
+Photo Gallery
+
+* Configuration
+
+  The class info.rsdev.mysite.gallery.GalleryModuleConfig supports the following properties:
+
+*-------------------------------+---------------+
+| property name                 | Description
+*-------------------------------+---------------+
+| ModuleConfigType              | The fully qualified java class name that must handle the module's configuration. The implementation supplied by MySite is info.rsdev.mysite.gallery.GalleryModuleConfig
+*-------------------------------+---------------+
+| template                      | The name of the GUI template that must be used to show the photo's
+*-------------------------------+---------------+
+| collection                    | The path to the image collection that will be displayed, when relative, it is considered relative to the site's data directory
+*-------------------------------+---------------+
+| showThumbnails                | Boolean value. When true, make thumbnails available to the template, false otherwise
+*-------------------------------+---------------+
+| imagesPerPageHint             | Positive integer number defining the number of images max. displayed per page. The template could show less images per page as it so desires, but never more.
+*-------------------------------+---------------+
+| showRandomPageAsFirstPage     | Boolean value. When true, a random page will be displayed when the request does not specify the image group and / or page number to display. When false, the first page will be displayed on these occasions.
+*-------------------------------+---------------+
+| cacheImageInfo                | Boolean value. When true, image info is read only once from the filesystem and cached in memory, false otherwise. \
+|                               | When caching is enabled, pages are served faster, at the cost of higher memory usage.
+*-------------------------------+---------------+
+

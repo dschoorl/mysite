@@ -1,0 +1,26 @@
+TODO list
+
+* General
+
+  * Add support for sql databases
+  
+    Configuration data and site content can be stored in an sql database. Whether they are stored on file or in a database 
+    is only visible in the site configuration and not in the code that accesses the data layer.
+    
+  * Add support for non-sql databases
+  
+    Like support for sql databases.
+    
+  * Dynamically add new websites without the need to restart the MySite application
+
+  * bla di bla
+  
+  []
+  
+* Photo Gallery
+
+  * Support serving images from outside the servlet container, E.g. via a web server .
+  
+  * Support serving images from other internet addresses, E.g. from flickr etc.
+
+  

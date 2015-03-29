@@ -20,13 +20,12 @@
 
     <menu name="Requirements">
       <item name="Overview" href="functional-overview.html"/>
-      <item name="Photo Gallery" href="photo-gallery.html"/>
-      <item name="Use cases" href="use-cases.html"/>
+      <item name="Photo Gallery" href="gallery-functional.html"/>
+      <item name="TODO" href="TODO.html"/>
     </menu>
     <menu name="User Documentation">
       <item name="Creating a website" href="new-website.html"/>
-      <item name="Photo Gallery" href="photo-gallery.html"/>
-      <item name="Use cases" href="use-cases.html"/>
+      <item name="Photo Gallery" href="gallery-user.html"/>
     </menu>
 
     <menu ref="reports" name="${project.name}" inherit="bottom" />
