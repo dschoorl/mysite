@@ -1,5 +1,8 @@
 package info.rsdev.mysite.common;
 
+import java.util.Map;
+import java.util.Properties;
+
 import info.rsdev.mysite.exception.ConfigurationException;
 
 /**
@@ -25,6 +28,35 @@ public class ErrorModuleConfig implements ModuleConfig {
     @Override
     public boolean hasHandlerFor(String requestPath) {
         return requestPath.startsWith(mountPoint);
+    }
+
+    @Override
+    public String getString(String propertyName) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean getBoolean(String propertyName) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public int getInteger(String propertyName) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String getMountPoint() {
+        String mountPoint = this.mountPoint;
+        if (mountPoint.startsWith("/")) {
+            mountPoint = mountPoint.substring(1);
+        }
+        return mountPoint;
+    }
+
+    @Override
+    public Map<Object, Object> getProperties() {
+        return new Properties();
     }
     
 }

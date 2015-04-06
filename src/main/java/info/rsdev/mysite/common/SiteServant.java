@@ -38,11 +38,12 @@ public class SiteServant implements Servlet {
     
     @Override
     public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+        logURL((HttpServletRequest)request);
         String hostname = request.getServerName().toLowerCase();
         SiteConfig config = configDai.getConfig(hostname);
         
         //get path into module context and then get page for path from the appropriate module
-        String modulePath = ((HttpServletRequest)request).getPathInfo();
+        String modulePath = ((HttpServletRequest)request).getServletPath();
         if (modulePath == null) {
             modulePath = "/";
         }
@@ -65,6 +66,22 @@ public class SiteServant implements Servlet {
     @Override
     public void destroy() {
         logger.info("Destroying servlet ".concat(getServletInfo()));
+    }
+    
+    private void logURL(HttpServletRequest r) {
+        logger.info(String.format("%nServletContext=%s%n,"
+                + "ServletPath=%s%n"
+                + "PathInfo=%s%n"
+                + "RequestURI=%s%n"
+                + "RequestURL=%s%n"
+                + "QueryString=%s%n", 
+                r.getServletContext(), 
+                r.getServletPath(), 
+                r.getPathInfo(), 
+                r.getRequestURI(),
+                r.getRequestURL(),
+                r.getQueryString()
+                ));
     }
     
 }

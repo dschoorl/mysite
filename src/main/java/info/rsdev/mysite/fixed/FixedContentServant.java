@@ -3,13 +3,11 @@ package info.rsdev.mysite.fixed;
 import info.rsdev.mysite.common.ModuleConfig;
 import info.rsdev.mysite.common.RequestHandler;
 import info.rsdev.mysite.exception.ConfigurationException;
+import info.rsdev.mysite.util.ServletUtils;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.FileInputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URLConnection;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -58,7 +56,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         if (isBinary(mimeType)) {
             writeBinary(response, resourceLocation);
         } else {
-            writeText(response, resourceLocation);
+            ServletUtils.writeText(response, resourceLocation.toFile());
         }
     }
     
@@ -75,30 +73,6 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             }
         } catch (IOException e) {
             logger.error(String.format("Error reading %s file", resourceLocation), e);
-        }
-        out.flush();
-    }
-    
-    private void writeText(HttpServletResponse response, Path resourceLocation) throws IOException {
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("Write TEXT response for %s", resourceLocation));
-        }
-        PrintWriter out = response.getWriter();
-        try (BufferedReader reader = new BufferedReader(new FileReader(resourceLocation.toFile()), 2048)) {
-            char[] buffer = new char[2048];
-            int charsRead = 0;
-            while ((charsRead = reader.read(buffer)) != -1) {
-                out.write(buffer, 0, charsRead);
-            }
-        } catch (IOException e) {
-            logger.error(String.format("Error reading %s file", resourceLocation), e);
-            String msg = String.format("...OMG. Something went horribly wrong while serving resource %s for you. Sorry. " +
-                    "Let us know if the error keeps occuring.", resourceLocation);
-            if (!response.isCommitted()) {
-                response.sendError(500, msg);
-            } else {
-                out.write(msg);
-            }
         }
         out.flush();
     }

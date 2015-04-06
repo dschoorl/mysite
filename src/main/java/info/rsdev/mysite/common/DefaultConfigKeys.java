@@ -7,6 +7,10 @@ import java.util.Properties;
  */
 public interface DefaultConfigKeys {
     
+    /**
+     * The filesystem directory outside the webapp that can be used by the website for storage that survives
+     * upgrades and reboots. It is generated when te ModuleConfig is loaded.
+     */
     public static final String SITE_DATA_DIR_KEY = "SiteDataDir";
     
     /**
@@ -16,12 +20,14 @@ public interface DefaultConfigKeys {
     
     /**
      * The logical name of the site. This is not an alias and does not need to be an actual fully qualified hostname.
+     * This property is generated when the ModuleConfig is loaded.
      */
     public static final String SITENAME_KEY = "SiteName";
     
     /**
-     * The fully qualified name of the Java class that implements the {@link ModuleConfig} interface form this module. It must
-     * have a public constructor that accepts a {@link Properties} argument.
+     * The fully qualified name of the Java class that implements the {@link ModuleConfig} interface for this module. It must
+     * have a public constructor that accepts a {@link Properties} argument. It must be set in the module's configuration
+     * properties.
      */
     public static final String MODULECONFIGTYPE_KEY = "ModuleConfigType";
 }

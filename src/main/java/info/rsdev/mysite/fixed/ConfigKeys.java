@@ -7,7 +7,7 @@ import info.rsdev.mysite.common.DefaultConfigKeys;
  */
 public interface ConfigKeys extends DefaultConfigKeys {
     
-    public static final String INDEX_FILE_NAME_KEY = "index.html";
+    public static final String INDEX_FILE_NAME_KEY = "indexFile";
     
     public static final String CONTENT_READER_CLASS = "";
     

@@ -1,6 +1,6 @@
 package info.rsdev.mysite.fixed;
 
-import info.rsdev.mysite.common.ModuleConfig;
+import info.rsdev.mysite.common.AbstractModuleConfig;
 import info.rsdev.mysite.common.RequestHandler;
 import info.rsdev.mysite.exception.ConfigurationException;
 
@@ -8,7 +8,7 @@ import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.Properties;
 
-public class FixedContentModuleConfig implements ModuleConfig, ConfigKeys {
+public class FixedContentModuleConfig extends AbstractModuleConfig implements ConfigKeys {
     
     /**
      * Implementation of a {@link RequestHandler} without request related state to serve static content
@@ -17,11 +17,9 @@ public class FixedContentModuleConfig implements ModuleConfig, ConfigKeys {
     
     private Path siteRoot = null;
     
-    private Properties properties = null;
-    
     public FixedContentModuleConfig(Properties configProperties) {
         //TODO: validate presence and correctness of important properties
-        this.properties = configProperties;
+        super(configProperties);
         this.requestHandler = new FixedContentServant();
     }
     
@@ -31,7 +29,7 @@ public class FixedContentModuleConfig implements ModuleConfig, ConfigKeys {
     }
     
     @Override
-    public boolean hasHandlerFor(String path) {
+    public boolean hasHandlerFor(String path) { 
         return path.startsWith(properties.getProperty(MOUNTPOINT_KEY));
     }
     
