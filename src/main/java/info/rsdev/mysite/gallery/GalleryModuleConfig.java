@@ -19,7 +19,7 @@ public class GalleryModuleConfig extends AbstractModuleConfig implements ConfigK
      */
     private final GalleryContentServant requestHandler;
     
-    private ST cachedTemplate = null;
+    private STGroup cachedTemplateGroup = null;
     
     public GalleryModuleConfig(Properties configProperties) {
         super(configProperties);
@@ -46,28 +46,25 @@ public class GalleryModuleConfig extends AbstractModuleConfig implements ConfigK
     }
 
     public synchronized ST getTemplate() {
-        if (cachedTemplate != null) {
-            return cachedTemplate;
-        }
-        
-        //is the template in the external directory or within the webapp?
         String templateName = getString(TEMPLATE_NAME_KEY);
-        File templateDir = new File(getString(SITE_DATA_DIR_KEY), getMountPoint());
-        File templateFile = new File(templateDir, templateName.concat(".stg"));
-        URL templateResource = null;
-        if (templateFile.isFile()) {
-            try {
-                templateResource = templateFile.toURI().toURL();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+        if (cachedTemplateGroup == null) {
+            //is the template in the external directory or within the webapp?
+            File templateDir = new File(getString(SITE_DATA_DIR_KEY), getMountPoint());
+            File templateFile = new File(templateDir, templateName.concat(".stg"));
+            URL templateResource = null;
+            if (templateFile.isFile()) {
+                try {
+                    templateResource = templateFile.toURI().toURL();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                String resourceName = "/templates/".concat(templateName).concat(".stg");
+                templateResource = Thread.currentThread().getContextClassLoader().getResource(resourceName);
             }
-        } else {
-            String resourceName = "/templates/".concat(templateName).concat(".stg");
-            templateResource = Thread.currentThread().getContextClassLoader().getResource(resourceName);
+            this.cachedTemplateGroup = new STGroupFile(templateResource, "UTF-8", '$', '$');
         }
-        STGroup group = new STGroupFile(templateResource, "UTF-8", '$', '$');
-        this.cachedTemplate = group.getInstanceOf(templateName);
-        return this.cachedTemplate;
+        return cachedTemplateGroup.getInstanceOf(templateName);
     }
     
 }

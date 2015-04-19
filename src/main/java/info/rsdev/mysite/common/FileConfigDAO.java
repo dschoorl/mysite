@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -79,7 +80,10 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
                         aliasesFile, subdirectory, contentRoot, alias));
                 continue;
             }
-            SiteConfig siteConfig = new DefaultSiteConfig(subdirectory, readmoduleConfig(location));
+            SiteConfig siteConfig = getConfig(subdirectory, siteConfigByAlias.values());
+            if (siteConfig == null) {
+                siteConfig = new DefaultSiteConfig(subdirectory, readmoduleConfig(location));
+            }
             if (siteConfigByAlias.containsKey(alias)) {
                 String previousName = this.siteConfigByAlias.get(alias).getSiteName();
                 if (!previousName.equals(subdirectory)) {
@@ -90,6 +94,17 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
             siteConfigByAlias.put(alias, siteConfig);
         }
         return siteConfigByAlias;
+    }
+
+    private SiteConfig getConfig(String subdirectory, Collection<SiteConfig> values) {
+        if (values != null) {
+            for (SiteConfig config: values) {
+                if (config.getSiteName().equals(subdirectory)) {
+                    return config;
+                }
+            }
+        }
+        return null;
     }
 
     private Map<String, ModuleConfig> readmoduleConfig(File location) {
@@ -124,7 +139,7 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
                     ModuleConfig config = constructor.newInstance(properties);
                     configByMountpoint.put(mountpoint, config);
                     logger.info(String.format("[%s]: mounted module %s on mountpoint '%s'", location.getName(), 
-                            config.getClass().getSimpleName(), mountpoint));
+                            config, mountpoint));
                 } catch (RuntimeException | IOException | ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                     logger.error(String.format("Problem loading module configuration from %s", propertyFile.getAbsolutePath()), e);
                     configByMountpoint.put(mountpoint, new ErrorModuleConfig(mountpoint, e));
