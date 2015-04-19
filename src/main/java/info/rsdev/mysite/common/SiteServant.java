@@ -38,19 +38,24 @@ public class SiteServant implements Servlet {
     
     @Override
     public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
-        logURL((HttpServletRequest)request);
+        String modulePath = ((HttpServletRequest)request).getServletPath();
+        logger.debug("Received request: ".concat((modulePath)));
+        
         String hostname = request.getServerName().toLowerCase();
         SiteConfig config = configDai.getConfig(hostname);
         
         //get path into module context and then get page for path from the appropriate module
-        String modulePath = ((HttpServletRequest)request).getServletPath();
-        if (modulePath == null) {
-            modulePath = "/";
-        }
         ModuleConfig moduleConfig = config.getModuleConfig(modulePath);
         if (moduleConfig == null) {
-            //TODO: return 404 page
-            throw new IllegalStateException(String.format("Page not found: %s", ((HttpServletRequest)request).getRequestURL()));
+            logger.error(String.format("No module configered to serve request ".concat(modulePath)));
+            ((HttpServletResponse)response).sendError(404);
+            return;
+        }
+        
+        if (logger.isDebugEnabled()) {
+            HttpServletRequest r = (HttpServletRequest)request;
+            logger.debug(String.format("%s will be serving %s request: %s [QuesryString=%s]", moduleConfig.getRequestHandler(), 
+                    r.getMethod(), r.getServletPath(), r.getQueryString()));
         }
         moduleConfig.getRequestHandler().handle(moduleConfig, (HttpServletRequest)request, (HttpServletResponse)response);
         
@@ -66,22 +71,6 @@ public class SiteServant implements Servlet {
     @Override
     public void destroy() {
         logger.info("Destroying servlet ".concat(getServletInfo()));
-    }
-    
-    private void logURL(HttpServletRequest r) {
-        logger.info(String.format("%nServletContext=%s%n,"
-                + "ServletPath=%s%n"
-                + "PathInfo=%s%n"
-                + "RequestURI=%s%n"
-                + "RequestURL=%s%n"
-                + "QueryString=%s%n", 
-                r.getServletContext(), 
-                r.getServletPath(), 
-                r.getPathInfo(), 
-                r.getRequestURI(),
-                r.getRequestURL(),
-                r.getQueryString()
-                ));
     }
     
 }

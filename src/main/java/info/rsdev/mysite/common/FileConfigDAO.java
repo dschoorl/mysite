@@ -123,6 +123,8 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
                     Constructor<? extends ModuleConfig> constructor = configClass.getConstructor(Properties.class);
                     ModuleConfig config = constructor.newInstance(properties);
                     configByMountpoint.put(mountpoint, config);
+                    logger.info("[%s]: mounted module %s on mountpoint '%s'", location.getName(), 
+                            config.getClass().getSimpleName(), mountpoint);
                 } catch (RuntimeException | IOException | ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
                     logger.error(String.format("Problem loading module configuration from %s", propertyFile.getAbsolutePath()), e);
                     configByMountpoint.put(mountpoint, new ErrorModuleConfig(mountpoint, e));
