@@ -11,33 +11,34 @@ slideshow(model) ::= <<
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
 </head>
-<body class="container-fluid">
+<body class="container">
 <div class="row">
-<nav class="col-sm-4">
+<nav class="col-sm-2">
   <p>$model.config.properties.("pageTitle")$</p>
-  <ul>
-    <li>Work</li>
-    <li>CertainPhotos</li>
-    <li>OtherPhotos</li>
-    <li>Budhas</li>
-    <li>Humor</li>
+  <ul class="nav nav-pills nav-stacked">
+    $model.menuItems:menuitem()$
   </ul>
 </nav>
-<section class="col-sm-8">
+<section class="col-sm-6">
    <header>
-     <p>Prev | Next | 1/23</p>
+     <p><a href="$model.previousPageUrl$">Prev</a> | <a href="$model.nextPageUrl$">Next</a> | $model.pageNumber$/$model.pageCount$</p>
    </header>
-   <figure>
-     <img class="img-responsive" src="images/certain/test-picture.jpg" />
-     <figcaption>
-       <p>Comming soon...</p>
-     </figcaption>
-   </figure>
+   $model.imagesOnPage:render_image()$
 </section>
-</div>
 <footer class="row">
-  <p class="col-sm-12" style="text-align: center;">&copy; 2015 Sylvia Borst, All rights reserved.</p>
+  <p class="col-sm-8" style="text-align: center;">&copy; 2015 Sylvia Borst, All rights reserved.</p>
 </footer>
+</div>
 </body>
 </html>
+>>
+
+menuitem(item) ::= <<
+  <li><a href="$item.targetUrl$">$item.caption$</a></li>
+>>
+
+render_image(image) ::= <<
+   <figure>
+     <img class="img-responsive" src="$image.imagePath$" />
+   </figure>
 >>

@@ -23,8 +23,8 @@ public class GalleryModuleConfig extends AbstractModuleConfig implements ConfigK
     
     public GalleryModuleConfig(Properties configProperties) {
         super(configProperties);
-        File collectionDir = new File(getString(SITE_DATA_DIR_KEY), getString(COLLECTION_PATH_KEY));
-        this.requestHandler = new GalleryContentServant(collectionDir);
+        String servletPath = properties.getProperty(CONTEXTPATH_KEY).concat(properties.getProperty(MOUNTPOINT_KEY));
+        this.requestHandler = new GalleryContentServant(new File(getString(SITE_DATA_DIR_KEY)), getString(COLLECTION_PATH_KEY), servletPath);
     }
     
     @Override

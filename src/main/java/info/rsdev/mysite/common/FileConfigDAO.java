@@ -38,8 +38,11 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
     
     private File contentRoot = null;
     
-    public FileConfigDAO() {
-        contentRoot = getContentRoot();
+    private final String contextPath;
+    
+    public FileConfigDAO(String contextPath) {
+        this.contextPath = contextPath;
+        this.contentRoot = getContentRoot();
         logger.info(String.format("Using '%s' as data directory", contentRoot.getAbsolutePath()));
         this.siteConfigByAlias = getSiteConfigByAlias(contentRoot, new File(contentRoot, "aliases.properties"));
     }
@@ -127,6 +130,7 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
                     properties.setProperty(MOUNTPOINT_KEY, mountpoint);
                     properties.setProperty(SITENAME_KEY, location.getName());
                     properties.setProperty(SITE_DATA_DIR_KEY, location.getAbsolutePath());
+                    properties.setProperty(CONTEXTPATH_KEY, this.contextPath);
                     
                     //Create the ModuleConfig instance; it's type is configured in the properties
                     String configType = properties.getProperty(MODULECONFIGTYPE_KEY);

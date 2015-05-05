@@ -13,6 +13,7 @@ public interface DefaultConfigKeys {
      */
     public static final String SITE_DATA_DIR_KEY = "SiteDataDir";
     
+    public static final String CONTEXTPATH_KEY = "servletContextPath";
     /**
      * The mountpoint on which the module is mounted. This property is generated when the ModuleConfig is loaded.
      */

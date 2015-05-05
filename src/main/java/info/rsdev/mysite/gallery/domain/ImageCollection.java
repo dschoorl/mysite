@@ -5,12 +5,12 @@ import info.rsdev.mysite.util.DirectoryFilter;
 import info.rsdev.mysite.util.ImageFileFilter;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * <p>The responsibility of this class is to inventory the given collection directory and all of it's subdirectories for images.
@@ -22,52 +22,91 @@ import java.util.Map.Entry;
  */
 public class ImageCollection {
     
-    private final Map<String, List<Image>> imagesByGroup;
+    /**
+     * The list of {@link Image}s in the imagegroup directory.
+     */
+    private final List<ImageGroup> imageGroups;
     
-    public ImageCollection(File collectionDir) {
-        if (collectionDir == null) {
+    private final String collectionPath;
+    
+    private final String mountPoint;
+    
+    public ImageCollection(File siteDir, String collectionPath, String mountPoint) {
+        if (collectionPath == null) {
             throw new NullPointerException("Directory to image collection cannot be null");
         }
+        File collectionDir = new File(siteDir, collectionPath);
         if (!collectionDir.isDirectory()) {
             throw new ConfigurationException(String.format("Not a directory: %s", collectionDir.getAbsolutePath()));
         }
-        imagesByGroup = inventory(collectionDir);   //TODO: run in a separate thread?
+        this.collectionPath = collectionPath;
+        this.mountPoint = mountPoint;
+        this.imageGroups = inventory(siteDir.toPath(), collectionDir, true);   //TODO: run in a separate thread?
     }
     
     public List<Image> getImages(String groupName) {
-        if (!imagesByGroup.containsKey(groupName)) {
-            return Collections.emptyList();
+        ImageGroup group = getImageGroup(imageGroups, groupName);
+        if (group != null) {
+            return Collections.unmodifiableList(group.getImages());
         }
-        return Collections.unmodifiableList(imagesByGroup.get(groupName));
+        return Collections.emptyList();
     }
     
-    protected Map<String, List<Image>> inventory(File groupDir) {
-        Map<String, List<Image>> imagesByGroup = new HashMap<>();
+    private ImageGroup getImageGroup(List<ImageGroup> imageGroups, String groupName) {
+        for (ImageGroup candidate: imageGroups) {
+            if (candidate.getName().equals(groupName)) {
+                return candidate;
+            }
+        }
+        return null;
+    }
+    
+    public List<ImageGroup> getImageGroups() {
+        return new ArrayList<>(imageGroups);
+    }
+    
+    public String getPath() {
+        return collectionPath;
+    }
+    
+    public String getMountPoint() {
+        return this.mountPoint;
+    }
+    
+    protected List<ImageGroup> inventory(Path sitePath, File groupDir, boolean subdirsOnly) {
+        LinkedList<ImageGroup> imageGroups = new LinkedList<>();
         
         //Depth-first: when there are subdirectories present in the directory, visit them first
         File[] subdirectories = groupDir.listFiles(DirectoryFilter.INSTANCE);
         for (File directory: subdirectories) {
             //take inventory of imagegroup in subdirectory and merge with our image group
-            Map<String, List<Image>> subtreeImageGroups = inventory(directory);
-            for (Entry<String, List<Image>> entry: subtreeImageGroups.entrySet()) {
-                if (imagesByGroup.containsKey(entry.getKey())) {
-                    imagesByGroup.get(entry.getKey()).addAll(entry.getValue());
+            Collection<ImageGroup> subtreeImageGroups = inventory(sitePath, directory, false);
+            for (ImageGroup group: subtreeImageGroups) {
+                int index = imageGroups.indexOf(group);
+                if (index >= 0) {
+                    imageGroups.get(index).merge(group);
                 } else {
-                    imagesByGroup.put(entry.getKey(), entry.getValue());
+                    imageGroups.add(group);
                 }
             }
         }
         
-        //take inventory of the images in the given directory
-        String groupName = groupDir.getName();
-        List<Image> imageGroup = imagesByGroup.get(groupName);
-        if (imageGroup == null) {
-            imageGroup = new ArrayList<Image>();
-            imagesByGroup.put(groupName, imageGroup);
+        if (!subdirsOnly) {
+            //take inventory of the images in the given directory
+            ImageGroup newGroup = new ImageGroup(this, groupDir.getName());
+            List<Image> images = new ArrayList<>();
+            for (File image: groupDir.listFiles(ImageFileFilter.INSTANCE)) {
+                images.add(new Image(newGroup, image));
+            }
+            newGroup.addImages(images);
+            ImageGroup current = getImageGroup(imageGroups, groupDir.getName());
+            if (current == null) {
+                imageGroups.add(newGroup);
+            } else {
+                current.merge(newGroup);
+            }
         }
-        for (File image: groupDir.listFiles(ImageFileFilter.INSTANCE)) {
-            imageGroup.add(new Image(image));
-        }
-        return imagesByGroup;
+        
+        return imageGroups;
     }
 }

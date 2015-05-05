@@ -14,18 +14,18 @@ public class ImageCollectionTest {
     
     @Before
     public void setup() {
-        this.collection = new ImageCollection(new File("src/test/resources/sites/site1.com/images"));
+        this.collection = new ImageCollection(new File("src/test/resources/sites/site1.com"), "images", "");
     }
     
     @Test
-    public void rootDirIsAlsoInventoried() {
+    public void rootDirIsNotInventoriedByDefault() {
         List<Image> groupImages = collection.getImages("images");
         assertNotNull(groupImages);
-        assertEquals(1, groupImages.size());
+        assertEquals(0, groupImages.size());
     }
     
     @Test
-    public void differentDirsWithSameNameAreMergesInOneGroup() {
+    public void differentDirsWithSameNameAreNotMergedInOneGroup() {
         List<Image> groupImages = collection.getImages("fun");
         assertNotNull(groupImages);
         assertEquals(3, groupImages.size());

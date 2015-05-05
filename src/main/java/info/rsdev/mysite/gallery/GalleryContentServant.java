@@ -9,6 +9,7 @@ import info.rsdev.mysite.gallery.domain.ImageCollection;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -22,15 +23,12 @@ import org.stringtemplate.v4.ST;
  * This {@link RequestHandler} implementation is responsible for coordinating access to the images from the configured 
  * image collection, using the configured template.
  */
-public class GalleryContentServant implements RequestHandler, ConfigKeys {
-    
-    private static final String PAGESIZE_PARAM = "pageSize";
-    private static final String PAGENUMBER_PARAM = "pageNumber";
+public class GalleryContentServant implements RequestHandler, ConfigKeys, RequestKeys {
     
     private final ImageCollection imageCollection;
     
-    public GalleryContentServant(File collectionDir) {
-        this.imageCollection = new ImageCollection(collectionDir);
+    public GalleryContentServant(File siteDir, String collectionPath, String mountPoint) {
+        this.imageCollection = new ImageCollection(siteDir, collectionPath, mountPoint);
     }
     
     @Override
@@ -46,32 +44,41 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys {
         GalleryModuleConfig galleryConfig = (GalleryModuleConfig)config;
         
         // analyse request
-        Map<String, String> requestParams = getRequestParameters(request);
+        Map<String, String> requestParams = getSupportedParameters(request);
         
         // query images to show
-        String groupName = requestParams.get("imagegroup");
+        String groupName = requestParams.get(IMAGEGROUP_PARAM);
         List<Image> images = imageCollection.getImages(groupName);
         int imageCount = images.size();
         
         // construct page
         int pageSize = getPageSize(requestParams, galleryConfig);
         int pageNumber = getPageNumber(requestParams);  //base 1
+        int pageCount = imageCount / pageSize;
         if (pageNumber == -1) {
             if (galleryConfig.showRandomFirstPage()) {
-                //TODO: randomly generate which page to show
+                //randomly generate which page to show (between 1 and pageCount, inclusive)
+                int min = 1;
+                int max = pageCount + 1;
+                pageNumber = min + (int)(Math.random() * ((max - min) + 1));
             } else {
                 pageNumber = 1;
             }
         }
-        int pageCount = imageCount / pageSize + 1;
-        if ((pageNumber * pageSize) >= imageCount) {
+        if ((pageNumber * pageSize) > imageCount) {
             pageNumber = pageCount; //if page out of bounds, show last page
         }
         GalleryPageModel model = new GalleryPageModel(galleryConfig, groupName, pageNumber, pageSize);
         
-        List<Image> imagesOnPage = images.subList((pageNumber - 1) * pageSize, (pageNumber * pageSize) - 1);
+        List<Image> imagesOnPage = null;
+        if (imageCount==0) {
+            imagesOnPage = Collections.emptyList();
+        } else { 
+            imagesOnPage = images.subList((pageNumber - 1) * pageSize, (pageNumber * pageSize));
+        }
         model.setImagesOnPage(imagesOnPage);
         model.setPageCount(pageCount);
+        model.setImageGroups(imageCollection.getImageGroups());
         
         renderPage(response, model);
     }
@@ -113,11 +120,15 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys {
         }
         int pageSizeHint = galleryConfig.getInteger(IMAGES_PER_PAGE_HINT_KEY);
         if (pageSizeHint > 0) { return pageSizeHint; }
-        return 20;
+        return 20;  //a hardcoded default (fallback value)
     }
 
-    private Map<String, String> getRequestParameters(HttpServletRequest request) {
-        return Collections.emptyMap();
+    private Map<String, String> getSupportedParameters(HttpServletRequest request) {
+        Map<String, String> wellknownParameters = new HashMap<>();
+        wellknownParameters.put(IMAGEGROUP_PARAM, request.getParameter(IMAGEGROUP_PARAM));
+        wellknownParameters.put(PAGENUMBER_PARAM, request.getParameter(PAGENUMBER_PARAM));
+        wellknownParameters.put(PAGESIZE_PARAM, request.getParameter(PAGESIZE_PARAM));
+        return wellknownParameters;
     }
     
 }

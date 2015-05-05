@@ -9,29 +9,37 @@ public class Image implements Comparable<Image> {
     
     public static final String THUMBNAIL_INDICATOR = "_thumb";
     
-    private final File location;
+    private final ImageGroup imageGroup;
     
-    public Image(File imageFile) {
-        this.location = imageFile;
+    private final String imagePath;
+    
+    public Image(ImageGroup group, File image) {
+        this.imageGroup = group;
+        
+        //calculate the imagePath relative to the collectionPath
+        String collectionPath = this.imageGroup.getCollection().getPath();
+        String imagePath = image.getAbsolutePath();
+        int index = imagePath.indexOf(collectionPath);
+        this.imagePath = imagePath.substring(index);
     }
     
     /**
      * Get the path to the image on this server, relative to the internet hostname
      */
-    public void getImagePath() {
-        
+    public String getImagePath() {
+        return this.imagePath;
     }
     
-    public void getThumbnailPath() {
-        
+    public File getThumbnailPath() {
+        return null; //not yet supported
     }
     
-    public void getWidth() {
-        
+    public int getWidth() {
+        return 0;
     }
     
-    public void getHeight() {
-        
+    public int getHeight() {
+        return 0;
     }
 
     @Override

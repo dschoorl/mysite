@@ -27,7 +27,7 @@ public class SiteServant implements Servlet {
         //Currently this servlet is not configurable -- this may change in the future
         logger.info(String.format("Initializing Servlet %s", getClass().getName()));
         this.servletConfig = config;
-        this.configDai = new FileConfigDAO();
+        this.configDai = new FileConfigDAO(config.getServletContext().getContextPath());
         logger.info(String.format("Platform default encoding: %s", Charset.defaultCharset()));
     }
     

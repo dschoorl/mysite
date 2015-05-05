@@ -15,7 +15,7 @@ public class FileConfigDAOTest {
     
     @Before
     public void setup() {
-        dao = new FileConfigDAO();
+        dao = new FileConfigDAO("/context");
     }
     
     @Test

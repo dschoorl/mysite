@@ -18,7 +18,7 @@ Photo Gallery
 *-------------------------------+---------------+
 | template                      | The name of the GUI template that must be used to show the photo's
 *-------------------------------+---------------+
-| collection                    | The path to the image collection that will be displayed, when relative, it is considered relative to the site's data directory
+| collection                    | The path to the image collection that will be displayed, relative to the site's data directory
 *-------------------------------+---------------+
 | showThumbnails                | Boolean value. When true, make thumbnails available to the template, false otherwise
 *-------------------------------+---------------+

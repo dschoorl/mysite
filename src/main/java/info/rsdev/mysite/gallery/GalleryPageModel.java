@@ -1,7 +1,13 @@
 package info.rsdev.mysite.gallery;
 
+import info.rsdev.mysite.common.domain.MenuItem;
 import info.rsdev.mysite.gallery.domain.Image;
+import info.rsdev.mysite.gallery.domain.ImageGroup;
+import info.rsdev.mysite.gallery.domain.ImageGroupMenuItem;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -16,11 +22,11 @@ public class GalleryPageModel {
     
     private int pageCount;
     
-    private String imageGroup;
+    private String imageGroupName;
     
     private List<Image> imagesOnPage;
     
-    private List<String> imageGroups;
+    private List<ImageGroup> imageGroups;
     
     private GalleryModuleConfig config;
     
@@ -48,11 +54,11 @@ public class GalleryPageModel {
     }
 
     public String getImageGroup() {
-        return imageGroup;
+        return imageGroupName;
     }
 
     public void setImageGroup(String imageGroup) {
-        this.imageGroup = imageGroup;
+        this.imageGroupName = imageGroup;
     }
 
     public List<Image> getImagesOnPage() {
@@ -63,11 +69,11 @@ public class GalleryPageModel {
         this.imagesOnPage = imagesOnPage;
     }
 
-    public List<String> getImageGroups() {
+    public List<ImageGroup> getImageGroups() {
         return imageGroups;
     }
 
-    public void setImageGroups(List<String> imageGroups) {
+    public void setImageGroups(List<ImageGroup> imageGroups) {
         this.imageGroups = imageGroups;
     }
 
@@ -85,6 +91,42 @@ public class GalleryPageModel {
     
     public void setPageCount(int pageCount) {
         this.pageCount = pageCount;
+    }
+    
+    public String getNextPageUrl() {
+        if (pageNumber+1 > pageCount) {
+            return null;
+        }
+        try {
+            return String.format("?imagegroup=%s&%s=%d", 
+                    URLEncoder.encode(this.imageGroupName, "UTF-8"),
+                    RequestKeys.PAGENUMBER_PARAM,
+                    pageNumber + 1);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public String getPreviousPageUrl() {
+        if (pageNumber <= 1) {
+            return null;
+        }
+        try {
+            return String.format("?imagegroup=%s&%s=%d", 
+                    URLEncoder.encode(this.imageGroupName, "UTF-8"),
+                    RequestKeys.PAGENUMBER_PARAM,
+                    pageNumber - 1);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    public List<MenuItem> getMenuItems() {
+        List<MenuItem> menuItems = new LinkedList<>();
+        for (ImageGroup imageGroup: imageGroups) {
+            menuItems.add(new ImageGroupMenuItem(imageGroup));
+        }
+        return menuItems;
     }
 
 }
