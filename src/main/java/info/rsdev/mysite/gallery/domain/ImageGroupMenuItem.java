@@ -12,8 +12,16 @@ public class ImageGroupMenuItem implements MenuItem {
     
     private final ImageGroup imageGroup;
     
+    private final boolean selected;
+    
     public ImageGroupMenuItem(ImageGroup imageGroup) {
         this.imageGroup = imageGroup;
+        this.selected = false;
+    }
+
+    public ImageGroupMenuItem(ImageGroup imageGroup, boolean isSelected) {
+        this.imageGroup = imageGroup;
+        this.selected = isSelected;
     }
 
     @Override
@@ -36,6 +44,11 @@ public class ImageGroupMenuItem implements MenuItem {
     @Override
     public String getImageUrl() {
         return null;
+    }
+    
+    @Override
+    public boolean isSelected() {
+        return selected;
     }
     
 }

@@ -18,4 +18,6 @@ public interface MenuItem {
      */
     public String getImageUrl();
     
+    public boolean isSelected();
+    
 }

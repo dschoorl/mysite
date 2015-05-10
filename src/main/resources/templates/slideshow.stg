@@ -34,7 +34,7 @@ slideshow(model) ::= <<
 >>
 
 menuitem(item) ::= <<
-  <li><a href="$item.targetUrl$">$item.caption$</a></li>
+  <li $if(item.selected)$class="active"$endif$><a href="$item.targetUrl$">$item.caption$</a></li>
 >>
 
 render_image(image) ::= <<

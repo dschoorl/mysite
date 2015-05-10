@@ -8,6 +8,8 @@ public class DefaultMenuItem implements MenuItem {
     
     private String imageUrl = null;
     
+    private boolean selected = false;
+    
     public DefaultMenuItem(String caption) {
         this(caption, null);
     }
@@ -30,6 +32,15 @@ public class DefaultMenuItem implements MenuItem {
     @Override
     public String getImageUrl() {
         return imageUrl;
+    }
+
+    @Override
+    public boolean isSelected() {
+        return selected;
+    }
+
+    public void setSelected(boolean selected) {
+        this.selected = selected;
     }
     
 }

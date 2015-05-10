@@ -142,7 +142,8 @@ public class GalleryPageModel {
         for (String itemName: visibleItemsInOrder) {
             for (ImageGroup imageGroup: imageGroups) {
                 if (imageGroup.getName().equals(itemName)) {
-                    visibleItems.add(new ImageGroupMenuItem(imageGroup));
+                    boolean isSelected = itemName.equals(this.imageGroupName);
+                    visibleItems.add(new ImageGroupMenuItem(imageGroup, isSelected));
                     break;
                 }
             }
