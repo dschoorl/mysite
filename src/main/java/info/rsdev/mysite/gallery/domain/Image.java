@@ -13,8 +13,11 @@ public class Image implements Comparable<Image> {
     
     private final String imagePath;
     
+    private final String imageName;
+    
     public Image(ImageGroup group, File image) {
         this.imageGroup = group;
+        this.imageName = image.getName();
         
         //calculate the imagePath relative to the collectionPath
         String collectionPath = this.imageGroup.getCollection().getPath();
@@ -44,8 +47,10 @@ public class Image implements Comparable<Image> {
 
     @Override
     public int compareTo(Image o) {
-        // TODO Auto-generated method stub
-        return 0;
+        if (o == null) {
+            return -1;
+        }
+        return this.imageName.compareTo(o.imageName);
     }
     
 }
