@@ -26,7 +26,7 @@ Photo Gallery
 *-------------------------------+---------------+
 | showRandomPageAsFirstPage     | Boolean value. When true, a random page will be displayed when the request does not specify the image group and / or page number to display. When false, the first page will be displayed on these occasions.
 *-------------------------------+---------------+
-| cacheImageInfo                | Boolean value. When true, image info is read only once from the filesystem and cached in memory, false otherwise. \
-|                               | When caching is enabled, pages are served faster, at the cost of higher memory usage.
+| menuitems                     | List with imagegroup names that must be visible in the navigation menu, in the given order. List items are separated with a column (:) \
+|                               | When absent, all image groups are visible as menu items in undetermined order.
 *-------------------------------+---------------+
 
