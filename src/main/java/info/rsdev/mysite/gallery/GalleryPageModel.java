@@ -7,6 +7,8 @@ import info.rsdev.mysite.gallery.domain.ImageGroupMenuItem;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -93,6 +95,19 @@ public class GalleryPageModel {
         this.pageCount = pageCount;
     }
     
+    protected List<String> getSortedVisibleItems() {
+        String itemString = config.getString(ConfigKeys.APPROVED_MENUITEMS);
+        if (itemString == null) {
+            List<String> visibleItemsInOrder = new LinkedList<>();
+            for (ImageGroup imageGroup: imageGroups) {
+                //assumption: name of the group will be the caption for the menuitem
+                visibleItemsInOrder.add(imageGroup.getName());
+            }
+            return visibleItemsInOrder;
+        }
+        return Arrays.asList(itemString.split(":"));
+    }
+    
     public String getNextPageUrl() {
         if (pageNumber+1 > pageCount) {
             return null;
@@ -122,11 +137,17 @@ public class GalleryPageModel {
     }
     
     public List<MenuItem> getMenuItems() {
-        List<MenuItem> menuItems = new LinkedList<>();
-        for (ImageGroup imageGroup: imageGroups) {
-            menuItems.add(new ImageGroupMenuItem(imageGroup));
+        List<String> visibleItemsInOrder = getSortedVisibleItems();
+        ArrayList<MenuItem> visibleItems = new ArrayList<>(visibleItemsInOrder.size());
+        for (String itemName: visibleItemsInOrder) {
+            for (ImageGroup imageGroup: imageGroups) {
+                if (imageGroup.getName().equals(itemName)) {
+                    visibleItems.add(new ImageGroupMenuItem(imageGroup));
+                    break;
+                }
+            }
         }
-        return menuItems;
+        return visibleItems;
     }
 
 }
