@@ -8,7 +8,6 @@ import info.rsdev.mysite.gallery.domain.ImageGroupMenuItem;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -96,16 +95,15 @@ public class GalleryPageModel {
     }
     
     protected List<String> getSortedVisibleItems() {
-        String itemString = config.getString(ConfigKeys.APPROVED_MENUITEMS);
-        if (itemString == null) {
-            List<String> visibleItemsInOrder = new LinkedList<>();
+        List<String> visibleItemsInOrder = config.getVisibleGroupsInOrder();
+        if (visibleItemsInOrder == null) {
+            visibleItemsInOrder = new LinkedList<>();
             for (ImageGroup imageGroup: imageGroups) {
                 //assumption: name of the group will be the caption for the menuitem
                 visibleItemsInOrder.add(imageGroup.getName());
             }
-            return visibleItemsInOrder;
         }
-        return Arrays.asList(itemString.split(":"));
+        return visibleItemsInOrder;
     }
     
     public String getNextPageUrl() {

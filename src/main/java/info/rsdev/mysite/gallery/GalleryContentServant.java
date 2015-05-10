@@ -5,6 +5,7 @@ import info.rsdev.mysite.common.RequestHandler;
 import info.rsdev.mysite.exception.ConfigurationException;
 import info.rsdev.mysite.gallery.domain.Image;
 import info.rsdev.mysite.gallery.domain.ImageCollection;
+import info.rsdev.mysite.gallery.domain.ImageGroup;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,6 +49,24 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
         
         // query images to show
         String groupName = requestParams.get(IMAGEGROUP_PARAM);
+        if (groupName == null) {
+            List<ImageGroup> groups = imageCollection.getImageGroups();
+            if (!groups.isEmpty()) {
+                if (galleryConfig.showRandomFirstPage()) {
+                    //randomly generate which group to show
+                    int min = 0;
+                    int max = groups.size();
+                    groupName = groups.get(min + (int)(Math.random() * (max - min))).getName();
+                } else {
+                    List<String> groupNamesInDisplayOrder = galleryConfig.getVisibleGroupsInOrder();
+                    if (groupNamesInDisplayOrder.isEmpty()) {
+                        groupName = groups.get(0).getName();
+                    } else {
+                        groupName = groupNamesInDisplayOrder.get(0);
+                    }
+                }
+            }
+        }
         List<Image> images = imageCollection.getImages(groupName);
         int imageCount = images.size();
         

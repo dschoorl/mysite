@@ -6,6 +6,8 @@ import info.rsdev.mysite.common.RequestHandler;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 
 import org.stringtemplate.v4.ST;
@@ -43,6 +45,14 @@ public class GalleryModuleConfig extends AbstractModuleConfig implements ConfigK
 
     public boolean showRandomFirstPage() {
         return getBoolean(RANDOM_PAGE_KEY);
+    }
+    
+    public List<String> getVisibleGroupsInOrder() {
+        String itemString = properties.getProperty(APPROVED_MENUITEMS);
+        if (itemString == null) {
+            return null;
+        }
+        return Arrays.asList(itemString.split(":"));
     }
 
     public synchronized ST getTemplate() {
