@@ -2,6 +2,8 @@ package info.rsdev.mysite.fixed;
 
 import info.rsdev.mysite.common.ModuleConfig;
 import info.rsdev.mysite.common.RequestHandler;
+import info.rsdev.mysite.common.domain.DefaultMenuGroup;
+import info.rsdev.mysite.common.domain.MenuGroup;
 import info.rsdev.mysite.exception.ConfigurationException;
 import info.rsdev.mysite.util.ServletUtils;
 
@@ -30,7 +32,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             "application/javascript");
     
     @Override
-    public void handle(ModuleConfig config, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public void handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (config == null) {
             throw new ConfigurationException(String.format("%s cannot be null", ModuleConfig.class.getSimpleName()));
         }
@@ -104,6 +106,12 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             logger.debug(String.format("MimeType resolved to %s by URLConnection.guessContentTypeFromName(%s)", mimeType, resource));
         }
         return mimeType;
+    }
+
+    @Override
+    public MenuGroup getMenuItems(ModuleConfig config) {
+        //this module does not provide menu items
+        return DefaultMenuGroup.EMPTY_GROUP;
     }
     
 }

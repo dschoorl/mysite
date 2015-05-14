@@ -1,6 +1,10 @@
 package info.rsdev.mysite.common;
 
+import info.rsdev.mysite.common.domain.MenuGroup;
+
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 public class DefaultSiteConfig implements SiteConfig {
@@ -27,6 +31,18 @@ public class DefaultSiteConfig implements SiteConfig {
     @Override
     public String getSiteName() {
         return siteName;
+    }
+
+    @Override
+    public List<MenuGroup> getMenu() {
+        List<MenuGroup> menu = new LinkedList<>();
+        for (ModuleConfig config: moduleConfigByMountPoint.values()) {
+            MenuGroup menuGroup = config.getRequestHandler().getMenuItems(config);
+            if (!menuGroup.isEmpty()) {
+                menu.add(menuGroup);
+            }
+        }
+        return menu;
     }
     
 }

@@ -12,16 +12,20 @@ public class ImageGroupMenuItem implements MenuItem {
     
     private final ImageGroup imageGroup;
     
-    private final boolean selected;
+    private boolean active = false;
+    
+    public ImageGroupMenuItem(ImageGroupMenuItem original) {
+        this.imageGroup = original.imageGroup;
+        this.active = original.active;
+    }
     
     public ImageGroupMenuItem(ImageGroup imageGroup) {
         this.imageGroup = imageGroup;
-        this.selected = false;
     }
 
-    public ImageGroupMenuItem(ImageGroup imageGroup, boolean isSelected) {
+    public ImageGroupMenuItem(ImageGroup imageGroup, boolean isActive) {
         this.imageGroup = imageGroup;
-        this.selected = isSelected;
+        this.active = isActive;
     }
 
     @Override
@@ -47,8 +51,15 @@ public class ImageGroupMenuItem implements MenuItem {
     }
     
     @Override
-    public boolean isSelected() {
-        return selected;
+    public boolean isActive() {
+        return active;
+    }
+
+    @Override
+    public MenuItem setActive(boolean isActive) {
+        ImageGroupMenuItem copy = new ImageGroupMenuItem(this);
+        copy.active = isActive;
+        return copy;
     }
     
 }

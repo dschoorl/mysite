@@ -31,4 +31,20 @@ public interface DefaultConfigKeys {
      * properties.
      */
     public static final String MODULECONFIGTYPE_KEY = "ModuleConfigType";
+    
+    public static final String TEMPLATE_NAME_KEY = "template";
+    
+    /**
+     * The list of menuitem names, separated by a column (:), that may appear in the navigation menu, in the order
+     * that they will appear. This is a filter and it is applied to a list of menu items; it will not cause menu items
+     * to be created, it only removes ones that are not wanted and orders the remaining ones.
+     */
+    public static final String APPROVED_MENUITEMS_KEY = "menuitems";
+    
+    public static final String MENU_ORDER_PRIORITY_KEY = "menuSortingPriority";
+    
+    public static final int DEFAULT_MENU_ORDER_PRIORITY_VALUE = 1000;
+    
+    public static final String MENUGROUP_TITLE_KEY = "menugroupTitle";
+    
 }

@@ -1,14 +1,12 @@
 package info.rsdev.mysite.gallery;
 
-import info.rsdev.mysite.common.domain.MenuItem;
+import info.rsdev.mysite.common.domain.MenuGroup;
 import info.rsdev.mysite.gallery.domain.Image;
-import info.rsdev.mysite.gallery.domain.ImageGroup;
-import info.rsdev.mysite.gallery.domain.ImageGroupMenuItem;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,7 +25,7 @@ public class GalleryPageModel {
     
     private List<Image> imagesOnPage;
     
-    private List<ImageGroup> imageGroups;
+    private List<MenuGroup> menu = Collections.emptyList();
     
     private GalleryModuleConfig config;
     
@@ -69,13 +67,22 @@ public class GalleryPageModel {
     public void setImagesOnPage(List<Image> imagesOnPage) {
         this.imagesOnPage = imagesOnPage;
     }
-
-    public List<ImageGroup> getImageGroups() {
-        return imageGroups;
+    
+    public List<MenuGroup> getMenu() {
+        return this.menu;
+    }
+    
+    public void setMenu(List<MenuGroup> menu) {
+        this.menu = new ArrayList<>(menu);
+        markActiveItem(this.menu, imageGroupName);
     }
 
-    public void setImageGroups(List<ImageGroup> imageGroups) {
-        this.imageGroups = imageGroups;
+    private void markActiveItem(List<MenuGroup> menu, String imageGroupName) {
+        for (MenuGroup menuGroup: menu) {
+            if (menuGroup.markActive(imageGroupName)) {
+                break;
+            }
+        }
     }
 
     public GalleryModuleConfig getConfig() {
@@ -92,18 +99,6 @@ public class GalleryPageModel {
     
     public void setPageCount(int pageCount) {
         this.pageCount = pageCount;
-    }
-    
-    protected List<String> getSortedVisibleItems() {
-        List<String> visibleItemsInOrder = config.getVisibleGroupsInOrder();
-        if (visibleItemsInOrder == null) {
-            visibleItemsInOrder = new LinkedList<>();
-            for (ImageGroup imageGroup: imageGroups) {
-                //assumption: name of the group will be the caption for the menuitem
-                visibleItemsInOrder.add(imageGroup.getName());
-            }
-        }
-        return visibleItemsInOrder;
     }
     
     public String getNextPageUrl() {
@@ -134,19 +129,4 @@ public class GalleryPageModel {
         }
     }
     
-    public List<MenuItem> getMenuItems() {
-        List<String> visibleItemsInOrder = getSortedVisibleItems();
-        ArrayList<MenuItem> visibleItems = new ArrayList<>(visibleItemsInOrder.size());
-        for (String itemName: visibleItemsInOrder) {
-            for (ImageGroup imageGroup: imageGroups) {
-                if (imageGroup.getName().equals(itemName)) {
-                    boolean isSelected = itemName.equals(this.imageGroupName);
-                    visibleItems.add(new ImageGroupMenuItem(imageGroup, isSelected));
-                    break;
-                }
-            }
-        }
-        return visibleItems;
-    }
-
 }

@@ -18,6 +18,14 @@ public interface MenuItem {
      */
     public String getImageUrl();
     
-    public boolean isSelected();
+    public boolean isActive();
+
+    /**
+     * Create a copy of this menu item and set itś active state to the provided value. When a {@link MenuItem} is
+     * marked active, it indicates that the page content stems from this menu item.
+     * @param isActive the active state of the copy
+     * @return a copy of the {@link MenuItem} with the desired active state
+     */
+    public MenuItem setActive(boolean isActive);
     
 }

@@ -6,6 +6,7 @@ import info.rsdev.mysite.exception.ConfigurationException;
 
 import java.nio.file.FileSystems;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Properties;
 
 public class FixedContentModuleConfig extends AbstractModuleConfig implements ConfigKeys {
@@ -58,6 +59,11 @@ public class FixedContentModuleConfig extends AbstractModuleConfig implements Co
             return indexFilename;
         }
         return "index.html";
+    }
+
+    @Override
+    public List<String> getVisibleMenuItems() {
+        return null;    //this module does not contribute menuitems for naviagtional menu's
     }
     
 }

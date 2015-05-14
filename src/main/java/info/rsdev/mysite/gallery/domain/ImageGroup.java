@@ -42,6 +42,7 @@ public class ImageGroup implements Comparable<ImageGroup> {
     public ImageGroup merge(ImageGroup other) {
         if (other != null) {
             if (!other.equals(this)) {
+                //ImageGroups can be merged when they stem from the same collection and have the same name
                 throw new IllegalArgumentException(String.format("Cannot merge incompatible ImageGroups: %s vs. %s",
                         this, other));
             }

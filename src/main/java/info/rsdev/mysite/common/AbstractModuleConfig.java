@@ -1,12 +1,23 @@
 package info.rsdev.mysite.common;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public abstract class AbstractModuleConfig implements ModuleConfig {
+import org.stringtemplate.v4.ST;
+import org.stringtemplate.v4.STGroup;
+import org.stringtemplate.v4.STGroupFile;
+
+public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfigKeys {
     
     protected final Properties properties;
+    
+    private STGroup cachedTemplateGroup = null;
     
     public AbstractModuleConfig(Properties configProperties) {
         this.properties = configProperties;
@@ -31,7 +42,7 @@ public abstract class AbstractModuleConfig implements ModuleConfig {
     
     @Override
     public String getMountPoint() {
-        String mountPoint = getString(DefaultConfigKeys.MOUNTPOINT_KEY);
+        String mountPoint = getString(MOUNTPOINT_KEY);
         if (mountPoint.startsWith("/")) {
             mountPoint = mountPoint.substring(1);
         }
@@ -39,7 +50,53 @@ public abstract class AbstractModuleConfig implements ModuleConfig {
     }
     
     @Override
+    public List<String> getVisibleMenuItems() {
+        String itemString = properties.getProperty(APPROVED_MENUITEMS_KEY);
+        if (itemString == null) {
+            return null;
+        }
+        return Arrays.asList(itemString.split(":"));
+    }
+
+    @Override
+    public String getMenugroupTitle() {
+        return getString(MENUGROUP_TITLE_KEY);
+    }
+    
+    @Override
+    public int getMenuSortingPriority() {
+        String sortingPriority = getString(MENU_ORDER_PRIORITY_KEY);
+        if (sortingPriority != null) {
+            return Integer.parseInt(sortingPriority);
+        }
+        return DEFAULT_MENU_ORDER_PRIORITY_VALUE;
+    }
+    
+    public synchronized ST getTemplate() {
+        String templateName = getString(TEMPLATE_NAME_KEY);
+        if (cachedTemplateGroup == null) {
+            //is the template in the external directory or within the webapp?
+            File templateDir = new File(getString(SITE_DATA_DIR_KEY), getMountPoint());
+            File templateFile = new File(templateDir, templateName.concat(".stg"));
+            URL templateResource = null;
+            if (templateFile.isFile()) {
+                try {
+                    templateResource = templateFile.toURI().toURL();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                String resourceName = "/templates/".concat(templateName).concat(".stg");
+                templateResource = Thread.currentThread().getContextClassLoader().getResource(resourceName);
+            }
+            this.cachedTemplateGroup = new STGroupFile(templateResource, "UTF-8", '$', '$');
+        }
+        return cachedTemplateGroup.getInstanceOf(templateName);
+    }
+    
+    @Override
     public Map<Object, Object> getProperties() {
         return Collections.unmodifiableMap(this.properties);
     }
+    
 }

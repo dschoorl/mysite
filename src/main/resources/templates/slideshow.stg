@@ -16,25 +16,29 @@ slideshow(model) ::= <<
 <nav class="col-sm-2">
   <p>$model.config.properties.("pageTitle")$</p>
   <ul class="nav nav-pills nav-stacked">
-    $model.menuItems:menuitem()$
+    $model.menu:menugroup()$
   </ul>
 </nav>
 <section class="col-sm-6">
    <header>
-     <p><a href="$model.previousPageUrl$">Prev</a> | <a href="$model.nextPageUrl$">Next</a> | $model.pageNumber$/$model.pageCount$</p>
+     <p><a href="$model.previousPageUrl$">prev</a> | <a href="$model.nextPageUrl$">next</a> | $model.pageNumber$/$model.pageCount$</p>
    </header>
    $model.imagesOnPage:render_image()$
 </section>
 <footer class="row">
-  <p class="col-sm-8" style="text-align: center;">&copy; 2015 Sylvia Borst, All rights reserved.</p>
+  <p class="col-sm-8" style="text-align: center;">&copy; 2015 Sylvia Borst, all rights reserved.</p>
 </footer>
 </div>
 </body>
 </html>
 >>
 
+menugroup(menuGroup) ::= <<
+  $if(!menuGroup.empty)$$menuGroup.menuItems:menuitem()$$endif$
+>>
+
 menuitem(item) ::= <<
-  <li $if(item.selected)$class="active"$endif$><a href="$item.targetUrl$">$item.caption$</a></li>
+  <li $if(item.active)$class="active"$endif$><a href="$item.targetUrl$">$item.caption$</a></li>
 >>
 
 render_image(image) ::= <<

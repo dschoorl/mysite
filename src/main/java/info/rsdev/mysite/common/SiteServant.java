@@ -1,7 +1,10 @@
 package info.rsdev.mysite.common;
 
+import info.rsdev.mysite.common.domain.MenuGroup;
+
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.List;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletConfig;
@@ -57,7 +60,8 @@ public class SiteServant implements Servlet {
             logger.debug(String.format("%s will be serving %s request: %s [QuesryString=%s]", moduleConfig.getRequestHandler(), 
                     r.getMethod(), r.getServletPath(), r.getQueryString()));
         }
-        moduleConfig.getRequestHandler().handle(moduleConfig, (HttpServletRequest)request, (HttpServletResponse)response);
+        List<MenuGroup> menu = config.getMenu();
+        moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest)request, (HttpServletResponse)response);
         
         //TODO: write entry to access logfile
         

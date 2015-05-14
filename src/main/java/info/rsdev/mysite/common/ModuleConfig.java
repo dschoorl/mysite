@@ -1,5 +1,6 @@
 package info.rsdev.mysite.common;
 
+import java.util.List;
 import java.util.Map;
 
 
@@ -35,4 +36,17 @@ public interface ModuleConfig {
     public String getMountPoint();
     
     public Map<Object, Object> getProperties();
+    
+    /**
+     * Get a list of menuitem captions for items that this module contributes that must be visible, in the order
+     * they must be visible. When returned null, all menuitems must be visible in their natural order.
+     * @return a list with visible menuitem captions in display order, or null, when no (generated) menuitems must be hidden;
+     *     they will be displayed in their natural order.
+     */
+    public List<String> getVisibleMenuItems();
+    
+    public String getMenugroupTitle();
+
+    public int getMenuSortingPriority();
+    
 }
