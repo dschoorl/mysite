@@ -1,6 +1,6 @@
 delimiters "$", "$"
 
-slideshow(model) ::= <<
+singlepage(model) ::= <<
 <!doctype html>
 <html>
 <head>
@@ -19,10 +19,7 @@ slideshow(model) ::= <<
   </ul>
 </nav>
 <section class="col-sm-6">
-   <header>
-     <p><a href="$model.previousPageUrl$">prev</a> | <a href="$model.nextPageUrl$">next</a> | $model.pageNumber$/$model.pageCount$</p>
-   </header>
-   $model.imagesOnPage:render_image()$
+  $model.content$
 </section>
 <footer class="row">
   <p class="col-sm-8" style="text-align: center;">&copy; 2015 Sylvia Borst, all rights reserved.</p>
