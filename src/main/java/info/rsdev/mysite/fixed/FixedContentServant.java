@@ -54,9 +54,11 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             return;
         }
         String mimeType = getMimeType(resourceLocation);
+        if (!mimeType.equals("text/html")) {
+            response.addHeader("Cache-Control", "max-age="+60*60*24*7); //cache everything, except html files, for one week
+        }
         response.setContentType(mimeType);
         if (isBinary(mimeType)) {
-            response.addHeader("Cache-Control", "max-age="+60*60*24*7); //cache binaries for one week
             writeBinary(response, resourceLocation);
         } else {
             ServletUtils.writeText(response, resourceLocation.toFile());
