@@ -1,47 +1,19 @@
 package info.rsdev.mysite.singlepage;
 
-import info.rsdev.mysite.common.domain.MenuGroup;
+import info.rsdev.mysite.common.domain.BasicPageModel;
 import info.rsdev.mysite.singlepage.domain.SinglePage;
 
-import java.util.Collections;
-import java.util.List;
-
-public class SinglePageModel {
-    
-    private List<MenuGroup> menu = Collections.emptyList();
-    
-    private final SinglePageModuleConfig config;
+public class SinglePageModel extends BasicPageModel<SinglePageModuleConfig> {
     
     private final SinglePage content;
     
     public SinglePageModel(SinglePageModuleConfig config, SinglePage content) {
-        this.config = config;
+        super(config, content.getName());
         this.content = content;
     }
 
-    public List<MenuGroup> getMenu() {
-        return menu;
-    }
-
-    public void setMenu(List<MenuGroup> menu) {
-        this.menu = menu;
-        markActiveItem(this.menu, this.content.getName());
-    }
-
-    private void markActiveItem(List<MenuGroup> menu, String pageName) {
-        for (MenuGroup menuGroup: menu) {
-            if (menuGroup.markActive(pageName)) {
-                break;
-            }
-        }
-    }
-    
-    public SinglePageModuleConfig getConfig() {
-        return config;
-    }
-
     public String getPageName() {
-        return content.getName();
+        return getSelectedMenuItemName();
     }
 
     public String getContent() {

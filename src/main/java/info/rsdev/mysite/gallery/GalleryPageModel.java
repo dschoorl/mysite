@@ -1,19 +1,17 @@
 package info.rsdev.mysite.gallery;
 
-import info.rsdev.mysite.common.domain.MenuGroup;
+import info.rsdev.mysite.common.domain.BasicPageModel;
 import info.rsdev.mysite.gallery.domain.Image;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
  * The information available to templates to generate the html page of the photo gallery. This is a DTO (Data 
  * Transfer Object).
  */
-public class GalleryPageModel {
+public class GalleryPageModel extends BasicPageModel<GalleryModuleConfig>{
     
     private int pageNumber;
     
@@ -21,17 +19,10 @@ public class GalleryPageModel {
     
     private int pageCount;
     
-    private String imageGroupName;
-    
     private List<Image> imagesOnPage;
     
-    private List<MenuGroup> menu = Collections.emptyList();
-    
-    private GalleryModuleConfig config;
-    
     public GalleryPageModel(GalleryModuleConfig config, String imageGroup, int pageNumber, int pageSize) {
-        setConfig(config);
-        setImageGroup(imageGroup);
+        super(config, imageGroup);
         setPageNumber(pageNumber);
         setPageSize(pageSize);
     }
@@ -53,11 +44,7 @@ public class GalleryPageModel {
     }
 
     public String getImageGroup() {
-        return imageGroupName;
-    }
-
-    public void setImageGroup(String imageGroup) {
-        this.imageGroupName = imageGroup;
+        return getSelectedMenuItemName();
     }
 
     public List<Image> getImagesOnPage() {
@@ -68,31 +55,6 @@ public class GalleryPageModel {
         this.imagesOnPage = imagesOnPage;
     }
     
-    public List<MenuGroup> getMenu() {
-        return this.menu;
-    }
-    
-    public void setMenu(List<MenuGroup> menu) {
-        this.menu = new ArrayList<>(menu);
-        markActiveItem(this.menu, imageGroupName);
-    }
-
-    private void markActiveItem(List<MenuGroup> menu, String imageGroupName) {
-        for (MenuGroup menuGroup: menu) {
-            if (menuGroup.markActive(imageGroupName)) {
-                break;
-            }
-        }
-    }
-
-    public GalleryModuleConfig getConfig() {
-        return config;
-    }
-
-    public void setConfig(GalleryModuleConfig config) {
-        this.config = config;
-    }
-
     public int getPageCount() {
         return this.pageCount;
     }
@@ -107,7 +69,7 @@ public class GalleryPageModel {
         }
         try {
             return String.format("?imagegroup=%s&%s=%d", 
-                    URLEncoder.encode(this.imageGroupName, "UTF-8"),
+                    URLEncoder.encode(getSelectedMenuItemName(), "UTF-8"),
                     RequestKeys.PAGENUMBER_PARAM,
                     pageNumber + 1);
         } catch (UnsupportedEncodingException e) {
@@ -121,7 +83,7 @@ public class GalleryPageModel {
         }
         try {
             return String.format("?imagegroup=%s&%s=%d", 
-                    URLEncoder.encode(this.imageGroupName, "UTF-8"),
+                    URLEncoder.encode(getSelectedMenuItemName(), "UTF-8"),
                     RequestKeys.PAGENUMBER_PARAM,
                     pageNumber - 1);
         } catch (UnsupportedEncodingException e) {

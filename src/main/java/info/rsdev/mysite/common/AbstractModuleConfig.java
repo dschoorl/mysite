@@ -40,6 +40,16 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         return Integer.parseInt(value);
     }
     
+    public String getContextPath() {
+        String contextPath = getString(CONTEXTPATH_KEY);
+        if (contextPath == null) {
+            contextPath = "";
+        } else if ((contextPath.length() > 0) && contextPath.endsWith("/")) {
+            contextPath = contextPath.substring(0, contextPath.length() - 1);   //strip trailing slash
+        }
+        return contextPath;
+    }
+    
     @Override
     public String getMountPoint() {
         String mountPoint = getString(MOUNTPOINT_KEY);
