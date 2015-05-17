@@ -9,24 +9,16 @@ Photo Gallery
 
 * Configuration
 
-  The class info.rsdev.mysite.gallery.GalleryModuleConfig supports the following properties:
+  The class info.rsdev.mysite.gallery.GalleryModuleConfig supports the following properties, on top of the 'set of general properties':
 
 *-------------------------------+---------------+
 | property name                 | Description
 *-------------------------------+---------------+
-| ModuleConfigType              | The fully qualified java class name that must handle the module's configuration. The implementation supplied by MySite is info.rsdev.mysite.gallery.GalleryModuleConfig
-*-------------------------------+---------------+
-| template                      | The name of the GUI template that must be used to show the photo's
-*-------------------------------+---------------+
 | collection                    | The path to the image collection that will be displayed, relative to the site's data directory
-*-------------------------------+---------------+
-| showThumbnails                | Boolean value. When true, make thumbnails available to the template, false otherwise
 *-------------------------------+---------------+
 | imagesPerPageHint             | Positive integer number defining the number of images max. displayed per page. The template could show less images per page as it so desires, but never more.
 *-------------------------------+---------------+
 | showRandomPageAsFirstPage     | Boolean value. When true, a random page will be displayed when the request does not specify the image group and / or page number to display. When false, the first page will be displayed on these occasions.
 *-------------------------------+---------------+
-| menuitems                     | List with imagegroup names that must be visible in the navigation menu, in the given order. List items are separated with a column (:) \
-|                               | When absent, all image groups are visible as menu items in undetermined order.
+| showThumbnails                | Boolean value. When true, make thumbnails available to the template, false otherwise
 *-------------------------------+---------------+
-

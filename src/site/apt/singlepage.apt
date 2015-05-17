@@ -1,0 +1,18 @@
+    -----
+    Single Page
+    -----
+    Red Star Developement, Dave Schoorl
+    -----
+    -----
+    
+Single Page
+
+* Configuration
+
+  The class info.rsdev.mysite.singlepage.SinglePageModuleConfig supports the following properties, on top of the 'set of general properties':
+
+*-------------------------------+---------------+
+| property name                 | Description
+*-------------------------------+---------------+
+| pageCollection                | The path to the collection of pages that will be displayed, relative to the site's data directory. All pages consist of a single html file, located directly in the folder that this property points to.
+*-------------------------------+---------------+
