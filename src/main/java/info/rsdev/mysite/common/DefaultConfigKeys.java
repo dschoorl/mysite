@@ -49,6 +49,6 @@ public interface DefaultConfigKeys {
     
     public static final String BOOTSTRAP_LOCATION_KEY = "bootstraplocation";
     
-    public static final String COPYRIGHT_NOTICE = "copyrightnotice";
+    public static final String COPYRIGHT_NOTICE_KEY = "copyrightnotice";
     
 }

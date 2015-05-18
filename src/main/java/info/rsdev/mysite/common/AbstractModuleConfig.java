@@ -40,6 +40,7 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         return Integer.parseInt(value);
     }
     
+    @Override
     public String getContextPath() {
         String contextPath = getString(CONTEXTPATH_KEY);
         if (contextPath == null) {

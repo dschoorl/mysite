@@ -115,6 +115,9 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
         File[] moduleProperties = location.listFiles(new FileFilter() {
             @Override
             public boolean accept(File file) {
+                if (file.getName().equals(".properties")) {
+                    return false;   //this file contains the general properties that must be applied to every module and must be processed specifically
+                }
                 return file.getName().endsWith(".properties") && file.isFile();
             }
         });
@@ -122,7 +125,7 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
         if (moduleProperties != null) {
             for (File propertyFile: moduleProperties) {
                 String mountpoint = getMountPoint(propertyFile);
-                Properties properties = new Properties();
+                Properties properties = getGeneralProperties(location);
                 try (FileReader reader = new FileReader(propertyFile)) {
                     properties.load(reader);
                     
@@ -154,6 +157,19 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
         return configByMountpoint;
     }
     
+    private Properties getGeneralProperties(File location) {
+        Properties generalProperties = new Properties();
+        File generalPropertiesFile = new File(location, ".properties");
+        if (generalPropertiesFile.isFile()) {
+            try (FileReader reader = new FileReader(generalPropertiesFile)) {
+                generalProperties.load(reader);
+            } catch (IOException e) {
+                logger.error(String.format("Problem loading general configuration from %s", generalPropertiesFile.getAbsolutePath()), e);
+            }
+        }
+        return generalProperties;
+    }
+
     private String getMountPoint(File propertyFile) {
         String path = propertyFile.getName();
         path = path.substring(0, path.length() - ".properties".length());

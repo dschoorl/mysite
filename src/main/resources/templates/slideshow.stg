@@ -7,9 +7,14 @@ slideshow(model) ::= <<
   <title>$model.config.properties.("pageTitle")$</title>
   <meta charset='UTF-8'>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="$model.config.contextPath$styling/v0.0.1/css/bootstrap.min.css">
+  $if(model.bootstrapLocation)$
+  <link rel="stylesheet" href="$model.bootstrapLocation$css/bootstrap.min.css">
+  <script src="$model.bootstrapLocation$js/bootstrap.min.js"></script>
+  $else$
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+  $endif$
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-  <script src="$model.config.contextPath$styling/v0.0.1/js/bootstrap.min.js"></script>
 </head>
 <body class="container">
 <div class="row">
@@ -26,9 +31,11 @@ slideshow(model) ::= <<
 </section>
 <section class="col-sm-4"></section>
 </div>
+$if(model.copyrightNotice)$
 <footer class="row">
-  <p class="col-sm-10 col-sm-offset-2 well-lg">&copy; 2015 Sylvia Borst, all rights reserved.</p>
-</footer></p>
+  <p class="col-sm-10 col-sm-offset-2 well-lg">$model.copyrightNotice$</p>
+</footer>
+$endif$
 </body>
 </html>
 >>

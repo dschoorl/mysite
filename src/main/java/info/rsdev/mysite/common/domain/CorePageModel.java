@@ -14,4 +14,15 @@ public interface CorePageModel<T extends ModuleConfig> {
     
     public String getSelectedMenuItemName();
     
+    public String getCopyrightNotice();
+    
+    /**
+     * Get the location of bootstrap. This could be relative to the server host (location starts with a slash),
+     * relative to an internet address (location starts with http:// or https://) or relative to the servlet context
+     * (all other). The location always ends with a slash. If a trailing slash is missing from the configuration, it
+     * is appended.
+     * @return the location to bootstrap files, ending with a slash
+     */
+    public String getBootstrapLocation();
+    
 }

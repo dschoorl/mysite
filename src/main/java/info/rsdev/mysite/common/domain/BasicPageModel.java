@@ -1,5 +1,6 @@
 package info.rsdev.mysite.common.domain;
 
+import info.rsdev.mysite.common.DefaultConfigKeys;
 import info.rsdev.mysite.common.ModuleConfig;
 
 import java.util.ArrayList;
@@ -46,6 +47,30 @@ public class BasicPageModel<T extends ModuleConfig> implements CorePageModel<T> 
     @Override
     public String getSelectedMenuItemName() {
         return this.selectedMenuItemName;
+    }
+
+    @Override
+    public String getCopyrightNotice() {
+        return config.getString(DefaultConfigKeys.COPYRIGHT_NOTICE_KEY);
+    }
+
+    @Override
+    public String getBootstrapLocation() {
+        String location = config.getString(DefaultConfigKeys.BOOTSTRAP_LOCATION_KEY);
+        String returnValue = null;
+        if (location != null) {
+            if (location.startsWith("/")) {
+                returnValue = location;    //relative to server host
+            } else if (location.startsWith("http://") || location.startsWith("https://")) {
+                returnValue = location;    //full url
+            } else {
+                returnValue = config.getContextPath().concat(location);    //relative to context path
+            }
+            if (!returnValue.endsWith("/")) {
+                returnValue = returnValue.concat("/");
+            }
+        }
+        return returnValue;
     }
 
 }

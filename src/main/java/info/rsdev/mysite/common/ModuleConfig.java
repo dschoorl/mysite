@@ -49,4 +49,6 @@ public interface ModuleConfig {
 
     public int getMenuSortingPriority();
     
+    public String getContextPath();
+    
 }
