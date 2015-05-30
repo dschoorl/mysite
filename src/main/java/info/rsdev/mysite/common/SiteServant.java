@@ -1,5 +1,6 @@
 package info.rsdev.mysite.common;
 
+import info.rsdev.mysite.common.domain.AccessLogEntry;
 import info.rsdev.mysite.common.domain.MenuGroup;
 
 import java.io.IOException;
@@ -20,6 +21,7 @@ import org.slf4j.LoggerFactory;
 public class SiteServant implements Servlet {
     
     private static final Logger logger = LoggerFactory.getLogger(SiteServant.class);
+    private static final Logger ACCESS_LOGGER = LoggerFactory.getLogger("AccessLog");
     
     private ServletConfig servletConfig  = null;
     
@@ -41,30 +43,37 @@ public class SiteServant implements Servlet {
     
     @Override
     public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
-        String modulePath = ((HttpServletRequest)request).getServletPath();
-        logger.debug("Received request: ".concat((modulePath)));
-        
-        String hostname = request.getServerName().toLowerCase();
-        SiteConfig config = configDai.getConfig(hostname);
-        
-        //get path into module context and then get page for path from the appropriate module
-        ModuleConfig moduleConfig = config.getModuleConfig(modulePath);
-        if (moduleConfig == null) {
-            logger.error(String.format("No module configered to serve request ".concat(modulePath)));
-            ((HttpServletResponse)response).sendError(404);
-            return;
+        String contentId = null;
+        AccessLogEntry logEntry = new AccessLogEntry().feedRequest((HttpServletRequest)request);
+        try {
+            String modulePath = ((HttpServletRequest)request).getServletPath();
+            logger.debug("Received request: ".concat((modulePath)));
+            
+            String hostname = request.getServerName().toLowerCase();
+            SiteConfig config = configDai.getConfig(hostname);
+            
+            //get path into module context and then get page for path from the appropriate module
+            ModuleConfig moduleConfig = config.getModuleConfig(modulePath);
+            if (moduleConfig == null) {
+                logger.error(String.format("No module configered to serve request ".concat(modulePath)));
+                ((HttpServletResponse)response).sendError(404);
+                return;
+            }
+            logEntry.feedModuleConfig(moduleConfig);
+            if (logger.isDebugEnabled()) {
+                HttpServletRequest r = (HttpServletRequest)request;
+                logger.debug(String.format("%s will be serving %s request: %s [QuesryString=%s]", moduleConfig.getRequestHandler(), 
+                        r.getMethod(), r.getServletPath(), r.getQueryString()));
+            }
+            List<MenuGroup> menu = config.getMenu();
+            contentId = moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest)request, (HttpServletResponse)response);
+        } catch (RuntimeException e) {
+            ((HttpServletResponse)response).setStatus(500);
+            throw e;
+        } finally {
+            //write entry to access logfile
+            ACCESS_LOGGER.info(logEntry.markFinished(contentId, ((HttpServletResponse)response).getStatus()).toString());
         }
-        
-        if (logger.isDebugEnabled()) {
-            HttpServletRequest r = (HttpServletRequest)request;
-            logger.debug(String.format("%s will be serving %s request: %s [QuesryString=%s]", moduleConfig.getRequestHandler(), 
-                    r.getMethod(), r.getServletPath(), r.getQueryString()));
-        }
-        List<MenuGroup> menu = config.getMenu();
-        moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest)request, (HttpServletResponse)response);
-        
-        //TODO: write entry to access logfile
-        
     }
     
     @Override

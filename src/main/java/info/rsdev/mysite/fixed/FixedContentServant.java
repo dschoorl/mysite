@@ -32,7 +32,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             "application/javascript");
     
     @Override
-    public void handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public String handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (config == null) {
             throw new ConfigurationException(String.format("%s cannot be null", ModuleConfig.class.getSimpleName()));
         }
@@ -51,7 +51,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         }
         if (!resourceLocation.toFile().isFile()) {
             response.sendError(404, String.format("Resource %s does not exist", resourceLocation));
-            return;
+            return null;
         }
         String mimeType = getMimeType(resourceLocation);
         if ((mimeType == null) || !mimeType.equals("text/html")) {
@@ -63,6 +63,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         } else {
             ServletUtils.writeText(response, resourceLocation.toFile());
         }
+        return resourceLocation.toFile().getName();
     }
     
     private void writeBinary(HttpServletResponse response, Path resourceLocation) throws IOException {

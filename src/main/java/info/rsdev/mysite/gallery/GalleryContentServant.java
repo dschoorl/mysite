@@ -38,7 +38,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
     }
     
     @Override
-    public void handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
+    public String handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (config == null) {
             throw new ConfigurationException(String.format("%s cannot be null", ModuleConfig.class.getSimpleName()));
@@ -105,6 +105,12 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
         model.setMenu(menu);
         
         renderPage(response, model);
+        
+        //return the main content of this page, currently this code fits only the slideshow template
+        if (imagesOnPage.size() > 0) {
+            return new File(imagesOnPage.get(0).getImagePath()).getName();
+        }
+        return null;
     }
     
     private void renderPage(HttpServletResponse response, GalleryPageModel pageModel) throws ServletException {

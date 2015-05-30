@@ -33,7 +33,7 @@ public class SinglePageContentServant implements RequestHandler, ConfigKeys {
     }
     
     @Override
-    public void handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
+    public String handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (config == null) {
             throw new ConfigurationException(String.format("%s cannot be null", ModuleConfig.class.getSimpleName()));
@@ -49,6 +49,8 @@ public class SinglePageContentServant implements RequestHandler, ConfigKeys {
         model.setMenu(menu);
         
         renderPage(response, model);
+        
+        return pageName;
     }
     
     private void renderPage(HttpServletResponse response, SinglePageModel pageModel) throws ServletException {

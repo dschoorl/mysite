@@ -21,10 +21,11 @@ public interface RequestHandler {
      * @param menu
      * @param request
      * @param response
+     * @return identifier for the content served, for logging purposes
      * @throws ServletException
      * @throws IOException
      */
-    public void handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+    public String handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     
     /**
      * Get the menu items that this module will contribute to the webpage's navigation menu. When the module does
