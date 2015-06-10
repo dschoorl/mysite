@@ -75,6 +75,11 @@ public class AccessLogIterator implements Iterator<AccessLogEntry> {
         return makeAccessLogEntry(tmp);
     }
     
+    @Override
+    public void remove() {
+        throw new UnsupportedOperationException("remove");
+    }
+    
     private AccessLogEntry makeAccessLogEntry(String[] fields) {
         String typeName = AccessLogEntry.class.getName().concat(fields[0].toUpperCase());
         Constructor<AccessLogEntry> logEntryConstructor = cachedConstructors.get(typeName);
