@@ -23,14 +23,13 @@ slideshow(model) ::= <<
     $model.menu:menugroup()$
   </ul>
 </nav>
-<section class="col-sm-6">
+<section class="col-sm-10">
    <header>
-     <p><a href="$model.previousPageUrl$">prev</a> | <a href="$model.nextPageUrl$">next</a> | $model.pageNumber$/$model.pageCount$</p>
+     <p><a href="$model.previousPageUrl$">prev</a> | <a href="$model.nextPag	eUrl$">next</a> | $model.pageNumber$/$model.pageCount$</p>
    </header>
    $model.imagesOnPage:render_image()$
 </section>
-<section class="col-sm-4"></section>
-</div>
+</div>1
 $if(model.copyrightNotice)$
 <footer class="row">
   <p class="col-sm-10 col-sm-offset-2 well-lg">$model.copyrightNotice$</p>
