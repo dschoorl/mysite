@@ -27,5 +27,5 @@ public class ErrorModuleConfig extends AbstractModuleConfig {
     public boolean hasHandlerFor(String requestPath) {
         return requestPath.startsWith(getMountPoint());
     }
-
+    
 }

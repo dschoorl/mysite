@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -103,6 +105,21 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
             this.cachedTemplateGroup = new STGroupFile(templateResource, "UTF-8", '$', '$');
         }
         return cachedTemplateGroup.getInstanceOf(templateName);
+    }
+    
+    @Override
+    public Logger getAccessLogger() {
+        //TODO: programmatically create logger per website that logs into website's data directory
+        return LoggerFactory.getLogger("AccessLog");
+    }
+    
+    @Override
+    public File getAccessLogFile() {
+        String logDir = System.getProperty("MYSITE_LOG_DIR");
+        if ((logDir == null) || logDir.isEmpty()) {
+            throw new IllegalStateException("The value of Java system property 'MYSITE_LOG_DIR' is not set");
+        }
+        return new File(logDir, "mysite-accesslog.log");
     }
     
     @Override

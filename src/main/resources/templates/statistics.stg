@@ -1,6 +1,6 @@
 delimiters "$", "$"
 
-slideshow(model) ::= <<
+statistics(model) ::= <<
 <!doctype html>
 <html>
 <head>
@@ -23,12 +23,10 @@ slideshow(model) ::= <<
     $model.menu:menugroup()$
   </ul>
 </nav>
-<section class="col-sm-10">
-   <header>
-     <p><a href="$model.previousPageUrl$">prev</a> | <a href="$model.nextPageUrl$">next</a> | $model.pageNumber$/$model.pageCount$</p>
-   </header>
-   $model.imagesOnPage:render_image()$
+<section class="col-sm-6">
+	<h4>web statistieken</h4>
 </section>
+<section class="col-sm-4"></section>
 </div>
 $if(model.copyrightNotice)$
 <footer class="row">
@@ -45,10 +43,4 @@ menugroup(menuGroup) ::= <<
 
 menuitem(item) ::= <<
   <li $if(item.active)$class="active"$endif$><a href="$item.targetUrl$">$item.caption$</a></li>
->>
-
-render_image(image) ::= <<
-   <figure>
-     <img class="img-responsive" src="$image.imagePath$" />
-   </figure>
 >>

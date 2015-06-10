@@ -1,7 +1,10 @@
 package info.rsdev.mysite.common;
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
+
+import org.slf4j.Logger;
 
 
 /**
@@ -50,5 +53,9 @@ public interface ModuleConfig {
     public int getMenuSortingPriority();
     
     public String getContextPath();
+    
+    public Logger getAccessLogger();
+
+    public File getAccessLogFile();
     
 }

@@ -1,6 +1,6 @@
 package info.rsdev.mysite.common;
 
-import info.rsdev.mysite.common.domain.AccessLogEntry;
+import info.rsdev.mysite.common.domain.AccessLogEntryV1;
 import info.rsdev.mysite.common.domain.MenuGroup;
 
 import java.io.IOException;
@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public class SiteServant implements Servlet {
     
     private static final Logger logger = LoggerFactory.getLogger(SiteServant.class);
-    private static final Logger ACCESS_LOGGER = LoggerFactory.getLogger("AccessLog");
+    private static final Logger GLOBAL_ACCESS_LOGGER = LoggerFactory.getLogger("AccessLog");
     
     private ServletConfig servletConfig  = null;
     
@@ -44,7 +44,8 @@ public class SiteServant implements Servlet {
     @Override
     public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
         String contentId = null;
-        AccessLogEntry logEntry = new AccessLogEntry().feedRequest((HttpServletRequest)request);
+        AccessLogEntryV1 logEntry = new AccessLogEntryV1().feedRequest((HttpServletRequest)request);
+        ModuleConfig moduleConfig = null;
         try {
             String modulePath = ((HttpServletRequest)request).getServletPath();
             logger.debug("Received request: ".concat((modulePath)));
@@ -53,7 +54,7 @@ public class SiteServant implements Servlet {
             SiteConfig config = configDai.getConfig(hostname);
             
             //get path into module context and then get page for path from the appropriate module
-            ModuleConfig moduleConfig = config.getModuleConfig(modulePath);
+            moduleConfig = config.getModuleConfig(modulePath);
             if (moduleConfig == null) {
                 logger.error(String.format("No module configered to serve request ".concat(modulePath)));
                 ((HttpServletResponse)response).sendError(404);
@@ -72,7 +73,13 @@ public class SiteServant implements Servlet {
             throw e;
         } finally {
             //write entry to access logfile
-            ACCESS_LOGGER.info(logEntry.markFinished(contentId, ((HttpServletResponse)response).getStatus()).toString());
+            Logger accessLogger = null;
+            if ((moduleConfig == null) || (moduleConfig.getAccessLogger() == null)) {
+                accessLogger = GLOBAL_ACCESS_LOGGER;
+            } else {
+                accessLogger = moduleConfig.getAccessLogger();
+            }
+            accessLogger.info(logEntry.markFinished(contentId, ((HttpServletResponse)response).getStatus()).toString());
         }
     }
     
