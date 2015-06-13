@@ -7,8 +7,12 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -29,6 +33,8 @@ public class AccessLogReport {
      * Cache the queries for UserAgent strings to Bot/crawler agents. The value of the entry is a static string 'Crawler'
      */
     private ConcurrentHashMap<String, String> crawlerUserAgents = null;
+    
+    private final String targetWebsite;
 
     /**
      * Cache the queries for ip2Country mapping
@@ -39,16 +45,20 @@ public class AccessLogReport {
      * The ip numbers to ignore when they appear in the logfile. Crawlers are ignored automatically (a crawler is identified by
      * their User-Agent string. The list is read from the module configuration file.
      */
-    private Set<String> ipsToIgnore = Collections.emptySet();
+    private Set<String> ipsToIgnore = new HashSet<>(Arrays.asList("87.212.128.27", "127.0.0.1"));    //TODO: configure in properties file
     
     private final Map<String, VisitorsByMonth> visitorsByMonth = new HashMap<>();
     
-    public AccessLogReport(ConcurrentHashMap<String, Locale> ip2Country, ConcurrentHashMap<String, String> crawlerUserAgents) {
+    private Set<String> browserUserAgents = new HashSet<>();
+    
+    public AccessLogReport(String targetSite, ConcurrentHashMap<String, Locale> ip2Country, ConcurrentHashMap<String, String> crawlerUserAgents) {
         this.ip2Country = ip2Country;
         this.crawlerUserAgents = crawlerUserAgents;
+        this.targetWebsite = targetSite;
     }
 
     public void process(AccessLogEntry logEntry) {
+        if (mustIgnore(logEntry.getIpRequester()) || isCrawler(logEntry) || isNotTargetSite(logEntry)) { return; }
         checkAndEnrichDerivedInformation(logEntry);
         String mapKey = String.format("%4d-%2d-%s", logEntry.getYear(), logEntry.getMonth(), logEntry.getWebsite());
         VisitorsByMonth monthStats = visitorsByMonth.get(mapKey);
@@ -59,6 +69,28 @@ public class AccessLogReport {
         monthStats.process(logEntry);
     }
     
+    private boolean isNotTargetSite(AccessLogEntry logEntry) {
+        return !targetWebsite.equalsIgnoreCase(logEntry.getWebsite());
+    }
+
+    private boolean isCrawler(AccessLogEntry logEntry) {
+        String uas = logEntry.getUserAgentString();
+        boolean isBrowser = uas.contains("Firefox") || uas.contains("Gecko") || uas.contains("MSIE");
+        if (isBrowser) {
+            browserUserAgents.add(uas);
+        }
+        return !isBrowser;
+    }
+    
+    public List<String> getBrowserAgentStrings() {
+        ArrayList<String> agents = new ArrayList<>(this.browserUserAgents);
+        Collections.sort(agents);
+        return agents;
+    }
+    
+    private boolean mustIgnore(String ipAddress) {
+        return this.ipsToIgnore.contains(ipAddress);
+    }
     
     private void checkAndEnrichDerivedInformation(AccessLogEntry logEntry) {
         //is country set
@@ -70,7 +102,6 @@ public class AccessLogReport {
             }
             logEntry.setCountry(ip2Country.get(ipAddress));
         }
-        
     }
 
     public static Locale resolveCountry(String ipAddress, Map<String, Locale> ip2Country) {
@@ -79,14 +110,17 @@ public class AccessLogReport {
         if ((ip2Country != null) && ip2Country.containsKey(ipAddress)) {
             return ip2Country.get(ipAddress);
         }
+        
+        long startTime = System.currentTimeMillis();
+        
         Locale country = null;
-        String host = "http://freegeoip.net";
+//        String host = "http://freegeoip.net";
+        String host = "http://api.wipmania.com";
         try {
             StringBuilder sb = new StringBuilder();
-            URL freeGeoIpUrl = new URL(String.format("%s/json/%s", host, ipAddress));
+            URL wipmaniaUrl = new URL(String.format("%s/%s", host, ipAddress));
 //            URL freeGeoIpUrl = new URL("http://freegeoip.net/");
-            URLConnection urlConnection = freeGeoIpUrl.openConnection();
-//            urlConnection.connect();
+            URLConnection urlConnection = wipmaniaUrl.openConnection();
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()))) {
                 String inputLine = null;
                 while ((inputLine = reader.readLine()) != null) {
@@ -94,14 +128,18 @@ public class AccessLogReport {
                 }
             }
             if (sb.length() > 0) {
-                /* Examples:
+                /* Examples for json format with freegeoip.net:
                  * {"ip":"87.212.128.27","country_code":"NL","country_name":"Netherlands","region_code":"NH","region_name":"North Holland","city":"Amsterdam","zip_code":"1000","time_zone":"Europe/Amsterdam","latitude":52.374,"longitude":4.89,"metro_code":0}
                  * {"ip":"127.0.0.1","country_code":"","country_name":"","region_code":"","region_name":"","city":"","zip_code":"","time_zone":"","latitude":0,"longitude":0,"metro_code":0}
+                 * 
+                 * Examples for api.wipmania.com:
+                 * NL
+                 * XX
                  */
-                String json = sb.toString();
-                if (json.startsWith("{") && json.endsWith("}")) {
-                    json = json.substring(1, json.length());
-                    String[] pairs = json.split(",");
+                String result = sb.toString();
+                if (result.startsWith("{") && result.endsWith("}")) {   //json from freegeoip.net
+                    result = result.substring(1, result.length());
+                    String[] pairs = result.split(",");
                     assert(pairs.length == 11); //we expect eleven information parts
                     String countryCodePair = pairs[1];
                     String [] keyValue = countryCodePair.split(":");
@@ -110,11 +148,60 @@ public class AccessLogReport {
                     if ((keyValue[1].length() > 2) && keyValue[1].startsWith("\"") && keyValue[1].endsWith("\\\"")) {
                         country = new Locale(keyValue[1].substring(1, keyValue[1].length()));
                     }
+                } else if(result.length() == 2) {
+                    country = new Locale("", result.toUpperCase());   //XX for unknown
                 }
             }
         } catch (IOException e) {
             logger.error(String.format("Could not resolve country for ip '%s' through %s", ipAddress, host), e);
         }
+        
+        if (logger.isDebugEnabled()) {
+            logger.debug(String.format("IP %s resolved to %s by %s in %d millies", ipAddress, country, host, System.currentTimeMillis() - startTime));
+        }
         return country;
+    }
+    
+    public VisitorsByMonth getLatestMonth() {
+        if (visitorsByMonth.isEmpty()) { return null; }
+        ArrayList<VisitorsByMonth> visitors = new ArrayList<>(visitorsByMonth.values());
+        Collections.sort(visitors);
+        return visitors.get(0);
+    }
+    
+    public List<VisitorsByMonth> getOlderMonths() {
+        if (visitorsByMonth.size() <= 1) { return null; }
+        ArrayList<VisitorsByMonth> visitors = new ArrayList<>(visitorsByMonth.values());
+        Collections.sort(visitors);
+        visitors.remove(0);
+        return visitors;
+    }
+    
+    public Map<Locale, VisitorsAndPageViews> getVisitorsByCountry() {
+        Map<Locale, VisitorsAndPageViews> aggregate = new HashMap<>();
+        for (VisitorsByMonth monthly: visitorsByMonth.values()) {
+            Map<Locale, VisitorsAndPageViews> byCountry = monthly.getByCountry();
+            for (Map.Entry<Locale, VisitorsAndPageViews> entry: byCountry.entrySet()) {
+                if (!aggregate.containsKey(entry.getKey())) {
+                    aggregate.put(entry.getKey(), entry.getValue());
+                } else {
+                    VisitorsAndPageViews aggregated = aggregate.get(entry.getKey());
+                    aggregated = aggregated.combine(entry.getValue());
+                    aggregate.put(entry.getKey(), aggregated);
+                }
+            }
+        }
+        return aggregate;
+    }
+    
+    public Map<Locale, VisitorsAndPageViews> getVisitorsByCountryLatestMonth() {
+        if (visitorsByMonth.isEmpty()) { return Collections.emptyMap(); }
+        ArrayList<VisitorsByMonth> visitors = new ArrayList<>(visitorsByMonth.values());
+        Collections.sort(visitors);
+        return visitors.get(0).getByCountry();
+    }
+    
+    public String getTitle() {
+        return "Meest recente gegevens";
     }
 }

@@ -6,10 +6,9 @@
 		</Console>
 	</Appenders>
 	<Loggers>
-		<Root level="error">
+		<Root level="info">
 			<AppenderRef ref="Console" />
 		</Root>
-		<Logger name="info.rsdev.mysite.fixed.FixedContentServant" level="DEBUG" />
-		<Logger name="info.rsdev.mysite.common.SiteServant" level="TRACE" />
+		<Logger name="info.rsdev.mysite.stats.domain.AccessLogReport" level="DEBUG" />
 	</Loggers>
 </Configuration>

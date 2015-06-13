@@ -53,25 +53,26 @@ public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
         }
         StatsModuleConfig statsConfig = (StatsModuleConfig) config;
         
-        AccessLogReport report = new AccessLogReport(this.ip2Country, this.crawlerUserAgents);
+        AccessLogReport report = new AccessLogReport(config.getString(SITENAME_KEY), this.ip2Country, this.crawlerUserAgents);
         AccessLogIterator logItems = new AccessLogIterator(statsConfig.getAccessLogFile());
         while (logItems.hasNext()) {
             report.process(logItems.next());
         }
         
         BasicPageModel<StatsModuleConfig> model = new BasicPageModel<>(statsConfig, null);
-        renderPage(response, model);
+        renderPage(response, model, report);
         
         return null;
     }
     
-    private void renderPage(HttpServletResponse response, BasicPageModel<StatsModuleConfig> model) throws ServletException {
+    private void renderPage(HttpServletResponse response, BasicPageModel<StatsModuleConfig> model, AccessLogReport report) throws ServletException {
         StatsModuleConfig config = model.getConfig();
         ST template = config.getTemplate();
         try {
             if (template == null) {
                 response.sendError(404);
             } else {
+                template.add("report", report);
                 template.add("model", model);
                 response.getWriter().write(template.render());
                 response.setContentType("text/html");

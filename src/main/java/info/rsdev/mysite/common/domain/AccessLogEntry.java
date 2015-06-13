@@ -1,5 +1,6 @@
 package info.rsdev.mysite.common.domain;
 
+import java.util.Calendar;
 import java.util.Locale;
 
 public interface AccessLogEntry {
@@ -27,5 +28,13 @@ public interface AccessLogEntry {
     public Locale getCountry();
 
     public void setCountry(Locale country);
+
+    public Calendar getTimestamp();
+
+    public String getSessionId();
+
+    public String getContentId();
+
+    public String getTemplateName();
     
 }

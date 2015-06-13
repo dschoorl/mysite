@@ -244,4 +244,34 @@ public class AccessLogEntryV1 implements AccessLogEntry {
     public void setCountry(Locale country) {
         this.countryRequester = country;
     }
+
+    @Override
+    public Calendar getTimestamp() {
+        return null;
+    }
+
+    @Override
+    public String getSessionId() {
+        if ((this.sessionId != null) && !this.sessionId.isEmpty()) {
+            return this.sessionId;
+        }
+        return null;
+    }
+
+    @Override
+    public String getContentId() {
+        if ((this.contentId != null) && !this.contentId.isEmpty()) {
+            return this.contentId;
+        }
+        return null;
+    }
+
+    @Override
+    public String getTemplateName() {
+        if ((this.templateName != null) && !this.templateName.isEmpty()) {
+            return this.templateName;
+        }
+        return null;
+    }
+    
 }

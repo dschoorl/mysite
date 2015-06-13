@@ -2,11 +2,14 @@ package info.rsdev.mysite.stats.domain;
 
 import info.rsdev.mysite.common.domain.AccessLogEntry;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.Set;
 
 public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
     
@@ -22,9 +25,14 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
      */
     private VisitorsAndPageViews[] visitorsAndPageViewsByMonthday = null;
     
-    private Map<String, AtomicInteger> visitorByCountry = new HashMap<>();
+    private VisitorsByCountry visitorsByCountry = new VisitorsByCountry();
+    
+    private Set<String> previouslyVisitedFrom = new HashSet<>();
     
     public VisitorsByMonth(String website, int month, int year) {
+        if (website.isEmpty()) {
+            website = null;
+        }
         this.website = website;
         this.month = month;
         this.year = year;
@@ -65,12 +73,97 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
         /* The natural order of instances of this class is (first) alphabetical by website, (second) by year, descending and
          * (third) by month, descending.
          */
-        return 0;
+        if (o == null) { return 1; }
+        
+        int i = 0;
+        
+        //take into account that website could be null or empty
+        if ((website == null) && (o.website != null)) { return -1; } 
+        if ((o.website == null) && (website != null)) { return 1; }
+        if ((website != null && o.website != null)) {
+            i = website.compareTo(o.website);
+        }
+        if (i != 0) return i;
+
+        i = Integer.compare(year, o.year);
+        if (i != 0) return -1 * i;  //descending order
+
+        return -1 * Integer.compare(month, o.month);    //descending order
     }
 
     public void process(AccessLogEntry logEntry) {
         
+        //TODO: check if we process log entries for same website
+        
+        int month = logEntry.getMonth();
+        int year = logEntry.getYear();
+        if ((this.year != year) || (this.month != month)) {
+            throw new IllegalArgumentException(String.format("AccessLogEntry for %Fd is not applicable for VisitorsByMonth %d-%d",
+                    logEntry.getTimestamp(), this.year, this.month));
+        }
+        
+        int day = logEntry.getDayOfMonth();
+        visitorsAndPageViewsByMonthday[day - 1].process(logEntry, previouslyVisitedFrom);
+        visitorsByCountry.process(logEntry);
     }
     
+    public int getNewVisitors() {
+        int total = 0;
+        for (VisitorsAndPageViews daily: visitorsAndPageViewsByMonthday) {
+            total += daily.getNewVisitors();
+        }
+        return total;
+    }
     
+    public int getRecurrentVisitors() {
+        int total = 0;
+        for (VisitorsAndPageViews daily: visitorsAndPageViewsByMonthday) {
+            total += daily.getRecurrentVisitors();
+        }
+        return total;
+    }
+    
+    public int getVisits() {
+        int total = 0;
+        for (VisitorsAndPageViews daily: visitorsAndPageViewsByMonthday) {
+            total += daily.getVisits();
+        }
+        return total;
+    }
+    
+    public int getPageViews() {
+        int total = 0;
+        for (VisitorsAndPageViews daily: visitorsAndPageViewsByMonthday) {
+            total += daily.getPageViews();
+        }
+        return total;
+    }
+
+    public int getUniquePageViews() {
+        int total = 0;
+        for (VisitorsAndPageViews daily: visitorsAndPageViewsByMonthday) {
+            total += daily.getUniquePageViews();
+        }
+        return total;
+    }
+    
+    public int getYear() {
+        return this.year;
+    }
+    
+    public int getMonth() {
+        return this.month;
+    }
+
+    public Object getWebsite() {
+        return this.website;
+    }
+
+    public Map<Locale, VisitorsAndPageViews> getByCountry() {
+        return visitorsByCountry.getVisitorsByCountry();
+    }
+    
+    public List<VisitorsAndPageViews> getByDay() {
+        return Arrays.asList(visitorsAndPageViewsByMonthday);
+    }
 }
