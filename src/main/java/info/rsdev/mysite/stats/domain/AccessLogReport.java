@@ -9,6 +9,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -32,6 +33,7 @@ public class AccessLogReport {
     /**
      * Cache the queries for UserAgent strings to Bot/crawler agents. The value of the entry is a static string 'Crawler'
      */
+    @SuppressWarnings("unused")
     private ConcurrentHashMap<String, String> crawlerUserAgents = null;
     
     private final String targetWebsite;
@@ -50,6 +52,9 @@ public class AccessLogReport {
     private final Map<String, VisitorsByMonth> visitorsByMonth = new HashMap<>();
     
     private Set<String> browserUserAgents = new HashSet<>();
+    
+    private static final String[] months = {"januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus", 
+        "september", "oktober", "november", "december"};
     
     public AccessLogReport(String targetSite, ConcurrentHashMap<String, Locale> ip2Country, ConcurrentHashMap<String, String> crawlerUserAgents) {
         this.ip2Country = ip2Country;
@@ -177,31 +182,37 @@ public class AccessLogReport {
         return visitors;
     }
     
-    public Map<Locale, VisitorsAndPageViews> getVisitorsByCountry() {
-        Map<Locale, VisitorsAndPageViews> aggregate = new HashMap<>();
+    public List<VisitorsAndPageViews<Locale>> getVisitorsByCountry() {
+        Map<Locale, VisitorsAndPageViews<Locale>> aggregate = new HashMap<>();
         for (VisitorsByMonth monthly: visitorsByMonth.values()) {
-            Map<Locale, VisitorsAndPageViews> byCountry = monthly.getByCountry();
-            for (Map.Entry<Locale, VisitorsAndPageViews> entry: byCountry.entrySet()) {
-                if (!aggregate.containsKey(entry.getKey())) {
-                    aggregate.put(entry.getKey(), entry.getValue());
+            Collection<VisitorsAndPageViews<Locale>> byCountry = monthly.getByCountry();
+            for (VisitorsAndPageViews<Locale> entry: byCountry) {
+                if (!aggregate.containsKey(entry.getGroupedBy())) {
+                    aggregate.put(entry.getGroupedBy(), entry);
                 } else {
-                    VisitorsAndPageViews aggregated = aggregate.get(entry.getKey());
-                    aggregated = aggregated.combine(entry.getValue());
-                    aggregate.put(entry.getKey(), aggregated);
+                    VisitorsAndPageViews<Locale> aggregated = aggregate.get(entry.getGroupedBy());
+                    aggregated = aggregated.combine(entry);
+                    aggregate.put(entry.getGroupedBy(), aggregated);
                 }
             }
         }
-        return aggregate;
+        ArrayList<VisitorsAndPageViews<Locale>> totalsByCountry = new ArrayList<>(aggregate.values());
+        Collections.sort(totalsByCountry, SortOnPageViews.INSTANCE);
+        return totalsByCountry;
     }
     
-    public Map<Locale, VisitorsAndPageViews> getVisitorsByCountryLatestMonth() {
-        if (visitorsByMonth.isEmpty()) { return Collections.emptyMap(); }
+    public List<VisitorsAndPageViews<Locale>> getVisitorsByCountryLatestMonth() {
+        if (visitorsByMonth.isEmpty()) { return Collections.emptyList(); }
         ArrayList<VisitorsByMonth> visitors = new ArrayList<>(visitorsByMonth.values());
         Collections.sort(visitors);
-        return visitors.get(0).getByCountry();
+        
+        List<VisitorsAndPageViews<Locale>> latestMonth = new ArrayList<>(visitors.get(0).getByCountry());
+        Collections.sort(latestMonth, SortOnPageViews.INSTANCE);
+        return latestMonth;
     }
     
     public String getTitle() {
-        return "Meest recente gegevens";
+        VisitorsByMonth latestMonth = getLatestMonth();
+        return String.format(String.format("%s, %s %d", latestMonth.getWebsite(), months[latestMonth.getMonth()], latestMonth.getYear()));
     }
 }

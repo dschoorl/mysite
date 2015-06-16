@@ -14,12 +14,12 @@ import static org.junit.Assert.*;
 
 public class VisitorsAndPageViewsTest {
     
-    private VisitorsAndPageViews stats = null;
+    private VisitorsAndPageViews<String> stats = null;
     Set<String> previouslyVisitedFrom = null;
     
     @Before
     public void init() {
-        this.stats = new VisitorsAndPageViews();
+        this.stats = new VisitorsAndPageViews<String>("group");
         assertEquals(0, stats.getNewVisitors());
         assertEquals(0, stats.getPageViews());
         

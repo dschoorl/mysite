@@ -2,9 +2,11 @@ package info.rsdev.mysite.stats.domain;
 
 import info.rsdev.mysite.common.domain.AccessLogEntry;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
@@ -12,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
+    
+    private static final Locale UNKNOWN = new Locale("XX");
     
     private final String website;
     
@@ -23,9 +27,9 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
      * The list contains an element for each day of the month. And each day contains a two column array containing
      * first the number of unique visitors for that day and secondly the pageviews for that day.
      */
-    private VisitorsAndPageViews[] visitorsAndPageViewsByMonthday = null;
+    private List<VisitorsAndPageViews<Integer>> visitorsByMonthday = null;
     
-    private VisitorsByCountry visitorsByCountry = new VisitorsByCountry();
+    private Map<Locale, VisitorsAndPageViews<Locale>> visitorsByCountry = new HashMap<>();
     
     private Set<String> previouslyVisitedFrom = new HashSet<>();
     
@@ -38,9 +42,9 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
         this.year = year;
         
         int daysInMonth = new GregorianCalendar(year, month, 1).getActualMaximum(Calendar.DAY_OF_MONTH);
-        visitorsAndPageViewsByMonthday = new VisitorsAndPageViews[daysInMonth];
+        visitorsByMonthday = new ArrayList<VisitorsAndPageViews<Integer>>(daysInMonth);
         for (int i = 0; i < daysInMonth; i++) {
-            visitorsAndPageViewsByMonthday[i] = new VisitorsAndPageViews();
+            visitorsByMonthday.add(new VisitorsAndPageViews<>(i + 1));
         }
     }
 
@@ -102,14 +106,34 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
                     logEntry.getTimestamp(), this.year, this.month));
         }
         
+        boolean isNewByDay = processDayStats(logEntry, this.previouslyVisitedFrom);
+        boolean isNewByCountry = processCountryStats(logEntry, this.previouslyVisitedFrom);
+        if (isNewByDay || isNewByCountry) {
+            this.previouslyVisitedFrom.add(logEntry.getIpRequester());
+        }
+    }
+    
+    private boolean processDayStats(AccessLogEntry logEntry, Set<String> previouslyVisitedFrom) {
         int day = logEntry.getDayOfMonth();
-        visitorsAndPageViewsByMonthday[day - 1].process(logEntry, previouslyVisitedFrom);
-        visitorsByCountry.process(logEntry);
+        return visitorsByMonthday.get(day - 1).process(logEntry, previouslyVisitedFrom);
+    }
+    
+    private boolean processCountryStats(AccessLogEntry logEntry, Set<String> previouslyVisitedFrom) {
+        Locale country = logEntry.getCountry();
+        if (country == null) {
+            country = UNKNOWN;
+        }
+        VisitorsAndPageViews<Locale> visitors = visitorsByCountry.get(country);
+        if (visitors == null) {
+            visitors = new VisitorsAndPageViews<Locale>(country);
+            visitorsByCountry.put(country, visitors);
+        }
+        return visitors.process(logEntry, previouslyVisitedFrom);
     }
     
     public int getNewVisitors() {
         int total = 0;
-        for (VisitorsAndPageViews daily: visitorsAndPageViewsByMonthday) {
+        for (VisitorsAndPageViews<Integer> daily: visitorsByMonthday) {
             total += daily.getNewVisitors();
         }
         return total;
@@ -117,7 +141,7 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
     
     public int getRecurrentVisitors() {
         int total = 0;
-        for (VisitorsAndPageViews daily: visitorsAndPageViewsByMonthday) {
+        for (VisitorsAndPageViews<Integer> daily: visitorsByMonthday) {
             total += daily.getRecurrentVisitors();
         }
         return total;
@@ -125,7 +149,7 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
     
     public int getVisits() {
         int total = 0;
-        for (VisitorsAndPageViews daily: visitorsAndPageViewsByMonthday) {
+        for (VisitorsAndPageViews<Integer> daily: visitorsByMonthday) {
             total += daily.getVisits();
         }
         return total;
@@ -133,7 +157,7 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
     
     public int getPageViews() {
         int total = 0;
-        for (VisitorsAndPageViews daily: visitorsAndPageViewsByMonthday) {
+        for (VisitorsAndPageViews<Integer> daily: visitorsByMonthday) {
             total += daily.getPageViews();
         }
         return total;
@@ -141,7 +165,7 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
 
     public int getUniquePageViews() {
         int total = 0;
-        for (VisitorsAndPageViews daily: visitorsAndPageViewsByMonthday) {
+        for (VisitorsAndPageViews<Integer> daily: visitorsByMonthday) {
             total += daily.getUniquePageViews();
         }
         return total;
@@ -159,11 +183,12 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
         return this.website;
     }
 
-    public Map<Locale, VisitorsAndPageViews> getByCountry() {
-        return visitorsByCountry.getVisitorsByCountry();
+    public Collection<VisitorsAndPageViews<Locale>> getByCountry() {
+        //TODO: order so that country with highest visits is top ranked
+        return visitorsByCountry.values();
     }
     
-    public List<VisitorsAndPageViews> getByDay() {
-        return Arrays.asList(visitorsAndPageViewsByMonthday);
+    public List<VisitorsAndPageViews<Integer>> getByDay() {
+        return visitorsByMonthday;
     }
 }

@@ -2,8 +2,8 @@ package info.rsdev.mysite.stats.domain;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Ignore;
@@ -24,7 +24,7 @@ public class AccessLogReportTest {
         assertEquals("Nederland", country.getDisplayCountry(new Locale("nl", "NL")));
     }
     
-    @Test @Ignore
+    @Test  @Ignore
     public void processLogfile() throws IOException {
         //the file location is temporary, test too, maybe
         File logFile = new File("/home/dschoorl/myown/websites/mysite/sites/sylviaborst.nl/logs/mysite-accesslog.log");
@@ -61,11 +61,10 @@ public class AccessLogReportTest {
         }
     }
     
-    private void print(Map<Locale, VisitorsAndPageViews> visitorsByCountry) {
+    private void print(List<VisitorsAndPageViews<Locale>> visitorsByCountry) {
         Locale dutch = new Locale("nl");
-        for (Map.Entry<Locale, VisitorsAndPageViews> entry: visitorsByCountry.entrySet()) {
-            String country = entry.getKey().getDisplayCountry(dutch);
-            VisitorsAndPageViews stats = entry.getValue();
+        for (VisitorsAndPageViews<Locale> stats: visitorsByCountry) {
+            String country = stats.getGroupedBy().getDisplayCountry(dutch);
             logger.info(String.format("Country = %s, visits = %d, new = %d, recurrent = %d, pageViews = %d, uniquePageViews = %d",
                     country,
                     stats.getVisits(),

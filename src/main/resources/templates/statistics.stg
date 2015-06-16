@@ -55,7 +55,7 @@ $endif$
 
 daily(stats) ::= <<
   <tr>
-  <td>#</td><td>$stats.visits$</td><td>$stats.newVisitors$</td><td>$stats.pageViews$</td><td>$stats.uniquePageViews$</td>
+  <td>$stats.groupedBy$</td><td>$stats.visits$</td><td>$stats.newVisitors$</td><td>$stats.pageViews$</td><td>$stats.uniquePageViews$</td>
   </tr>
 >>
 
@@ -66,13 +66,11 @@ total(stats) ::= <<
 
 >>
 
-bycountry(map) ::= <<
-  $map:{
-    locale | <tr>
-      <td>$locale.displayCountry$</td>
-      <td>$map.(locale).visits$</td><td></td><td></td><td></td>
-      </tr>
-    }$
+bycountry(stats) ::= <<
+  <tr>
+      <td>$stats.groupedBy.displayCountry$</td>
+      <td>$stats.visits$</td><td>$stats.newVisitors$</td><td>$stats.pageViews$</td><td>$stats.uniquePageViews$</td>
+  </tr>
 >>
 
 menugroup(menuGroup) ::= <<

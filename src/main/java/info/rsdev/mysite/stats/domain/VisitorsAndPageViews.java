@@ -5,7 +5,7 @@ import info.rsdev.mysite.common.domain.AccessLogEntry;
 import java.util.HashSet;
 import java.util.Set;
 
-public class VisitorsAndPageViews {
+public class VisitorsAndPageViews<T> {
     
     private int newVisitors = 0;
     
@@ -25,27 +25,37 @@ public class VisitorsAndPageViews {
     
     private Set<String> sessionAndContentIds = new HashSet<>();
     
-    public VisitorsAndPageViews() {}
+    private T groupBy = null;
     
-    public VisitorsAndPageViews(VisitorsAndPageViews first, VisitorsAndPageViews second) {
+    public VisitorsAndPageViews(T groupBy) {
+        this.groupBy = groupBy;
+    }
+    
+    public VisitorsAndPageViews(VisitorsAndPageViews<T> first, VisitorsAndPageViews<T> second) {
+        if (!first.groupBy.equals(second.groupBy)) {
+            throw new IllegalArgumentException(String.format("Grouped by different values: %s vs. %s", 
+                    first.groupBy, second.groupBy));
+        }
         this.newVisitors = first.newVisitors + second.newVisitors;
         this.recurrentVisitors = first.recurrentVisitors + second.recurrentVisitors;
         this.visits = first.visits + second.visits;
         this.pageViews = first.pageViews + second.pageViews;
         this.uniquePageViews = first.uniquePageViews + second.uniquePageViews;
+        this.groupBy = first.groupBy;
     }
 
-    public void process(AccessLogEntry logEntry, Set<String> previouslyVisitedFrom) {
+    public boolean process(AccessLogEntry logEntry, Set<String> previouslyVisitedFrom) {
+        boolean isNewVisitor = false;
         if (!sessionIds.contains(logEntry.getSessionId()) && isPageView(logEntry)) {
             visits++;
+            sessionIds.add(logEntry.getSessionId());
             String ipAddress = logEntry.getIpRequester();
             if (previouslyVisitedFrom.contains(ipAddress)) {
                 this.recurrentVisitors++;
             } else {
                 this.newVisitors++;
-                previouslyVisitedFrom.add(ipAddress);
+                isNewVisitor = true;
             }
-            sessionIds.add(logEntry.getSessionId());
         }
         if (isPageView(logEntry)) {
             pageViews++;
@@ -55,6 +65,7 @@ public class VisitorsAndPageViews {
                 uniquePageViews++;
             }
         }
+        return isNewVisitor;
     }
     
     private boolean isPageView(AccessLogEntry logEntry) {
@@ -80,9 +91,17 @@ public class VisitorsAndPageViews {
     public int getRecurrentVisitors() {
         return this.recurrentVisitors;
     }
-
-    public VisitorsAndPageViews combine(VisitorsAndPageViews other) {
-        return new VisitorsAndPageViews(this, other);
+    
+    public T getGroupedBy() {
+        return this.groupBy;
     }
     
+    public String getGroupedByToString() {
+        return this.groupBy.toString();
+    }
+
+    public VisitorsAndPageViews<T> combine(VisitorsAndPageViews<T> other) {
+        return new VisitorsAndPageViews<T>(this, other);
+    }
+
 }
