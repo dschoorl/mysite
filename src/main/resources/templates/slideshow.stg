@@ -36,7 +36,7 @@ $if(model.copyrightNotice)$
 </footer>
 $endif$
 <footer class="row">
-  <p class="col-sm-10 col-sm-offset-2"><a href="http://.www.soeva.net" title="also checkout this site by SB">www.soeva.net</a></p>
+  <p class="col-sm-10 col-sm-offset-2"><a href="http://www.soeva.net" title="also checkout this site by SB">www.soeva.net</a></p>
 </footer>
 </body>
 </html>
