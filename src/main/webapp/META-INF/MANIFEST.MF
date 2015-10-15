@@ -1,4 +1,0 @@
-Manifest-Version: 1.0
-Class-Path: mysql-connector-java-5.1.25.jar commons-logging-1.2.jar lo
- g4j-core-2.1.jar log4j-api-2.1.jar
-

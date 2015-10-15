@@ -5,7 +5,11 @@
 	<artifactId>mysite-pom</artifactId>
 	<packaging>pom</packaging>
 	<version>0.1-SNAPSHOT</version>
-	<name>mysite</name>
+	<name>mysite-pom</name>
+	<modules>
+		<module>webapp</module>
+		<module>assetman</module>
+	</modules>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<maven.compiler.source>1.7</maven.compiler.source>
