@@ -10,15 +10,7 @@
 		<servlet-class>info.rsdev.mysite.common.SiteServant</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
-	<servlet>
-		<servlet-name>greetServlet</servlet-name>
-		<servlet-class>info.rsdev.server.GreetingServiceImpl</servlet-class>
-	</servlet>
 
-	<servlet-mapping>
-		<servlet-name>greetServlet</servlet-name>
-		<url-pattern>/assetman/greet</url-pattern>
-	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>SiteServant</servlet-name>
 		<url-pattern>/*</url-pattern>
@@ -27,6 +19,5 @@
 
 	<welcome-file-list>
 		<welcome-file>mysite.html</welcome-file>
-		<welcome-file>assetman.html</welcome-file>
 	</welcome-file-list>
 </web-app>
