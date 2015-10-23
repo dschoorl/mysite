@@ -164,9 +164,11 @@ public class SiteServant implements Servlet {
     
     protected void writeUnavaliablePage(HttpServletResponse response) throws ServletException {
         //not tailored to visited module or website
+        response.setContentType("text/html");
         try {
             PrintWriter out = response.getWriter();
             out.write(GLOBAL_UNAVAILABLE_PAGE);
+            out.flush();
         } catch (IOException e) {
             throw new ServletException("Cannot write unavailable page to HttpServletResponse", e);
         }
