@@ -64,4 +64,6 @@ public interface ModuleConfig {
 
     public File getAccessLogFile();
     
+    public boolean isDisabled();
+    
 }

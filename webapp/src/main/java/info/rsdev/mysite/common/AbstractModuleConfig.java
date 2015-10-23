@@ -128,4 +128,9 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         return Collections.unmodifiableMap(this.properties);
     }
     
+    @Override
+    public boolean isDisabled() {
+        return getBoolean(DISABLED_KEY);
+    }
+    
 }

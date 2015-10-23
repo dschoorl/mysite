@@ -5,6 +5,7 @@ import info.rsdev.mysite.common.domain.MenuGroup;
 import info.rsdev.mysite.util.ServletUtils;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
@@ -26,6 +27,30 @@ public class SiteServant implements Servlet {
     
     private static final Logger logger = LoggerFactory.getLogger(SiteServant.class);
     private static final Logger GLOBAL_ACCESS_LOGGER = LoggerFactory.getLogger("AccessLog");
+    private static final String GLOBAL_UNAVAILABLE_PAGE = 
+            "<!DOCTYPE html>\n" + 
+            " <head>\n" + 
+            "  <style>\n" + 
+            "    body {\n" + 
+            "        background: grey;\n" + 
+            "        font-family: Arial;\n" +
+            "        font-size: 36px }" +
+            "    section {\n" + 
+            "        background: grey;\n" + 
+            "        color: black;\n" + 
+            "        border-radius: 1em;\n" + 
+            "        padding: 1em;\n" + 
+            "        position: absolute;\n" + 
+            "        top: 50%;\n" + 
+            "        left: 50%;\n" + 
+            "        margin-right: -50%;\n" + 
+            "        transform: translate(-50%, -50%) }\n" + 
+            "  </style></head>\n" + 
+            "  <section>\n" + 
+            "\n" + 
+            "  <p>TEMPORARILY<br />&nbsp;UNAVAILABLE</p>\n" + 
+            "\n" + 
+            "  </section>\n";
     
     private ServletConfig servletConfig  = null;
     
@@ -108,6 +133,12 @@ public class SiteServant implements Servlet {
                 ((HttpServletResponse)response).sendError(404);
                 return;
             }
+            if (moduleConfig.isDisabled()) {
+                logger.info(String.format("%s is disabled for %s; serving unavailable page", moduleConfig, hostname));
+                writeUnavaliablePage((HttpServletResponse)response);
+                return;
+            }
+            
             logEntry.feedModuleConfig(moduleConfig);
             if (logger.isDebugEnabled()) {
                 HttpServletRequest r = (HttpServletRequest)request;
@@ -128,6 +159,16 @@ public class SiteServant implements Servlet {
                 accessLogger = moduleConfig.getAccessLogger();
             }
             accessLogger.info(logEntry.markFinished(contentId, ((HttpServletResponse)response).getStatus()).toString());
+        }
+    }
+    
+    protected void writeUnavaliablePage(HttpServletResponse response) throws ServletException {
+        //not tailored to visited module or website
+        try {
+            PrintWriter out = response.getWriter();
+            out.write(GLOBAL_UNAVAILABLE_PAGE);
+        } catch (IOException e) {
+            throw new ServletException("Cannot write unavailable page to HttpServletResponse", e);
         }
     }
     

@@ -51,4 +51,6 @@ public interface DefaultConfigKeys {
     
     public static final String COPYRIGHT_NOTICE_KEY = "copyrightnotice";
     
+    public static final String DISABLED_KEY = "disabled";
+    
 }
