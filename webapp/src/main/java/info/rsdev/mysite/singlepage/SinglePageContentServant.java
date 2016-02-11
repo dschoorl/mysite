@@ -55,7 +55,7 @@ public class SinglePageContentServant implements RequestHandler, ConfigKeys {
     
     private void renderPage(HttpServletResponse response, SinglePageModel pageModel) throws ServletException {
         SinglePageModuleConfig singlepageConfig = pageModel.getConfig();
-        ST template = singlepageConfig.getTemplate();
+        ST template = singlepageConfig.getTemplate(pageModel.getSelectedMenuItemName());
         try {
             if (template == null) {
                 response.sendError(404);

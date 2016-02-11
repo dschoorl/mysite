@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,7 +20,7 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
     
     protected final Properties properties;
     
-    private STGroup cachedTemplateGroup = null;
+    private ConcurrentHashMap<String, STGroup> cachedTemplateGroupByTemplateName = new ConcurrentHashMap<>();
     
     public AbstractModuleConfig(Properties configProperties) {
         this.properties = configProperties;
@@ -85,9 +86,16 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         return DEFAULT_MENU_ORDER_PRIORITY_VALUE;
     }
     
-    public synchronized ST getTemplate() {
-        String templateName = getString(TEMPLATE_NAME_KEY);
-        if (cachedTemplateGroup == null) {
+    public synchronized ST getTemplate(String forMenuItem) {
+        String templateName = null;
+        if (forMenuItem != null) {
+            templateName = getString(forMenuItem + "." + TEMPLATE_NAME_KEY); //is there a template specific for this menu item?
+        }
+        if (templateName == null) {
+            templateName = getString(TEMPLATE_NAME_KEY);    //use default instead
+        }
+        
+        if (!cachedTemplateGroupByTemplateName.contains(templateName)) {
             //is the template in the external directory or within the webapp?
             File templateDir = new File(getString(SITE_DATA_DIR_KEY), getMountPoint());
             File templateFile = new File(templateDir, templateName.concat(".stg"));
@@ -102,9 +110,9 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
                 String resourceName = "/templates/".concat(templateName).concat(".stg");
                 templateResource = Thread.currentThread().getContextClassLoader().getResource(resourceName);
             }
-            this.cachedTemplateGroup = new STGroupFile(templateResource, "UTF-8", '$', '$');
+            this.cachedTemplateGroupByTemplateName.putIfAbsent(templateName, new STGroupFile(templateResource, "UTF-8", '$', '$'));
         }
-        return cachedTemplateGroup.getInstanceOf(templateName);
+        return cachedTemplateGroupByTemplateName.get(templateName).getInstanceOf(templateName);
     }
     
     @Override

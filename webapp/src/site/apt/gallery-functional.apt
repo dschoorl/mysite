@@ -21,7 +21,19 @@ the first page is assumed. The ordering of the images is alphabetical by filenam
 about the image contains at least the path to the image's thumnail (when applicable) and the path to the image. The information
 available per image may be extended in the future. 
 
-  The module contains a page template that is capable of serving only one image at a time and supports browsing back and forth 
-through the image collection. When the module is configured to serve more than one image per page, an error message is displayed 
-to the user instead of the images. New page templates may be shiped in the future.
+  The module contains two page templates:
+  
+  * one that is capable of serving only one image at a time and supports browsing back and forth through the image collection. 
+    When the module is configured to serve more than one image per page, an error message is displayed to the user instead of 
+    the images. This template is called slideshow.
+    
+  * one that is capable of showing a grid of thumbnails where the user can click one thumbnail to view enlarged, like a 
+    light table. From the enlarged view, the user can browse to the next or previous image of the grid. When the boundaries
+    of the grid for that page are reached, it will move to the next or previous page. In other words, browsing supersedes 
+    the page boundaries. This template is called portfolio.
+    
+  New page templates may be shiped in the future.
 
+  Each group of images can be assigned their own template.
+  
+  

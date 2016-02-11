@@ -37,7 +37,9 @@ should be configured in every module's property file.
 *-------------------------------+---------------+
 | ModuleConfigType              | The fully qualified java class name that must handle the module's configuration. The implementation supplied by MySite is info.rsdev.mysite.gallery.GalleryModuleConfig
 *-------------------------------+---------------+
-| template                      | The name of the GUI template that must be used to show the content
+| template                      | The name of the default GUI template that must be used to show the content, when there is none provided for a specific menuitem (see below).
+*-------------------------------+---------------+
+| <menuItemName>.template       | The name of the GUI template that must be used to show the content behind a specific menuitem. When none provided, the default template is used (see above).
 *-------------------------------+---------------+
 | disabled                      | A boolean value, and when true, shows an 'unavailable' page, and when false, shows the regular content 
 *-------------------------------+---------------+

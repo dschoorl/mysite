@@ -115,7 +115,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
     
     private void renderPage(HttpServletResponse response, GalleryPageModel pageModel) throws ServletException {
         GalleryModuleConfig galleryConfig = pageModel.getConfig();
-        ST template = galleryConfig.getTemplate();
+        ST template = galleryConfig.getTemplate(pageModel.getSelectedMenuItemName());
         try {
             if (template == null) {
                 response.sendError(404);

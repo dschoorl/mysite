@@ -67,7 +67,7 @@ public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
     
     private void renderPage(HttpServletResponse response, BasicPageModel<StatsModuleConfig> model, AccessLogReport report) throws ServletException {
         StatsModuleConfig config = model.getConfig();
-        ST template = config.getTemplate();
+        ST template = config.getTemplate(null);
         try {
             if (template == null) {
                 response.sendError(404);
