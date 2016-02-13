@@ -38,4 +38,15 @@ public class GalleryModuleConfig extends AbstractModuleConfig implements ConfigK
         return getBoolean(RANDOM_PAGE_KEY);
     }
     
+    public int getThumbnailsPerRow(String forMenuItem) {
+        if (getBoolean(forMenuItem, SHOW_THUMBNAILS_KEY)) {
+            return getInteger(forMenuItem, THUMBNAILS_PER_ROW_KEY);
+        }
+        return 0;
+    }
+    
+    public int getImagesPerPage(String forMenuItem) {
+        return getInteger(forMenuItem, IMAGES_PER_PAGE_HINT_KEY);
+    }
+    
 }

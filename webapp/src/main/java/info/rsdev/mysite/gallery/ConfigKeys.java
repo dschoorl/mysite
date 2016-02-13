@@ -20,4 +20,8 @@ public interface ConfigKeys extends DefaultConfigKeys {
     
     public static final String RANDOM_PAGE_KEY = "showRandomPageAsFirstPage";
     
+    public static final String THUMBNAILS_PER_ROW_KEY = "thumbnailsPerRow";
+    
+    
+    
 }

@@ -31,14 +31,33 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         return this.properties.getProperty(propertyName);
     }
     
+    protected String getString(String forMenuItem, String propertyName) {
+        String propertyValue = null;
+        if (forMenuItem != null) {
+            propertyValue = getString(forMenuItem + "." + propertyName); //is the property defined specific for the menu item?
+        }
+        if (propertyValue == null) {
+            propertyValue = getString(propertyName);    //use default instead
+        }
+        return propertyValue;
+    }
+    
     @Override
     public boolean getBoolean(String propertyName) {
         return Boolean.parseBoolean(this.properties.getProperty(propertyName));
     }
     
+    protected boolean getBoolean(String forMenuItem, String propertyName) {
+        return Boolean.parseBoolean(getString(forMenuItem, propertyName));
+    }
+    
     @Override
     public int getInteger(String propertyName) {
-        String value = this.properties.getProperty(propertyName);
+        return getInteger(null, propertyName);
+    }
+    
+    protected int getInteger(String forMenuItem, String propertyName) {
+        String value = getString(forMenuItem, propertyName);
         if (value == null) { return 0; }
         return Integer.parseInt(value);
     }
@@ -87,14 +106,7 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
     }
     
     public synchronized ST getTemplate(String forMenuItem) {
-        String templateName = null;
-        if (forMenuItem != null) {
-            templateName = getString(forMenuItem + "." + TEMPLATE_NAME_KEY); //is there a template specific for this menu item?
-        }
-        if (templateName == null) {
-            templateName = getString(TEMPLATE_NAME_KEY);    //use default instead
-        }
-        
+        String templateName = getString(forMenuItem, TEMPLATE_NAME_KEY);
         if (!cachedTemplateGroupByTemplateName.contains(templateName)) {
             //is the template in the external directory or within the webapp?
             File templateDir = new File(getString(SITE_DATA_DIR_KEY), getMountPoint());

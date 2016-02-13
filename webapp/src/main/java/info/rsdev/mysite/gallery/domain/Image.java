@@ -7,7 +7,7 @@ import java.io.File;
  */
 public class Image implements Comparable<Image> {
     
-    public static final String THUMBNAIL_INDICATOR = "_thumb";
+    public static final String THUMBNAIL_INDICATOR = "_t";
     
     private final ImageGroup imageGroup;
     

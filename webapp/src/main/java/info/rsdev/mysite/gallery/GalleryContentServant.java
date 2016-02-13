@@ -76,7 +76,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
         int imageCount = images.size();
         
         // construct page
-        int pageSize = getPageSize(requestParams, galleryConfig);
+        int pageSize = getPageSize(requestParams, galleryConfig, groupName);
         int pageNumber = getPageNumber(requestParams); // base 1
         int pageCount = imageCount / pageSize;
         if (pageNumber == -1) {
@@ -140,7 +140,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
         return -1; // indicate that no valid pagenumber is submitted in the request
     }
     
-    private int getPageSize(Map<String, String> requestParams, GalleryModuleConfig galleryConfig) {
+    private int getPageSize(Map<String, String> requestParams, GalleryModuleConfig galleryConfig, String groupName) {
         try {
             if (requestParams.containsKey(PAGESIZE_PARAM)) {
                 return Integer.parseInt(requestParams.get(PAGESIZE_PARAM));
@@ -148,7 +148,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
         } catch (NumberFormatException e) {
             // Most likely, someone is tamparing the request - how to handle that situation??
         }
-        int pageSizeHint = galleryConfig.getInteger(IMAGES_PER_PAGE_HINT_KEY);
+        int pageSizeHint = galleryConfig.getImagesPerPage(groupName);
         if (pageSizeHint > 0) {
             return pageSizeHint;
         }

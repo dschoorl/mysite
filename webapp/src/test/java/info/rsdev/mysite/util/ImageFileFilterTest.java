@@ -37,7 +37,7 @@ public class ImageFileFilterTest {
     
     @Test
     public void doNotAcceptThumbnailFiles() {
-        assertFalse(ImageFileFilter.INSTANCE.accept(new File("1_thumb.png")));
+        assertFalse(ImageFileFilter.INSTANCE.accept(new File("1_t.png")));
     }
     
     @Test
