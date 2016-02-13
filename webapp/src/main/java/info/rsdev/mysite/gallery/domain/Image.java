@@ -8,6 +8,7 @@ import java.io.File;
 public class Image implements Comparable<Image> {
     
     public static final String THUMBNAIL_INDICATOR = "_t";
+    public static final String THUMBNAIL_EXTENSION = ".png";
     
     private final ImageGroup imageGroup;
     
@@ -33,8 +34,13 @@ public class Image implements Comparable<Image> {
         return this.imagePath;
     }
     
-    public File getThumbnailPath() {
-        return null; //not yet supported
+    /**
+     * Get the path to the thumbnail on this server, relative to the internet hostname. It is calculated from the
+     * image name and the thumbnail may or may not exist (yet). Thumbnails are always in png-format.
+     */
+    public String getThumbnailPath() {
+        int dotIndex = this.imagePath.lastIndexOf('.');
+        return this.imagePath.substring(0,  dotIndex).concat(THUMBNAIL_INDICATOR + THUMBNAIL_EXTENSION);
     }
     
     public int getWidth() {
@@ -51,6 +57,10 @@ public class Image implements Comparable<Image> {
             return -1;
         }
         return this.imageName.compareTo(o.imageName);
+    }
+    
+    public static boolean isThumbnail(String fileName) {
+        return fileName.endsWith(THUMBNAIL_INDICATOR + THUMBNAIL_EXTENSION);
     }
     
 }

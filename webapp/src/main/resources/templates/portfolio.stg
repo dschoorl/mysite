@@ -49,6 +49,6 @@ menuitem(item) ::= <<
 
 render_image(image) ::= <<
    <figure>
-     <img class="img-responsive" src="$model.config.contextPath$$image.imagePath$" />
+     <img class="img-responsive" src="$model.config.contextPath$$image.thumbnailPath$" />
    </figure>
 >>

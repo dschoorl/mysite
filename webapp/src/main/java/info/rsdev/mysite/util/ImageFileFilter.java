@@ -20,7 +20,7 @@ public class ImageFileFilter implements FileFilter {
         int lastDotIndex = filename.lastIndexOf('.');
         if (lastDotIndex < 0) { return false; }
         
-        //do not accept thumbnails! -- their name, the part before the (mandatory) extension, ends with _thumb
+        //do not accept thumbnails! -- their name, the part before the (mandatory) extension, ends with _t
         if ((lastDotIndex > Image.THUMBNAIL_INDICATOR.length()) && filename.substring(0, lastDotIndex).endsWith(Image.THUMBNAIL_INDICATOR)) {
             return false;
         }

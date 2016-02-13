@@ -5,7 +5,9 @@ import info.rsdev.mysite.common.RequestHandler;
 import info.rsdev.mysite.common.domain.DefaultMenuGroup;
 import info.rsdev.mysite.common.domain.MenuGroup;
 import info.rsdev.mysite.exception.ConfigurationException;
+import info.rsdev.mysite.gallery.domain.Image;
 import info.rsdev.mysite.util.ServletUtils;
+import info.rsdev.mysite.util.ThumbnailCreator;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -49,6 +51,10 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         }
         if (resourceLocation.toFile().isDirectory()) {
             resourceLocation = resourceLocation.resolve(fixedConfig.getIndexFilename());
+        }
+        if (Image.isThumbnail(resourceLocation.getFileName().toString())) {
+            //when applicable, create a thumbnail on the fly
+            ThumbnailCreator.make(resourceLocation);
         }
         if (!resourceLocation.toFile().isFile()) {
             response.sendError(404, String.format("Resource %s does not exist", resourceLocation));
