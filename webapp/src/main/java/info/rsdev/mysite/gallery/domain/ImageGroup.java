@@ -14,7 +14,7 @@ public class ImageGroup implements Comparable<ImageGroup> {
     
     private final String groupName;
     
-    private List<Image> images = new LinkedList<>();
+    private List<DefaultImage> images = new LinkedList<>();
     
     public ImageGroup(ImageCollection collection, String name) {
         this.collection = collection;
@@ -29,11 +29,11 @@ public class ImageGroup implements Comparable<ImageGroup> {
         return this.collection;
     }
     
-    public List<Image> getImages() {
+    public List<DefaultImage> getImages() {
         return this.images;
     }
     
-    public void addImages(Collection<Image> newImages) {
+    public void addImages(Collection<DefaultImage> newImages) {
         if (newImages != null) {
             this.images = merge(this.images, newImages);
         }
@@ -51,12 +51,12 @@ public class ImageGroup implements Comparable<ImageGroup> {
         return this;
     }
     
-    private List<Image> merge(Collection<Image> master, Collection<Image> other) {
-        Set<Image> set = new HashSet<>(master.size() + other.size());
+    private List<DefaultImage> merge(Collection<DefaultImage> master, Collection<DefaultImage> other) {
+        Set<DefaultImage> set = new HashSet<>(master.size() + other.size());
         set.addAll(master);
         set.addAll(other);
 
-        List<Image> result = new ArrayList<>(set);
+        List<DefaultImage> result = new ArrayList<>(set);
         Collections.sort(result);
         return result;
     }

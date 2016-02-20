@@ -6,7 +6,7 @@ import info.rsdev.mysite.common.domain.DefaultMenuGroup;
 import info.rsdev.mysite.common.domain.MenuGroup;
 import info.rsdev.mysite.common.domain.MenuItem;
 import info.rsdev.mysite.exception.ConfigurationException;
-import info.rsdev.mysite.gallery.domain.Image;
+import info.rsdev.mysite.gallery.domain.DefaultImage;
 import info.rsdev.mysite.gallery.domain.ImageCollection;
 import info.rsdev.mysite.gallery.domain.ImageGroup;
 import info.rsdev.mysite.gallery.domain.ImageGroupMenuItem;
@@ -72,7 +72,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
                 }
             }
         }
-        List<Image> images = imageCollection.getImages(groupName);
+        List<DefaultImage> images = imageCollection.getImages(groupName);
         int imageCount = images.size();
         
         // construct page
@@ -94,7 +94,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
         }
         GalleryPageModel model = new GalleryPageModel(galleryConfig, groupName, pageNumber, pageSize);
         
-        List<Image> imagesOnPage = null;
+        List<DefaultImage> imagesOnPage = null;
         if (imageCount == 0) {
             imagesOnPage = Collections.emptyList();
         } else {
@@ -104,6 +104,8 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
         model.setPageCount(pageCount);
         model.setMenu(menu);
         
+        int focussedImageIndex = getFocussedImageIndex(requestParams, imagesOnPage.size());
+        model.setFocusOn(focussedImageIndex);
         renderPage(response, model);
         
         //return the main content of this page, currently this code fits only the slideshow template
@@ -155,11 +157,27 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
         return 20; // a hardcoded default (fallback value)
     }
     
+    private int getFocussedImageIndex(Map<String, String> requestParams, int size) {
+        int imageIndex = -1;
+        try {
+            if (requestParams.containsKey(IMAGENUMBER_PARAM)) {
+                imageIndex = Integer.parseInt(requestParams.get(IMAGENUMBER_PARAM));
+                if (imageIndex >= size) {
+                    imageIndex = size;  //Most likely, someone is tamparing the request - how to handle that situation??
+                }
+            }
+        } catch (NumberFormatException e) {
+            // Most likely, someone is tamparing the request - how to handle that situation??
+        }
+        return imageIndex;  //No focus set on a specific image
+    }
+
     private Map<String, String> getSupportedParameters(HttpServletRequest request) {
         Map<String, String> wellknownParameters = new HashMap<>();
         wellknownParameters.put(IMAGEGROUP_PARAM, request.getParameter(IMAGEGROUP_PARAM));
         wellknownParameters.put(PAGENUMBER_PARAM, request.getParameter(PAGENUMBER_PARAM));
         wellknownParameters.put(PAGESIZE_PARAM, request.getParameter(PAGESIZE_PARAM));
+        wellknownParameters.put(IMAGENUMBER_PARAM, request.getParameter(IMAGENUMBER_PARAM));
         return wellknownParameters;
     }
     

@@ -19,21 +19,21 @@ public class ImageCollectionTest {
     
     @Test
     public void rootDirIsNotInventoriedByDefault() {
-        List<Image> groupImages = collection.getImages("images");
+        List<DefaultImage> groupImages = collection.getImages("images");
         assertNotNull(groupImages);
         assertEquals(0, groupImages.size());
     }
     
     @Test
     public void differentDirsWithSameNameAreNotMergedInOneGroup() {
-        List<Image> groupImages = collection.getImages("fun");
+        List<DefaultImage> groupImages = collection.getImages("fun");
         assertNotNull(groupImages);
         assertEquals(3, groupImages.size());
     }
     
     @Test
     public void dirsWithNoImagesAreInventoriedAsEmptyCollections() {
-        List<Image> groupImages = collection.getImages("serious");
+        List<DefaultImage> groupImages = collection.getImages("serious");
         assertNotNull(groupImages);
         assertEquals(0, groupImages.size());
     }

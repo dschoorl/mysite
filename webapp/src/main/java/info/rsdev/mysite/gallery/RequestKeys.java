@@ -5,6 +5,7 @@ public interface RequestKeys {
     public static final String IMAGEGROUP_PARAM = "imagegroup";
     public static final String PAGESIZE_PARAM = "pageSize";
     public static final String PAGENUMBER_PARAM = "pageNumber";
+    public static final String IMAGENUMBER_PARAM = "imageNumber";
     
     
 }

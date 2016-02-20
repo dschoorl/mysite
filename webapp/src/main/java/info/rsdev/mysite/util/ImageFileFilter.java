@@ -1,6 +1,6 @@
 package info.rsdev.mysite.util;
 
-import info.rsdev.mysite.gallery.domain.Image;
+import info.rsdev.mysite.gallery.domain.DefaultImage;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -21,7 +21,7 @@ public class ImageFileFilter implements FileFilter {
         if (lastDotIndex < 0) { return false; }
         
         //do not accept thumbnails! -- their name, the part before the (mandatory) extension, ends with _t
-        if ((lastDotIndex > Image.THUMBNAIL_INDICATOR.length()) && filename.substring(0, lastDotIndex).endsWith(Image.THUMBNAIL_INDICATOR)) {
+        if ((lastDotIndex > DefaultImage.THUMBNAIL_INDICATOR.length()) && filename.substring(0, lastDotIndex).endsWith(DefaultImage.THUMBNAIL_INDICATOR)) {
             return false;
         }
         

@@ -13,7 +13,7 @@ import org.imgscalr.Scalr;
 import org.imgscalr.Scalr.Method;
 import org.imgscalr.Scalr.Mode;
 
-import info.rsdev.mysite.gallery.domain.Image;
+import info.rsdev.mysite.gallery.domain.DefaultImage;
 
 public abstract class ThumbnailCreator {
 
@@ -38,7 +38,7 @@ public abstract class ThumbnailCreator {
     public static void make(Path original, Path thumbnailPath) {
         if (Files.notExists(thumbnailPath)) {
             if (Files.notExists(original)) {
-                throw new IllegalArgumentException(String.format("Image file does not exist: ", original));
+                throw new IllegalArgumentException(String.format("DefaultImage file does not exist: ", original));
             }
             int maxWith = 100, maxHeight = 100;
             try {
@@ -67,11 +67,11 @@ public abstract class ThumbnailCreator {
     
     private static Path getOriginal(Path thumbnailPath) {
         String fileName = thumbnailPath.getFileName().toString();
-        if (!Image.isThumbnail(fileName)) {
+        if (!DefaultImage.isThumbnail(fileName)) {
             throw new IllegalArgumentException("Not a thumbnail filename pattern: " + fileName);
         }
         
-        int uptoIndex = fileName.lastIndexOf(Image.THUMBNAIL_INDICATOR + Image.THUMBNAIL_EXTENSION);
+        int uptoIndex = fileName.lastIndexOf(DefaultImage.THUMBNAIL_INDICATOR + DefaultImage.THUMBNAIL_EXTENSION);
         fileName = fileName.substring(0, uptoIndex);
         File parentDir = thumbnailPath.getParent().toFile();
         File[] candidates = parentDir.isDirectory()?parentDir.listFiles(new OriginalMatcher(fileName)):new File[]{};

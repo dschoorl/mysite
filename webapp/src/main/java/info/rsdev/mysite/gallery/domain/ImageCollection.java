@@ -23,7 +23,7 @@ import java.util.List;
 public class ImageCollection {
     
     /**
-     * The list of {@link Image}s in the imagegroup directory.
+     * The list of {@link DefaultImage}s in the imagegroup directory.
      */
     private final List<ImageGroup> imageGroups;
     
@@ -44,7 +44,7 @@ public class ImageCollection {
         this.imageGroups = inventory(siteDir.toPath(), collectionDir, true);   //TODO: run in a separate thread?
     }
     
-    public List<Image> getImages(String groupName) {
+    public List<DefaultImage> getImages(String groupName) {
         ImageGroup group = getImageGroup(imageGroups, groupName);
         if (group != null) {
             return Collections.unmodifiableList(group.getImages());
@@ -94,9 +94,9 @@ public class ImageCollection {
         if (!subdirsOnly) {
             //take inventory of the images in the given directory
             ImageGroup newGroup = new ImageGroup(this, groupDir.getName());
-            List<Image> images = new ArrayList<>();
+            List<DefaultImage> images = new ArrayList<>();
             for (File image: groupDir.listFiles(ImageFileFilter.INSTANCE)) {
-                images.add(new Image(newGroup, image));
+                images.add(new DefaultImage(newGroup, image));
             }
             newGroup.addImages(images);
             ImageGroup current = getImageGroup(imageGroups, groupDir.getName());
