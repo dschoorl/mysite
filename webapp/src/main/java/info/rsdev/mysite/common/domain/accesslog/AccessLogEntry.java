@@ -1,4 +1,4 @@
-package info.rsdev.mysite.common.domain;
+package info.rsdev.mysite.common.domain.accesslog;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -36,5 +36,7 @@ public interface AccessLogEntry {
     public String getContentId();
 
     public String getTemplateName();
+    
+    public boolean ignoreMe();
     
 }

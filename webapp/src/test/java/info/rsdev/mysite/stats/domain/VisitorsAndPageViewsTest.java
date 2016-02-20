@@ -5,12 +5,12 @@ import static org.mockito.Mockito.*;
 import java.util.HashSet;
 import java.util.Set;
 
-import info.rsdev.mysite.common.domain.AccessLogEntry;
-
 import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+
+import info.rsdev.mysite.common.domain.accesslog.AccessLogEntry;
 
 public class VisitorsAndPageViewsTest {
     

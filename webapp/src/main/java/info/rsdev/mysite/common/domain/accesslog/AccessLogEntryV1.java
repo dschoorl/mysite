@@ -1,4 +1,4 @@
-package info.rsdev.mysite.common.domain;
+package info.rsdev.mysite.common.domain.accesslog;
 
 import info.rsdev.mysite.common.DefaultConfigKeys;
 import info.rsdev.mysite.common.ModuleConfig;
@@ -132,7 +132,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
     
     public AccessLogEntryV1 feedModuleConfig(ModuleConfig config) {
         mountpoint = config.getMountPoint();
-        templateName = config.getString(DefaultConfigKeys.TEMPLATE_NAME_KEY);
+//        templateName = config.getString(DefaultConfigKeys.TEMPLATE_NAME_KEY);
         website = config.getString(DefaultConfigKeys.SITENAME_KEY);
         return this;
     }
@@ -156,10 +156,14 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         return this;
     }
     
-    public AccessLogEntryV1 markFinished(String contentId, int statusCode) {
+    public AccessLogEntryV1 markFinished(ModuleHandlerResult result, int statusCode) {
         this.statusCode = statusCode;
         this.durationInMs = (int)(System.currentTimeMillis() - this.timestampRequestReceived.getTimeInMillis());
-        this.contentId = contentId;
+        this.statusCode = statusCode;
+        if (result != null) {
+            this.contentId = result.getContentId();
+            this.templateName = result.getTemplateName();
+        }
         return this;
     }
     
@@ -272,6 +276,11 @@ public class AccessLogEntryV1 implements AccessLogEntry {
             return this.templateName;
         }
         return null;
+    }
+
+    @Override
+    public boolean ignoreMe() {
+        return getContentId() == null;
     }
     
 }

@@ -1,7 +1,8 @@
 package info.rsdev.mysite.common;
 
-import info.rsdev.mysite.common.domain.AccessLogEntryV1;
 import info.rsdev.mysite.common.domain.MenuGroup;
+import info.rsdev.mysite.common.domain.accesslog.AccessLogEntryV1;
+import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
 import info.rsdev.mysite.util.ServletUtils;
 
 import java.io.IOException;
@@ -113,7 +114,7 @@ public class SiteServant implements Servlet {
     
     @Override
     public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
-        String contentId = null;
+        ModuleHandlerResult result = null;
         AccessLogEntryV1 logEntry = new AccessLogEntryV1().feedRequest((HttpServletRequest)request);
         ModuleConfig moduleConfig = null;
         try {
@@ -146,7 +147,7 @@ public class SiteServant implements Servlet {
                         r.getMethod(), r.getServletPath(), r.getQueryString()));
             }
             List<MenuGroup> menu = config.getMenu();
-            contentId = moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest)request, (HttpServletResponse)response);
+            result = moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest)request, (HttpServletResponse)response);
         } catch (RuntimeException e) {
             ((HttpServletResponse)response).setStatus(500);
             throw e;
@@ -158,7 +159,10 @@ public class SiteServant implements Servlet {
             } else {
                 accessLogger = moduleConfig.getAccessLogger();
             }
-            accessLogger.info(logEntry.markFinished(contentId, ((HttpServletResponse)response).getStatus()).toString());
+            logEntry.markFinished(result, ((HttpServletResponse)response).getStatus());
+            if (!logEntry.ignoreMe()) {
+                accessLogger.info(logEntry.toString());
+            }
         }
     }
     

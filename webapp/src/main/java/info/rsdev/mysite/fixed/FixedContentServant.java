@@ -4,6 +4,7 @@ import info.rsdev.mysite.common.ModuleConfig;
 import info.rsdev.mysite.common.RequestHandler;
 import info.rsdev.mysite.common.domain.DefaultMenuGroup;
 import info.rsdev.mysite.common.domain.MenuGroup;
+import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
 import info.rsdev.mysite.exception.ConfigurationException;
 import info.rsdev.mysite.gallery.domain.DefaultImage;
 import info.rsdev.mysite.util.ServletUtils;
@@ -34,7 +35,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             "application/javascript");
     
     @Override
-    public String handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    public ModuleHandlerResult handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         if (config == null) {
             throw new ConfigurationException(String.format("%s cannot be null", ModuleConfig.class.getSimpleName()));
         }
@@ -70,7 +71,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         } else {
             ServletUtils.writeText(response, resourceLocation.toFile());
         }
-        return resourceLocation.toFile().getName();
+        return ModuleHandlerResult.NO_CONTENT;    //not worth logging in access log
     }
     
     private void writeBinary(HttpServletResponse response, Path resourceLocation) throws IOException {

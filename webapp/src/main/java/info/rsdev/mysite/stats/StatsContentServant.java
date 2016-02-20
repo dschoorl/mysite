@@ -7,6 +7,7 @@ import info.rsdev.mysite.common.domain.BasicPageModel;
 import info.rsdev.mysite.common.domain.DefaultMenuGroup;
 import info.rsdev.mysite.common.domain.MenuGroup;
 import info.rsdev.mysite.common.domain.MenuItem;
+import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
 import info.rsdev.mysite.exception.ConfigurationException;
 import info.rsdev.mysite.gallery.GalleryModuleConfig;
 import info.rsdev.mysite.stats.domain.AccessLogIterator;
@@ -41,7 +42,7 @@ public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
     private final ConcurrentHashMap<String, Locale> ip2Country = new ConcurrentHashMap<>();
     
     @Override
-    public String handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
+    public ModuleHandlerResult handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
         if (config == null) {
@@ -60,12 +61,12 @@ public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
         }
         
         BasicPageModel<StatsModuleConfig> model = new BasicPageModel<>(statsConfig, null);
-        renderPage(response, model, report);
+        String templateName = renderPage(response, model, report);
         
-        return null;
+        return new ModuleHandlerResult(templateName, "stats");
     }
     
-    private void renderPage(HttpServletResponse response, BasicPageModel<StatsModuleConfig> model, AccessLogReport report) throws ServletException {
+    private String renderPage(HttpServletResponse response, BasicPageModel<StatsModuleConfig> model, AccessLogReport report) throws ServletException {
         StatsModuleConfig config = model.getConfig();
         ST template = config.getTemplate(null);
         try {
@@ -80,6 +81,7 @@ public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
         } catch (IOException e) {
             throw new ServletException("Error occured during preparation of web page", e);
         }
+        return template==null?null:template.getName();
     }
 
     @Override

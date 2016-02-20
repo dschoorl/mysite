@@ -1,7 +1,5 @@
 package info.rsdev.mysite.stats.domain;
 
-import info.rsdev.mysite.common.domain.AccessLogEntry;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -10,6 +8,8 @@ import org.junit.After;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
+
+import info.rsdev.mysite.common.domain.accesslog.AccessLogEntry;
 
 public class AccessLogIteratorTest {
     

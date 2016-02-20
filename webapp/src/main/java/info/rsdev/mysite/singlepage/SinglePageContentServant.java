@@ -6,6 +6,7 @@ import info.rsdev.mysite.common.domain.DefaultMenuGroup;
 import info.rsdev.mysite.common.domain.DefaultMenuItem;
 import info.rsdev.mysite.common.domain.MenuGroup;
 import info.rsdev.mysite.common.domain.MenuItem;
+import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
 import info.rsdev.mysite.exception.ConfigurationException;
 import info.rsdev.mysite.singlepage.domain.SinglePage;
 import info.rsdev.mysite.singlepage.domain.SinglePageCollection;
@@ -33,7 +34,7 @@ public class SinglePageContentServant implements RequestHandler, ConfigKeys {
     }
     
     @Override
-    public String handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
+    public ModuleHandlerResult handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (config == null) {
             throw new ConfigurationException(String.format("%s cannot be null", ModuleConfig.class.getSimpleName()));
@@ -48,12 +49,11 @@ public class SinglePageContentServant implements RequestHandler, ConfigKeys {
         SinglePageModel model = new SinglePageModel(singlepageConfig, content);
         model.setMenu(menu);
         
-        renderPage(response, model);
-        
-        return pageName;
+        String templateName = renderPage(response, model);
+        return new ModuleHandlerResult(templateName, pageName);
     }
     
-    private void renderPage(HttpServletResponse response, SinglePageModel pageModel) throws ServletException {
+    private String renderPage(HttpServletResponse response, SinglePageModel pageModel) throws ServletException {
         SinglePageModuleConfig singlepageConfig = pageModel.getConfig();
         ST template = singlepageConfig.getTemplate(pageModel.getSelectedMenuItemName());
         try {
@@ -67,6 +67,7 @@ public class SinglePageContentServant implements RequestHandler, ConfigKeys {
         } catch (IOException e) {
             throw new ServletException("Error occured during preparation of web page", e);
         }
+        return template==null?null:template.getName();
     }
     
     private String getPageName(SinglePageModuleConfig singlepageConfig, HttpServletRequest request) {

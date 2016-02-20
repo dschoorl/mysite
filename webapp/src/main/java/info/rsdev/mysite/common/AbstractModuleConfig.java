@@ -129,7 +129,6 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
     
     @Override
     public Logger getAccessLogger() {
-        //TODO: programmatically create logger per website that logs into website's data directory
         return LoggerFactory.getLogger("AccessLog");
     }
     
@@ -139,7 +138,6 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         if ((logDir == null) || logDir.isEmpty()) {
             throw new IllegalStateException("The value of Java system property 'MYSITE_LOG_DIR' is not set");
         }
-//        File logDir = new File(getString(SITE_DATA_DIR_KEY), "logs");
         return new File(logDir, "mysite-accesslog.log");
     }
     

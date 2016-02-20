@@ -1,16 +1,5 @@
 package info.rsdev.mysite.gallery;
 
-import info.rsdev.mysite.common.ModuleConfig;
-import info.rsdev.mysite.common.RequestHandler;
-import info.rsdev.mysite.common.domain.DefaultMenuGroup;
-import info.rsdev.mysite.common.domain.MenuGroup;
-import info.rsdev.mysite.common.domain.MenuItem;
-import info.rsdev.mysite.exception.ConfigurationException;
-import info.rsdev.mysite.gallery.domain.DefaultImage;
-import info.rsdev.mysite.gallery.domain.ImageCollection;
-import info.rsdev.mysite.gallery.domain.ImageGroup;
-import info.rsdev.mysite.gallery.domain.ImageGroupMenuItem;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,6 +14,19 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.stringtemplate.v4.ST;
 
+import info.rsdev.mysite.common.ModuleConfig;
+import info.rsdev.mysite.common.RequestHandler;
+import info.rsdev.mysite.common.domain.DefaultMenuGroup;
+import info.rsdev.mysite.common.domain.MenuGroup;
+import info.rsdev.mysite.common.domain.MenuItem;
+import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
+import info.rsdev.mysite.exception.ConfigurationException;
+import info.rsdev.mysite.gallery.domain.DefaultImage;
+import info.rsdev.mysite.gallery.domain.Image;
+import info.rsdev.mysite.gallery.domain.ImageCollection;
+import info.rsdev.mysite.gallery.domain.ImageGroup;
+import info.rsdev.mysite.gallery.domain.ImageGroupMenuItem;
+
 /**
  * This {@link RequestHandler} implementation is responsible for coordinating access to the images from the configured image
  * collection, using the configured template.
@@ -38,7 +40,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
     }
     
     @Override
-    public String handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
+    public ModuleHandlerResult handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         if (config == null) {
             throw new ConfigurationException(String.format("%s cannot be null", ModuleConfig.class.getSimpleName()));
@@ -106,16 +108,27 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
         
         int focussedImageIndex = getFocussedImageIndex(requestParams, imagesOnPage.size());
         model.setFocusOn(focussedImageIndex);
-        renderPage(response, model);
         
-        //return the main content of this page, currently this code fits only the slideshow template
-        if (imagesOnPage.size() > 0) {
-            return new File(imagesOnPage.get(0).getImagePath()).getName();
-        }
-        return null;
+        String templateName = renderPage(response, model);
+        String contentId = determineContentId(templateName, model);
+        return new ModuleHandlerResult(templateName, contentId);
     }
     
-    private void renderPage(HttpServletResponse response, GalleryPageModel pageModel) throws ServletException {
+    private String determineContentId(String templateName, GalleryPageModel model) {
+        //TODO: determine more intelligently; without knowledge of used template 
+        if (templateName.equals("/slideshow")) {
+            return new File(model.getImagesOnPage().get(0).getImagePath()).getName();
+        } else {
+            Image focussedImage = model.getFocussedImage();
+            if (focussedImage != null) {
+                return new File(focussedImage.getImagePath()).getName();
+            } else {
+                return "page" + model.getPageNumber();
+            }
+        }
+    }
+
+    private String renderPage(HttpServletResponse response, GalleryPageModel pageModel) throws ServletException {
         GalleryModuleConfig galleryConfig = pageModel.getConfig();
         ST template = galleryConfig.getTemplate(pageModel.getSelectedMenuItemName());
         try {
@@ -129,6 +142,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
         } catch (IOException e) {
             throw new ServletException("Error occured during preparation of web page", e);
         }
+        return template==null?null:template.getName();
     }
     
     private int getPageNumber(Map<String, String> requestParams) {

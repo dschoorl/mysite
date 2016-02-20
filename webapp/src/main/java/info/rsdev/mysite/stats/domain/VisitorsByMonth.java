@@ -1,7 +1,5 @@
 package info.rsdev.mysite.stats.domain;
 
-import info.rsdev.mysite.common.domain.AccessLogEntry;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -12,6 +10,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+
+import info.rsdev.mysite.common.domain.accesslog.AccessLogEntry;
 
 public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
     

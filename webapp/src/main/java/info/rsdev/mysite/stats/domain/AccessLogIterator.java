@@ -1,7 +1,5 @@
 package info.rsdev.mysite.stats.domain;
 
-import info.rsdev.mysite.common.domain.AccessLogEntry;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -17,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
+
+import info.rsdev.mysite.common.domain.accesslog.AccessLogEntry;
 
 /**
  * This class is not thread safe!
@@ -36,6 +36,7 @@ public class AccessLogIterator implements Iterator<AccessLogEntry> {
     private String[] nextLine = null;
     
     public AccessLogIterator(File logfile) throws FileNotFoundException {
+        logger.info("Processing logfile " + logfile.getAbsolutePath());
         csvReader = new CSVReader(new FileReader(logfile));
         readNextlineIntoBuffer();
     }

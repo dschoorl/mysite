@@ -62,18 +62,18 @@ $endif$
 </html>
 >>
 
+render_image(image, i0) ::= <<
+<div class="col-xs-4 col-sm-3 col-md-2">
+  <a href="$model.baseUrl$$i0$" class="thumbnail">
+    <img src="$model.config.contextPath$$image.thumbnailPath$" alt="thumbnail">
+  </a>
+</div>
+>>
+
 menugroup(menuGroup) ::= <<
   $if(!menuGroup.empty)$$menuGroup.menuItems:menuitem()$$endif$
 >>
 
 menuitem(item) ::= <<
   <li $if(item.active)$class="active"$endif$><a href="$item.targetUrl$">$item.caption$</a></li>
->>
-
-render_image(image, i0) ::= <<
-<div class="col-xs-2">
-  <a href="$model.baseUrl$$i0$" class="thumbnail">
-    <img src="$model.config.contextPath$$image.thumbnailPath$" alt="thumbnail">
-  </a>
-</div>
 >>

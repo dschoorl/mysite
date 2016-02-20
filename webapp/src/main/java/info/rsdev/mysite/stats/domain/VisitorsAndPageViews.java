@@ -1,9 +1,9 @@
 package info.rsdev.mysite.stats.domain;
 
-import info.rsdev.mysite.common.domain.AccessLogEntry;
-
 import java.util.HashSet;
 import java.util.Set;
+
+import info.rsdev.mysite.common.domain.accesslog.AccessLogEntry;
 
 public class VisitorsAndPageViews<T> {
     

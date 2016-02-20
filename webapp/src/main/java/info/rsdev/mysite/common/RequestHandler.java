@@ -1,13 +1,14 @@
 package info.rsdev.mysite.common;
 
-import info.rsdev.mysite.common.domain.MenuGroup;
-
 import java.io.IOException;
 import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import info.rsdev.mysite.common.domain.MenuGroup;
+import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
 
 /**
  * This interface defines the transfer point of a request from the servlet to the module
@@ -25,7 +26,7 @@ public interface RequestHandler {
      * @throws ServletException
      * @throws IOException
      */
-    public String handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
+    public ModuleHandlerResult handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException;
     
     /**
      * Get the menu items that this module will contribute to the webpage's navigation menu. When the module does
