@@ -123,7 +123,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
             if (focussedImage != null) {
                 return new File(focussedImage.getImagePath()).getName();
             } else {
-                return "page" + model.getPageNumber();
+                return model.getSelectedMenuItemName() + "_" + model.getPageNumber();
             }
         }
     }

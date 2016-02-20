@@ -47,7 +47,7 @@ public class AccessLogReport {
      * The ip numbers to ignore when they appear in the logfile. Crawlers are ignored automatically (a crawler is identified by
      * their User-Agent string. The list is read from the module configuration file.
      */
-    private Set<String> ipsToIgnore = new HashSet<>(Arrays.asList("87.212.128.27", "143.176.159.198", "127.0.0.1"));    //TODO: configure in properties file
+    private Set<String> ipsToIgnore = new HashSet<>(Arrays.asList("87.212.128.27", "143.176.159.198"/*, "127.0.0.1"*/));    //TODO: configure in properties file
     
     private final Map<String, VisitorsByMonth> visitorsByMonth = new HashMap<>();
     
