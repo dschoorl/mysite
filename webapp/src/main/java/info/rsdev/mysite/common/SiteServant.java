@@ -1,30 +1,32 @@
 package info.rsdev.mysite.common;
 
-import info.rsdev.mysite.common.domain.MenuGroup;
-import info.rsdev.mysite.common.domain.accesslog.AccessLogEntryV1;
-import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
-import info.rsdev.mysite.util.ServletUtils;
-
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.List;
 
-import javax.servlet.Servlet;
+import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class SiteServant implements Servlet {
+import info.rsdev.mysite.common.domain.MenuGroup;
+import info.rsdev.mysite.common.domain.accesslog.AccessLogEntryV1;
+import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
+import info.rsdev.mysite.util.ServletUtils;
+
+@Singleton
+public class SiteServant extends HttpServlet {
+    
+    private static final long serialVersionUID = 1L;
     
     private static final Logger logger = LoggerFactory.getLogger(SiteServant.class);
     private static final Logger GLOBAL_ACCESS_LOGGER = LoggerFactory.getLogger("AccessLog");
@@ -53,15 +55,13 @@ public class SiteServant implements Servlet {
             "\n" + 
             "  </section>\n";
     
-    private ServletConfig servletConfig  = null;
-    
     private ConfigDAI configDai = null;
     
     @Override
     public void init(ServletConfig config) throws ServletException {
         //Currently this servlet is not configurable -- this may change in the future
         logger.info(String.format("Initializing Servlet %s", getClass().getName()));
-        this.servletConfig = config;
+        super.init(config);
         this.configDai = new FileConfigDAO(getContextPath(config));
         logger.info(String.format("Platform default encoding: %s", Charset.defaultCharset()));
     }
@@ -73,16 +73,19 @@ public class SiteServant implements Servlet {
             servletContextPath = "/";
         }
         
+        String mapping = null;
         ServletRegistration registration = servletContext.getServletRegistration(config.getServletName());
-        Collection<String> mappings = registration.getMappings();
-        if (mappings.size() > 1) {
-            throw new ServletException(String.format("%s must only be mapped to a single url pattern: %s",
-                    getClass().getName(), mappings));
+        if (registration != null) {
+            Collection<String> mappings = registration.getMappings();
+            if (mappings.size() > 1) {
+                throw new ServletException(String.format("%s must only be mapped to a single url pattern: %s",
+                        getClass().getName(), mappings));
+            }
+            if (!mappings.isEmpty()) {
+                mapping = mappings.iterator().next();
+            }
         }
-        if (mappings.isEmpty()) {
-            return getContextPath(servletContextPath, null);
-        }
-        return getContextPath(servletContextPath, mappings.iterator().next());
+        return getContextPath(servletContextPath, mapping);
     }
     
     protected String getContextPath(String servletContextPath, String urlMapping) {
@@ -108,12 +111,7 @@ public class SiteServant implements Servlet {
     }
     
     @Override
-    public ServletConfig getServletConfig() {
-        return servletConfig;
-    }
-    
-    @Override
-    public void service(ServletRequest request, ServletResponse response) throws ServletException, IOException {
+    public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ModuleHandlerResult result = null;
         AccessLogEntryV1 logEntry = new AccessLogEntryV1().feedRequest((HttpServletRequest)request);
         ModuleConfig moduleConfig = null;
