@@ -1,6 +1,5 @@
 package info.rsdev.mysite.common.startup;
 
-import com.google.inject.persist.PersistFilter;
 import com.google.inject.servlet.ServletModule;
 
 import info.rsdev.mysite.common.SiteServant;
@@ -11,6 +10,6 @@ public class MysiteServletModule extends ServletModule {
     protected void configureServlets() {
         serve("/*").with(SiteServant.class);
         
-        filter("/*").through(PersistFilter.class);  //start JPA and provide a session per http request
+//        filter("/*").through(PersistFilter.class);  //start JPA and provide a session per http request
     }
 }
