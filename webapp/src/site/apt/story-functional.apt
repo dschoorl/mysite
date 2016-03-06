@@ -1,0 +1,31 @@
+    -----
+    Story telling
+    -----
+    Red Star Developement, Dave Schoorl
+    -----
+    -----
+    
+Story telling
+
+* Functional Requirements  
+
+  Story telling allows a website to publish stories and receive feedback on them from readers.
+  
+  A story can contain a preface, the story itself and an epilogue. The story is mandatory, preface and epilogue are optional. 
+Each of these parts can contain multiple pages. A page is served as a single webpage to the reader.
+
+  Feedback can be provided in two ways:
+  
+  * As inline comments in the story text (not in the preface or epilogue texts). These comments are hidden but can be made 
+    visible. Any reader can read the comments made by any other reader this way. Someone can indicate if they agree or disagree 
+    with a comment.
+    
+  * As feedback at the end of the story. This feedback can be replied to and spawn a discussion. However, only one level of 
+    discussion is supported. So you can not start a new thread within a thread. On the other side, multiple discussions can
+    be started in a response to a story. So it depends whether you provide new feedback or reply to feedback. Someone can 
+    indicate if they agree or disagree with a feedback.
+    
+    []
+  
+  A story can contain multiple versions. Each version can be published as well and be compared with each other. Comments and 
+feedback are stored per version.
