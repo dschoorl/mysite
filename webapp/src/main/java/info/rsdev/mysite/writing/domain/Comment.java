@@ -1,4 +1,4 @@
-package info.rsdev.mysite.story.domain;
+package info.rsdev.mysite.writing.domain;
 
 public class Comment extends Feedback {
     

@@ -1,8 +1,8 @@
-package info.rsdev.mysite.story.domain;
+package info.rsdev.mysite.writing.domain;
 
 import java.util.List;
 
-public class Story {
+public class Document {
     
     /**
      * E-mail address of the author to foreward {@link Comment} and {@link Feedback} to.

@@ -1,4 +1,4 @@
-package info.rsdev.mysite.story.domain;
+package info.rsdev.mysite.writing.domain;
 
 import java.util.List;
 

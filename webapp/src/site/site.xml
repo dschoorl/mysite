@@ -21,10 +21,11 @@
     <menu name="Requirements">
       <item name="Overview" href="functional-overview.html"/>
       <item name="Photo Gallery" href="gallery-functional.html"/>
-      <item name="Story telling" href="story-functional.html"/>
+      <item name="Writing" href="writing-functional.html"/>
       <item name="TODO" href="TODO.html"/>
     </menu>
     <menu name="User Documentation">
+      <item name="Install and setup" href="deploy.html"/>
       <item name="Creating a website" href="new-website.html"/>
       <item name="Photo Gallery" href="gallery-user.html"/>
     </menu>
