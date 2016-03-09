@@ -1,8 +1,5 @@
 package info.rsdev.mysite.common;
 
-import info.rsdev.mysite.exception.ConfigurationException;
-import info.rsdev.mysite.fixed.ConfigKeys;
-
 import java.io.File;
 import java.io.FileFilter;
 import java.io.FileReader;
@@ -17,8 +14,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import info.rsdev.mysite.common.startup.PropertiesModule.ContentRoot;
+import info.rsdev.mysite.common.startup.PropertiesModule.ContextPath;
+import info.rsdev.mysite.exception.ConfigurationException;
+import info.rsdev.mysite.fixed.ConfigKeys;
 
 /**
  * This implementation of {@link ConfigDAI} reads configuration from the filesystem at the location pointed to
@@ -40,28 +44,12 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
     
     private final String contextPath;
     
-    public FileConfigDAO(String contextPath) {
+    @Inject
+    public FileConfigDAO(@ContentRoot File contentRoot, @ContextPath String contextPath) {
+        this.contentRoot = contentRoot;
         this.contextPath = contextPath;
-        this.contentRoot = getContentRoot();
         logger.info(String.format("Using '%s' as data directory", contentRoot.getAbsolutePath()));
-        this.siteConfigByAlias = getSiteConfigByAlias(contentRoot, new File(contentRoot, "aliases.properties"));
-    }
-    
-    private File getContentRoot() {
-        File contentRoot  = null;
-        String dataDir = System.getenv(DATA_DIR_VARIABLE_NAME);
-        if (dataDir == null) {
-            dataDir = System.getProperty(dataDir);
-            if (dataDir == null) {
-                throw new IllegalStateException(String.format("%s is not set. Check setup documentation.", DATA_DIR_VARIABLE_NAME));
-            }
-        }
-        contentRoot = new File(dataDir);
-        if (!contentRoot.isDirectory()) {
-            throw new IllegalStateException(String.format("Directory '%s' pointed to by %s does not exist. Please create it manually.", 
-                    dataDir, DATA_DIR_VARIABLE_NAME));
-        }
-        return contentRoot;
+        this.siteConfigByAlias = getSiteConfigByAlias(this.contentRoot, new File(this.contentRoot, "aliases.properties"));
     }
     
     protected Map<String, SiteConfig> getSiteConfigByAlias(File contentRoot, File aliasesFile) {

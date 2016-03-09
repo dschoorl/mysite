@@ -31,8 +31,12 @@ public class PropertiesModule extends AbstractModule {
     
     private final File contentRoot;
     
-    public PropertiesModule(File contentRoot) {
+    private final String contextPath;
+    
+    public PropertiesModule(File contentRoot, String contextPath) {
         this.contentRoot = contentRoot;
+        logger.info(String.format("Using Servlet ContextPath: %s", contextPath));
+        this.contextPath = contextPath;
     }
 
     @Override
@@ -46,8 +50,16 @@ public class PropertiesModule extends AbstractModule {
         return this.contentRoot;
     }
     
+    @Provides @Singleton @ContextPath
+    public String provideServletContextPath() {
+        return this.contextPath;
+    }
+    
     @BindingAnnotation @Target({ FIELD, PARAMETER, METHOD }) @Retention(RUNTIME)
     public @interface ContentRoot {}
+
+    @BindingAnnotation @Target({ FIELD, PARAMETER, METHOD }) @Retention(RUNTIME)
+    public @interface ContextPath {}
 
     @BindingAnnotation @Target({ FIELD, PARAMETER, METHOD }) @Retention(RUNTIME)
     public @interface Jdbc {}

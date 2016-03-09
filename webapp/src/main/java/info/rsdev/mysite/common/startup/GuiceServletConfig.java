@@ -1,14 +1,17 @@
 package info.rsdev.mysite.common.startup;
 
 import java.io.File;
-import java.util.Properties;
+import java.util.Collection;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletRegistration;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Key;
 import com.google.inject.servlet.GuiceServletContextListener;
 
-import info.rsdev.mysite.common.startup.PropertiesModule.Jdbc;
+import info.rsdev.mysite.util.ServletUtils;
 
 public class GuiceServletConfig extends GuiceServletContextListener {
     
@@ -18,11 +21,13 @@ public class GuiceServletConfig extends GuiceServletContextListener {
      */
     public static final String DATA_DIR_VARIABLE_NAME = "MYSITE_DATA_DIR";
     
+    private String contextPath = "not defined";
+    
     @Override
     protected Injector getInjector() {
         File contentRoot = getContentRoot();
         return Guice.createInjector(
-                                    new PropertiesModule(contentRoot),
+                                    new PropertiesModule(contentRoot, contextPath),
                                     new MysiteServletModule(), 
                                     new MysiteJpaModule(contentRoot));
         
@@ -45,5 +50,55 @@ public class GuiceServletConfig extends GuiceServletContextListener {
         return contentRoot;
 
     }
+    
+    @Override
+    public void contextInitialized(ServletContextEvent servletContextEvent) {
+        ServletContext servletContext = servletContextEvent.getServletContext();
+        String servletContextPath = servletContext.getContextPath();
+        if (servletContextPath.isEmpty()) {
+            servletContextPath = "/";
+        }
+        
+        String mapping = null;
+        String servletName = null;    //config.getServletName();
+        ServletRegistration registration = servletContext.getServletRegistration(servletName);
+        if (registration != null) {
+            Collection<String> mappings = registration.getMappings();
+            if (mappings.size() > 1) {
+                throw new IllegalStateException(String.format("%s must only be mapped to a single url pattern: %s",
+                        getClass().getName(), mappings));
+                
+            }
+            if (!mappings.isEmpty()) {
+                mapping = mappings.iterator().next();
+            }
+        }
+        this.contextPath = getContextPath(servletContextPath, mapping);
+        super.contextInitialized(servletContextEvent);
+    }
+    
+    protected String getContextPath(String servletContextPath, String urlMapping) {
+        if (urlMapping != null) {
+            if (urlMapping.endsWith("/*")) {
+                urlMapping = urlMapping.substring(0, urlMapping.length() - 1);  //remove trailing astrix
+            } else if (!urlMapping.endsWith("/")){
+                //remove possible resource name mapping
+                String lastPart = urlMapping;
+                int slashIndex = urlMapping.lastIndexOf('/');
+                if (slashIndex > 1) {
+                    lastPart = urlMapping.substring(slashIndex);
+                }
+                if (lastPart.contains("*.") || lastPart.contains(".")) {
+                    urlMapping = urlMapping.substring(0, slashIndex + 1);   //include the forward slash
+                } else {
+                    urlMapping = urlMapping.concat("/");
+                }
+            }
+        }
+        
+        return ServletUtils.concatenatePaths(servletContextPath, urlMapping);
+    }
+    
+
 
 }

@@ -1,11 +1,9 @@
 package info.rsdev.mysite.writing;
 
+import java.util.Properties;
+
 import info.rsdev.mysite.common.AbstractModuleConfig;
 import info.rsdev.mysite.common.RequestHandler;
-import info.rsdev.mysite.util.ServletUtils;
-
-import java.io.File;
-import java.util.Properties;
 
 public class WritingModuleConfig extends AbstractModuleConfig implements ConfigKeys {
     

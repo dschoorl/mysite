@@ -3,14 +3,12 @@ package info.rsdev.mysite.common;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
-import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
-import javax.servlet.ServletRegistration;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -21,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import info.rsdev.mysite.common.domain.MenuGroup;
 import info.rsdev.mysite.common.domain.accesslog.AccessLogEntryV1;
 import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
-import info.rsdev.mysite.util.ServletUtils;
 
 @Singleton
 public class SiteServant extends HttpServlet {
@@ -57,70 +54,32 @@ public class SiteServant extends HttpServlet {
     
     private ConfigDAI configDai = null;
     
+    @Inject
+    public SiteServant(ConfigDAI configDao) {
+        this.configDai = configDao;
+    }
+    
     @Override
     public void init(ServletConfig config) throws ServletException {
         //Currently this servlet is not configurable -- this may change in the future
-        logger.info(String.format("Initializing Servlet %s", getClass().getName()));
+        logger.info(String.format("Initializing Servlet %s [%s]", getServletInfo(), getClass().getName()));
         super.init(config);
-        this.configDai = new FileConfigDAO(getContextPath(config));
         logger.info(String.format("Platform default encoding: %s", Charset.defaultCharset()));
-    }
-    
-    protected String getContextPath(ServletConfig config) throws ServletException {
-        ServletContext servletContext = config.getServletContext();
-        String servletContextPath = servletContext.getContextPath();
-        if (servletContextPath.isEmpty()) {
-            servletContextPath = "/";
-        }
-        
-        String mapping = null;
-        ServletRegistration registration = servletContext.getServletRegistration(config.getServletName());
-        if (registration != null) {
-            Collection<String> mappings = registration.getMappings();
-            if (mappings.size() > 1) {
-                throw new ServletException(String.format("%s must only be mapped to a single url pattern: %s",
-                        getClass().getName(), mappings));
-            }
-            if (!mappings.isEmpty()) {
-                mapping = mappings.iterator().next();
-            }
-        }
-        return getContextPath(servletContextPath, mapping);
-    }
-    
-    protected String getContextPath(String servletContextPath, String urlMapping) {
-        if (urlMapping != null) {
-            if (urlMapping.endsWith("/*")) {
-                urlMapping = urlMapping.substring(0, urlMapping.length() - 1);  //remove trailing astrix
-            } else if (!urlMapping.endsWith("/")){
-                //remove possible resource name mapping
-                String lastPart = urlMapping;
-                int slashIndex = urlMapping.lastIndexOf('/');
-                if (slashIndex > 1) {
-                    lastPart = urlMapping.substring(slashIndex);
-                }
-                if (lastPart.contains("*.") || lastPart.contains(".")) {
-                    urlMapping = urlMapping.substring(0, slashIndex + 1);   //include the forward slash
-                } else {
-                    urlMapping = urlMapping.concat("/");
-                }
-            }
-        }
-        
-        return ServletUtils.concatenatePaths(servletContextPath, urlMapping);
     }
     
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ModuleHandlerResult result = null;
-        AccessLogEntryV1 logEntry = new AccessLogEntryV1().feedRequest((HttpServletRequest)request);
+        AccessLogEntryV1 logEntry = new AccessLogEntryV1().feedRequest(request);
         ModuleConfig moduleConfig = null;
         try {
-            String modulePath = ((HttpServletRequest)request).getPathInfo();
+            String modulePath = request.getPathInfo();
             if (modulePath == null) {
                 modulePath = "/";
             }
-            logger.debug(String.format("Received request: %s", modulePath));
+            if (logger.isDebugEnabled()) {
+                logger.debug(String.format("Received request: %s", modulePath));
+            }
             
             String hostname = request.getServerName().toLowerCase();
             SiteConfig config = configDai.getConfig(hostname);
@@ -137,12 +96,10 @@ public class SiteServant extends HttpServlet {
                 writeUnavaliablePage((HttpServletResponse)response);
                 return;
             }
-            
             logEntry.feedModuleConfig(moduleConfig);
             if (logger.isDebugEnabled()) {
-                HttpServletRequest r = (HttpServletRequest)request;
                 logger.debug(String.format("%s will be serving %s request: %s [QuesryString=%s]", moduleConfig.getRequestHandler(), 
-                        r.getMethod(), r.getServletPath(), r.getQueryString()));
+                        request.getMethod(), request.getServletPath(), request.getQueryString()));
             }
             List<MenuGroup> menu = config.getMenu();
             result = moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest)request, (HttpServletResponse)response);
