@@ -34,4 +34,12 @@ public class Opinion {
     
     private Date dateExpressed = null;
     
+    public Opinion() {}
+    
+    protected Opinion(Opinion original) {
+        this.browserFingerprint = original.browserFingerprint;
+        this.dateExpressed = original.dateExpressed==null?null:(Date)original.dateExpressed.clone();
+        this.opinionType = original.opinionType;
+        this.registeredIpAddress = original.registeredIpAddress;
+    }
 }

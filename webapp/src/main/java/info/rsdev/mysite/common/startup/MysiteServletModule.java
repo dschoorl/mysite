@@ -6,6 +6,8 @@ import com.google.inject.servlet.ServletModule;
 import info.rsdev.mysite.common.ConfigDAI;
 import info.rsdev.mysite.common.FileConfigDAO;
 import info.rsdev.mysite.common.SiteServant;
+import info.rsdev.mysite.writing.dao.IReadingDao;
+import info.rsdev.mysite.writing.dao.StaticReadingDao;
 
 public class MysiteServletModule extends ServletModule {
 
@@ -16,6 +18,7 @@ public class MysiteServletModule extends ServletModule {
         filter("/*").through(PersistFilter.class);  //start JPA and provide a session per http request
         
         bind(ConfigDAI.class).to(FileConfigDAO.class);
+        bind(IReadingDao.class).to(StaticReadingDao.class);
     }
   
 }
