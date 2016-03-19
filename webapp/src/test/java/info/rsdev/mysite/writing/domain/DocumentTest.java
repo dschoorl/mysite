@@ -37,4 +37,23 @@ public class DocumentTest {
         assertTrue(this.documentUnderTest.getVersion("Latest").isPublished());
     }
     
+    @Test(expected=InconsistentDocumentException.class)
+    public void newVersionMustHaveUniqueNameWithinDocument() {
+        this.documentUnderTest.newVersion(FIRST_VERSION);
+    }
+    
+    @Test(expected=InconsistentDocumentException.class)
+    public void newCopyOfVersionMustHaveUniqueNameWithinDocument() {
+        this.documentUnderTest.newVersion(FIRST_VERSION, FIRST_VERSION);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void theNameOfANewVersionMustNotBeNull() {
+        this.documentUnderTest.newVersion(null);
+    }
+    
+    @Test(expected=IllegalArgumentException.class)
+    public void theNameOfANewVersionMustNotBeEmpty() {
+        this.documentUnderTest.newVersion("");
+    }
 }

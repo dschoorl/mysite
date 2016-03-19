@@ -27,6 +27,8 @@ public class Version {
      */
     private String title = null;
     
+    private String teaser = null;
+    
     private String summary = null;
     
     private Date dateFinished = null;
@@ -157,6 +159,15 @@ public class Version {
         return this;
     }
 
+    public String getTeaser() {
+        return teaser;
+    }
+
+    public Version setTeaser(String teaser) {
+        this.teaser = teaser;
+        return this;
+    }
+
     public Date getDateFinished() {
         return dateFinished==null?null:(Date)dateFinished.clone();
     }
@@ -173,15 +184,39 @@ public class Version {
     public List<Page> getPreface() {
         return Collections.unmodifiableList(preface);
     }
-
+    
+    public Page newPrefacePage() {
+        return appendPage(this.preface);
+    }
+    
+    public Page newPrefacePageAt(int index) {
+        return newPageAt(this.preface, index);
+    }
+    
     public List<Page> getContent() {
         return Collections.unmodifiableList(content);
     }
 
+    public Page newContentPage() {
+        return appendPage(this.content);
+    }
+    
+    public Page newContentPageAt(int index) {
+        return newPageAt(this.content, index);
+    }
+    
     public List<Page> getEpilogue() {
         return Collections.unmodifiableList(epilogue);
     }
-
+    
+    public Page newEpiloguePage() {
+        return appendPage(this.epilogue);
+    }
+    
+    public Page newEpiloguePageAt(int index) {
+        return newPageAt(this.epilogue, index);
+    }
+    
     public Map<String, String> getOtherProperties() {
         return Collections.unmodifiableMap(otherProperties);
     }
@@ -189,4 +224,21 @@ public class Version {
     public Date getDatePublished() {
         return datePublished==null?null:(Date)datePublished.clone();
     }
+
+    public String getBasedOnVersion() {
+        return basedOnVersion;
+    }
+
+    private Page appendPage(List<Page> pages) {
+        Page newPage = new Page();
+        pages.add(newPage);
+        return newPage;
+    }
+    
+    private Page newPageAt(List<Page> pages, int index) {
+        Page newPage = new Page();
+        pages.add(index, newPage);
+        return newPage;
+    }
+
 }
