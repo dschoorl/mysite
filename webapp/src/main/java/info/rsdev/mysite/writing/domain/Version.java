@@ -7,6 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A {@link Version} represents the formal version of a document, as it existed in time. The lifecycle of a version has a 
+ * number of consecutive stages; it is not possible for a Version to go back to a stage that it has already gone through. The
+ * stages are: draft, published and withdrawn. Only versions that are in draft can be edited. 
+ * in order for it to be active (see: {@link Document#getPublishedVersion()}. Only one version can be active at a time.
+ * The document 
+ */
 public class Version {
     
     /**
@@ -48,11 +55,15 @@ public class Version {
      */
     private String authorEmailAddress = null;
     
-    private ArrayList<Page> preface = null;
+    private ArrayList<Part> preface = null;
     
-    private ArrayList<Page> content = null;
+    /**
+     * The content of this version, consisting of a sequence of {@link Part} instances. These could include preface and
+     * epilogue parts, however, at present these are not acknowledged as parts that should be treated specifically.
+     */
+    private ArrayList<Part> content = null;
     
-    private ArrayList<Page> epilogue = null;
+    private ArrayList<Part> epilogue = null;
     
     private Map<String, String> otherProperties = null;
     
@@ -71,20 +82,20 @@ public class Version {
         this.author = original.author;
         this.authorEmailAddress = original.authorEmailAddress;
         this.content = new ArrayList<>(original.content.size());
-        for (Page page: original.content) {
-            this.content.add(new Page(page));
+        for (Part page: original.content) {
+            this.content.add(new Part(page));
         }
         this.dateFinished = null;
         this.datePublished = null;
         this.dateWithdrawn = null;
         this.epilogue = new ArrayList<>(original.epilogue.size());
-        for (Page page: original.epilogue) {
-            this.epilogue.add(new Page(page));
+        for (Part page: original.epilogue) {
+            this.epilogue.add(new Part(page));
         }
         this.otherProperties = new HashMap<>(original.otherProperties);
         this.preface = new ArrayList<>(original.preface.size());
-        for (Page page: original.preface) {
-            this.preface.add(new Page(page));
+        for (Part page: original.preface) {
+            this.preface.add(new Part(page));
         }
         this.summary = original.summary;
         this.summaryOfChanges = null;   //specific for this version
@@ -181,40 +192,40 @@ public class Version {
         return this;
     }
 
-    public List<Page> getPreface() {
+    public List<Part> getPreface() {
         return Collections.unmodifiableList(preface);
     }
     
-    public Page newPrefacePage() {
-        return appendPage(this.preface);
+    public Part newPrefacePart() {
+        return appendPart(this.preface);
     }
     
-    public Page newPrefacePageAt(int index) {
-        return newPageAt(this.preface, index);
+    public Part newPrefacePartAt(int index) {
+        return newPartAt(this.preface, index);
     }
     
-    public List<Page> getContent() {
+    public List<Part> getContent() {
         return Collections.unmodifiableList(content);
     }
 
-    public Page newContentPage() {
-        return appendPage(this.content);
+    public Part newContentPart() {
+        return appendPart(this.content);
     }
     
-    public Page newContentPageAt(int index) {
-        return newPageAt(this.content, index);
+    public Part newContentPartAt(int index) {
+        return newPartAt(this.content, index);
     }
     
-    public List<Page> getEpilogue() {
+    public List<Part> getEpilogue() {
         return Collections.unmodifiableList(epilogue);
     }
     
-    public Page newEpiloguePage() {
-        return appendPage(this.epilogue);
+    public Part newEpiloguePart() {
+        return appendPart(this.epilogue);
     }
     
-    public Page newEpiloguePageAt(int index) {
-        return newPageAt(this.epilogue, index);
+    public Part newEpiloguePartAt(int index) {
+        return newPartAt(this.epilogue, index);
     }
     
     public Map<String, String> getOtherProperties() {
@@ -228,17 +239,17 @@ public class Version {
     public String getBasedOnVersion() {
         return basedOnVersion;
     }
-
-    private Page appendPage(List<Page> pages) {
-        Page newPage = new Page();
-        pages.add(newPage);
-        return newPage;
+    
+    private Part appendPart(List<Part> parts) {
+        Part newPart = new Part();
+        parts.add(newPart);
+        return newPart;
     }
     
-    private Page newPageAt(List<Page> pages, int index) {
-        Page newPage = new Page();
-        pages.add(index, newPage);
-        return newPage;
+    private Part newPartAt(List<Part> parts, int index) {
+        Part newPart = new Part();
+        parts.add(index, newPart);
+        return newPart;
     }
 
 }

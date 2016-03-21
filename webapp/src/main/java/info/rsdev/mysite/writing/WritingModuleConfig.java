@@ -4,6 +4,7 @@ import java.util.Properties;
 
 import info.rsdev.mysite.common.AbstractModuleConfig;
 import info.rsdev.mysite.common.RequestHandler;
+import info.rsdev.mysite.writing.dao.StaticReadingDao;
 
 public class WritingModuleConfig extends AbstractModuleConfig implements ConfigKeys {
     
@@ -14,7 +15,7 @@ public class WritingModuleConfig extends AbstractModuleConfig implements ConfigK
     
     public WritingModuleConfig(Properties configProperties) {
         super(configProperties);
-        this.requestHandler = new WritingContentServant();
+        this.requestHandler = new WritingContentServant(new StaticReadingDao());
     }
     
     @Override
@@ -25,10 +26,10 @@ public class WritingModuleConfig extends AbstractModuleConfig implements ConfigK
     @Override
     public boolean hasHandlerFor(String requestPath) {
         
-        /* We can handle this request, when the requestpath starts with this module's mountpoint and it contains
-         * the template file.
+        /* We can handle this request, when the requestpath starts with this modules mountpoint and it contains
+         * the content file.
          */
-        return requestPath.equalsIgnoreCase(properties.getProperty(MOUNTPOINT_KEY));
+        return requestPath.toLowerCase().startsWith(properties.getProperty(MOUNTPOINT_KEY).toLowerCase());
     }
 
 }

@@ -1,0 +1,54 @@
+delimiters "$", "$"
+
+writing(model) ::= <<
+<!doctype html>
+<html>
+<head>
+  <title>$model.config.properties.("pageTitle")$</title>
+  <meta charset='UTF-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
+  $if(model.bootstrapLocation)$
+  <script src="$model.bootstrapLocation$js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="$model.bootstrapLocation$css/bootstrap.min.css">
+  $else$
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+  $endif$
+</head>
+<body class="container">
+<div class="row">
+<nav class="col-xs-2">
+  <ul class="nav nav-pills nav-stacked">
+    $model.menu:menugroup()$
+  </ul>
+</nav>
+<article class="col-xs-6">
+  <h1>$model.documentTitle$</h1>
+  <h2>$model.page.title$</h2>
+  $model.page.text$
+</article>
+<div class="col-xs-4"></div>
+</div>
+$if(model.copyrightNotice)$
+<footer class="row">
+  <p class="col-xs-10 col-xs-offset-2 well-lg">$model.copyrightNotice$</p>
+</footer>
+$endif$
+</body>
+</html>
+>>
+
+menugroup(menuGroup) ::= <<
+  $if(!menuGroup.empty)$$menuGroup.menuItems:menuitem()$$endif$
+>>
+
+menuitem(item) ::= <<
+  <li $if(item.active)$class="active"$endif$><a href="$item.targetUrl$">$item.caption$</a></li>
+>>
+
+render_image(image) ::= <<
+   <figure>
+     <img class="img-responsive" src="$image.imagePath$" />
+   </figure>
+>>

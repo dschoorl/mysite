@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -17,12 +18,21 @@ import info.rsdev.mysite.common.domain.MenuGroup;
 import info.rsdev.mysite.common.domain.MenuItem;
 import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
 import info.rsdev.mysite.exception.ConfigurationException;
+import info.rsdev.mysite.writing.dao.IReadingDao;
+import info.rsdev.mysite.writing.domain.Document;
 
 /**
  * This {@link RequestHandler} implementation is responsible for coordinating access to the images from the configured image
  * collection, using the configured template.
  */
 public class WritingContentServant implements RequestHandler, ConfigKeys {
+    
+    private final IReadingDao dao;
+    
+    @Inject
+    public WritingContentServant(IReadingDao dao) {
+        this.dao = dao;
+    }
     
     @Override
     public ModuleHandlerResult handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
@@ -36,7 +46,9 @@ public class WritingContentServant implements RequestHandler, ConfigKeys {
         }
         WritingModuleConfig writingConfig = (WritingModuleConfig) config;
         
-        WritingPageModel model = new WritingPageModel(writingConfig, null);
+        String path = request.getPathInfo().substring(("/"+ config.getMountPoint() + "/").length());
+        Document selectedDocument = dao.getDocumentByName(path);
+        WritingPageModel model = new WritingPageModel(writingConfig, selectedDocument);
         
         model.setMenu(menu);
         
@@ -46,7 +58,7 @@ public class WritingContentServant implements RequestHandler, ConfigKeys {
     }
     
     private String determineContentId(String templateName, WritingPageModel model) {
-        return null;
+        return model.getSelectedMenuItemName();
     }
 
     private String renderPage(HttpServletResponse response, WritingPageModel pageModel) throws ServletException {

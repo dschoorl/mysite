@@ -58,7 +58,8 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             ThumbnailCreator.make(resourceLocation);
         }
         if (!resourceLocation.toFile().isFile()) {
-            response.sendError(404, String.format("Resource %s does not exist", resourceLocation));
+            String resource = ServletUtils.concatenatePaths(request.getContextPath(), pathInfo);
+            response.sendError(404, String.format("Resource %s does not exist", resource));
             return null;
         }
         String mimeType = getMimeType(resourceLocation);

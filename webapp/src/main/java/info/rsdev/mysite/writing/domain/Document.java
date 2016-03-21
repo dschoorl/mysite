@@ -6,8 +6,7 @@ import java.util.Locale;
 import info.rsdev.mysite.writing.exceptions.InconsistentDocumentException;
 
 /**
- * This class represents the 
- * @author Dave Schoorl
+ * This class represents a single text document in a specific language and incorporates version management. 
  */
 public class Document {
     
