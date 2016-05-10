@@ -13,6 +13,15 @@
 		<filter-name>guiceFilter</filter-name>
 		<filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
 	</filter>
+	<servlet>
+		<servlet-name>greetServlet</servlet-name>
+		<servlet-class>info.rsdev.server.GreetingServiceImpl</servlet-class>
+	</servlet>
+
+	<servlet-mapping>
+		<servlet-name>greetServlet</servlet-name>
+		<url-pattern>/assetman/greet</url-pattern>
+	</servlet-mapping>
 
 	<filter-mapping>
 		<filter-name>guiceFilter</filter-name>
@@ -21,5 +30,6 @@
 
 	<welcome-file-list>
 		<welcome-file>mysite.html</welcome-file>
+		<welcome-file>assetman.html</welcome-file>
 	</welcome-file-list>
 </web-app>
