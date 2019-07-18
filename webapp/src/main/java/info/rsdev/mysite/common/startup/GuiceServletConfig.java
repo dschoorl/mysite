@@ -28,8 +28,7 @@ public class GuiceServletConfig extends GuiceServletContextListener {
         File contentRoot = getContentRoot();
         return Guice.createInjector(
                                     new PropertiesModule(contentRoot, contextPath),
-                                    new MysiteServletModule(), 
-                                    new MysiteJpaModule(contentRoot));
+                                    new MysiteServletModule());
         
     }
     

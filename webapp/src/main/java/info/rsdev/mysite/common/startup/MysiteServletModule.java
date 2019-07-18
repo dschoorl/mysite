@@ -1,6 +1,5 @@
 package info.rsdev.mysite.common.startup;
 
-import com.google.inject.persist.PersistFilter;
 import com.google.inject.servlet.ServletModule;
 
 import info.rsdev.mysite.common.ConfigDAI;
@@ -15,10 +14,7 @@ public class MysiteServletModule extends ServletModule {
     protected void configureServlets() {
         serve("/*").with(SiteServant.class);
         
-        filter("/*").through(PersistFilter.class);  //start JPA and provide a session per http request
-        
         bind(ConfigDAI.class).to(FileConfigDAO.class);
         bind(IReadingDao.class).to(StaticReadingDao.class);
     }
-  
 }
