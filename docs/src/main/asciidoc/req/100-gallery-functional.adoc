@@ -1,27 +1,20 @@
-    -----
-    Photo Gallery
-    -----
-    Red Star Development, Dave Schoorl
-    -----
-    -----
-    
-Photo Gallery
+= Photo Gallery
 
-* Functional Requirements  
+==  Functional Requirements  
 
-  The photo gallery allows a website to show a photo portfolio. Image formats supported are png, jpg and gif.
+The photo gallery allows a website to show a photo portfolio. Image formats supported are png, jpg and gif.
 
-  Images are grouped in a certain way. A group of images is called a collection. Images from a group are served per page. 
+Images are grouped in a certain way. A group of images is called a collection. Images from a group are served per page. 
 How many images are on a page is configurable. If a request comes in for a group without indicating the page number, serving 
 the first page is assumed. The ordering of the images is alphabetical by filename, ascending, case insensitive.
   
-  The module is capable of creating thumbnails of images if so configured. The size of the thumbnails is configurable.
-  
-  The module provides page information to the page template and information for each image that is on that page. Information 
+The module is capable of creating thumbnails of images if so configured. The size of the thumbnails is configurable.
+
+The module provides page information to the page template and information for each image that is on that page. Information 
 about the image contains at least the path to the image's thumnail (when applicable) and the path to the image. The information
 available per image may be extended in the future. 
 
-  The module contains two page templates:
+The module contains two page templates:
   
   * one that is capable of serving only one image at a time and supports browsing back and forth through the image collection. 
     When the module is configured to serve more than one image per page, an error message is displayed to the user instead of 
@@ -32,8 +25,6 @@ available per image may be extended in the future.
     of the grid for that page are reached, it will move to the next or previous page. In other words, browsing supersedes 
     the page boundaries. This template is called portfolio.
     
-  New page templates may be shiped in the future.
+New page templates may be shiped in the future.
 
-  Each group of images can be assigned their own template.
-  
-  
+Each group of images can be assigned their own template.

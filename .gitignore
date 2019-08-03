@@ -1,10 +1,15 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-.idea/
+# Ignore Intellij specific files and folders
+.idea
 *.iml
-/.classpath
-/.project
-/.settings/
-/target/
-/temp.txt
+
+# Ignore Eclipse specific files and folders
+.classpath
+.project
+.settings
+target
+
+#ignore temp-files
+temp.txt

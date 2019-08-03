@@ -1,0 +1,22 @@
+= Photo Gallery
+
+== Configuration
+
+The class info.rsdev.mysite.gallery.GalleryModuleConfig supports the following properties, on top of the 'set of general properties':
+
+|===
+| property name                     | Description
+| collection                        | The path to the image collection that will be displayed, relative 
+to the site's data directory
+| imagesPerPageHint                 | Positive integer number defining the number of images max. 
+displayed per page. The template could show less images per page as it so desires, but never more.
+| showRandomPageAsFirstPage         | Boolean value. When true, a random page will be displayed when 
+the request does not specify the image group and / or page number to display. When false, the first page 
+will be displayed on these occasions.
+| showThumbnails                    | Boolean value. When true, make thumbnails available to the 
+template, false otherwise
+| thumbnailsPerRow                  | Integer value. The default number of thumbnails a row can hold 
+in a grid of thumbnails, when there is none provided for a specific menuitem (see below).
+| <menuItemName>.thumbnailsPerRow   | Integer value. The number of thumbnails a row can hold in a 
+grid of thumbnails for a specific menuitem. When none provided, the default number is used (see above).
+|===

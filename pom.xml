@@ -8,6 +8,7 @@
     <name>mysite-pom</name>
     <modules>
         <module>webapp</module>
+        <module>docs</module>
     </modules>
     <properties>
         <servlet-api.version>3.0.1</servlet-api.version>

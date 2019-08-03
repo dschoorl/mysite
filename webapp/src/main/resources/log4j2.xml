@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
 	<Appenders>
-		<File name="AccessLog" fileName="${sys:MYSITE_LOG_DIR}/mysite-accesslog.log" />
+		<File name="AccessLog" fileName="${env:MYSITE_LOG_DIR:log}/mysite-accesslog.log" />
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n" />
 		</Console>
