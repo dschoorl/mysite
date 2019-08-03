@@ -9,13 +9,12 @@
     </parent>
     <artifactId>mysite</artifactId>
     <packaging>war</packaging>
-    <name>mysite</name>
+    <name>mysite-webapp</name>
 
     <dependencies>
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <scope>provided</scope>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -50,17 +49,14 @@
         <dependency>
             <groupId>org.imgscalr</groupId>
             <artifactId>imgscalr-lib</artifactId>
-            <version>4.2</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
-            <version>4.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.inject.extensions</groupId>
             <artifactId>guice-servlet</artifactId>
-            <version>4.0</version>
         </dependency>
     </dependencies>
 </project>
