@@ -1,4 +1,4 @@
-package info.rsdev.mysite.writing.dao;
+package info.rsdev.mysite.text.dao;
 
 import java.io.File;
 
@@ -6,7 +6,7 @@ import javax.inject.Inject;
 
 import info.rsdev.mysite.common.startup.PropertiesModule.ContentRoot;
 import info.rsdev.mysite.common.startup.PropertiesModule.ContextPath;
-import info.rsdev.mysite.writing.domain.Document;
+import info.rsdev.mysite.text.domain.DefaultDocument;
 
 public class FileReadingDao implements IReadingDao {
 
@@ -16,7 +16,7 @@ public class FileReadingDao implements IReadingDao {
     }
 
     @Override
-    public Document getDocumentByName(String name) {
+    public DefaultDocument getDocumentByName(String name) {
         return null;
     }
 

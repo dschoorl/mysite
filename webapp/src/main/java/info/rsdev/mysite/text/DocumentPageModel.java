@@ -1,17 +1,17 @@
-package info.rsdev.mysite.writing;
+package info.rsdev.mysite.text;
 
 import info.rsdev.mysite.common.domain.BasicPageModel;
-import info.rsdev.mysite.writing.domain.Document;
+import info.rsdev.mysite.text.domain.DefaultDocument;
 
 /**
  * The information available to templates to generate the html page of one or
  * more documents. This is a DTO (Data Transfer Object).
  */
-public class WritingPageModel extends BasicPageModel<WritingModuleConfig> {
+public class DocumentPageModel extends BasicPageModel<DocumentModuleConfig> {
 
-    private final Document selectedDocument;
+    private final DefaultDocument selectedDocument;
 
-    public WritingPageModel(WritingModuleConfig config, Document selectedDocument) {
+    public DocumentPageModel(DocumentModuleConfig config, DefaultDocument selectedDocument) {
         super(config, selectedDocument.getTechnicalName());
         this.selectedDocument = selectedDocument;
     }

@@ -61,7 +61,7 @@ public abstract class DefaultResourceCollection<G extends ResourceGroup<T>, T ex
         return Collections.emptyList();
     }
 
-    protected G getResourceGroup(String groupName) {
+    public G getResourceGroup(String groupName) {
         for (G candidate : this.resourceGroups) {
             if (candidate.getName().equals(groupName)) {
                 return candidate;
@@ -102,8 +102,8 @@ public abstract class DefaultResourceCollection<G extends ResourceGroup<T>, T ex
         if (!subdirsOnly) {
             // take inventory of the resources in the given directory
             G newGroup = createAndAddNewGroup(groupDir.getName());
-            for (File imagePath : groupDir.listFiles(getResourceFilter())) {
-                newGroup.createAndAddNewResource(imagePath);
+            for (File resourcePath : groupDir.listFiles(getResourceFilter())) {
+                newGroup.createAndAddNewResource(resourcePath);
             }
         }
 

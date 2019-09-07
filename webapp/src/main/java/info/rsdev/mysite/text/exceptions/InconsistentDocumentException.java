@@ -1,4 +1,4 @@
-package info.rsdev.mysite.writing.exceptions;
+package info.rsdev.mysite.text.exceptions;
 
 public class InconsistentDocumentException extends RuntimeException {
 

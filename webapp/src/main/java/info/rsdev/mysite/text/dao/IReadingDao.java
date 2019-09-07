@@ -1,6 +1,6 @@
-package info.rsdev.mysite.writing.dao;
+package info.rsdev.mysite.text.dao;
 
-import info.rsdev.mysite.writing.domain.Document;
+import info.rsdev.mysite.text.domain.DefaultDocument;
 
 /**
  * This interface defines the interactions with the datalayer for the purpose of presenting the reader the possibility to read 
@@ -8,6 +8,6 @@ import info.rsdev.mysite.writing.domain.Document;
  */
 public interface IReadingDao {
 
-    Document getDocumentByName(String name);
+    DefaultDocument getDocumentByName(String name);
     
 }

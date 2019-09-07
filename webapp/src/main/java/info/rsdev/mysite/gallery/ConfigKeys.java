@@ -7,11 +7,6 @@ import info.rsdev.mysite.common.DefaultConfigKeys;
  */
 public interface ConfigKeys extends DefaultConfigKeys {
     
-    /**
-     * The path relative to the site data directory that is the root directory for this image collection
-     */
-    public static final String COLLECTION_PATH_KEY = "collection";
-    
     public static final String SHOW_THUMBNAILS_KEY = "showThumbnails";
     
     public static final String IMAGES_PER_PAGE_HINT_KEY = "imagesPerPageHint";

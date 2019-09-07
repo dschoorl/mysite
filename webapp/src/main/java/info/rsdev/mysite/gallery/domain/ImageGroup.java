@@ -34,12 +34,6 @@ public class ImageGroup implements ResourceGroup<DefaultImage>, Comparable<Image
         return Collections.unmodifiableList(new ArrayList<>(this.images));
     }
 
-    // public void addImages(Collection<DefaultImage> newImages) {
-    // if (newImages != null) {
-    // this.images = merge(this.images, newImages);
-    // }
-    // }
-
     @Override
     public DefaultImage createAndAddNewResource(File resourcePath) {
         DefaultImage newImage = new DefaultImage(this, resourcePath);

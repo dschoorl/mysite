@@ -1,4 +1,4 @@
-package info.rsdev.mysite.writing;
+package info.rsdev.mysite.text;
 
 import info.rsdev.mysite.common.DefaultConfigKeys;
 

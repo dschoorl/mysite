@@ -5,8 +5,8 @@ import com.google.inject.servlet.ServletModule;
 import info.rsdev.mysite.common.ConfigDAI;
 import info.rsdev.mysite.common.FileConfigDAO;
 import info.rsdev.mysite.common.SiteServant;
-import info.rsdev.mysite.writing.dao.FileReadingDao;
-import info.rsdev.mysite.writing.dao.IReadingDao;
+import info.rsdev.mysite.text.dao.FileReadingDao;
+import info.rsdev.mysite.text.dao.IReadingDao;
 
 public class MysiteServletModule extends ServletModule {
 

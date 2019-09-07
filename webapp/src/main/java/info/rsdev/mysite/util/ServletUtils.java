@@ -15,6 +15,8 @@ public abstract class ServletUtils {
     
     private static final Logger logger = LoggerFactory.getLogger(ServletUtils.class);
     
+    private static final String PATH_SEPARATOR = "/";
+    
     /**
      * do not instantiate this bag of static utility methods
      */
@@ -50,5 +52,18 @@ public abstract class ServletUtils {
         if (path1.endsWith("/")) { path1 = path1.substring(0, path1.length() - 1); }
         if (path2.startsWith("/")) { path2 = path2.substring(1); }
         return path1.concat("/").concat(path2);
+    }
+    
+    public static String getFirstPathElement(String path) {
+        if ((path == null) || path.isEmpty()) {
+            return null;
+        }
+        int indexOfSlash = path.indexOf(PATH_SEPARATOR);
+        if (indexOfSlash < 0) {
+            return path;
+        } else if (indexOfSlash == 0) {
+            return getFirstPathElement(path.substring(1));
+        }
+        return path.substring(0, indexOfSlash);
     }
 }
