@@ -33,7 +33,7 @@ $if(model.focussedImage)$
         </div>
         <div class="modal-body">
           <center>
-          <img src="$model.config.contextPath$$model.focussedImage.imagePath$">
+          <img src="$model.config.contextPath$$model.focussedImage.path$">
           </center>
         </div>
       </div><!-- /.modal-content -->

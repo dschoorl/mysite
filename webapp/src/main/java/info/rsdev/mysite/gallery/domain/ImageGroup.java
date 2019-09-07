@@ -1,26 +1,27 @@
 package info.rsdev.mysite.gallery.domain;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-public class ImageGroup implements Comparable<ImageGroup> {
-    
+import info.rsdev.mysite.common.domain.resources.ResourceGroup;
+
+public class ImageGroup implements ResourceGroup<DefaultImage>, Comparable<ImageGroup> {
+
     private final ImageCollection collection;
-    
+
     private final String groupName;
-    
-    private List<DefaultImage> images = new LinkedList<>();
-    
+
+    private SortedSet<DefaultImage> images = new TreeSet<DefaultImage>();
+
     public ImageGroup(ImageCollection collection, String name) {
         this.collection = collection;
         this.groupName = name;
     }
-    
+
     public String getName() {
         return groupName;
     }
@@ -28,42 +29,29 @@ public class ImageGroup implements Comparable<ImageGroup> {
     public ImageCollection getCollection() {
         return this.collection;
     }
-    
-    public List<DefaultImage> getImages() {
-        return this.images;
-    }
-    
-    public void addImages(Collection<DefaultImage> newImages) {
-        if (newImages != null) {
-            this.images = merge(this.images, newImages);
-        }
+
+    public List<DefaultImage> getAll() {
+        return Collections.unmodifiableList(new ArrayList<>(this.images));
     }
 
-    public ImageGroup merge(ImageGroup other) {
-        if (other != null) {
-            if (!other.equals(this)) {
-                //ImageGroups can be merged when they stem from the same collection and have the same name
-                throw new IllegalArgumentException(String.format("Cannot merge incompatible ImageGroups: %s vs. %s",
-                        this, other));
-            }
-            this.images = merge(this.images, other.images);
-        }
-        return this;
-    }
-    
-    private List<DefaultImage> merge(Collection<DefaultImage> master, Collection<DefaultImage> other) {
-        Set<DefaultImage> set = new HashSet<>(master.size() + other.size());
-        set.addAll(master);
-        set.addAll(other);
+    // public void addImages(Collection<DefaultImage> newImages) {
+    // if (newImages != null) {
+    // this.images = merge(this.images, newImages);
+    // }
+    // }
 
-        List<DefaultImage> result = new ArrayList<>(set);
-        Collections.sort(result);
-        return result;
+    @Override
+    public DefaultImage createAndAddNewResource(File resourcePath) {
+        DefaultImage newImage = new DefaultImage(this, resourcePath);
+        this.images.add(newImage);
+        return newImage;
     }
-    
+
     @Override
     public int compareTo(ImageGroup o) {
-        if (o == null) { return -1; }
+        if (o == null) {
+            return -1;
+        }
         return this.groupName.compareTo(o.groupName);
     }
 
@@ -90,7 +78,7 @@ public class ImageGroup implements Comparable<ImageGroup> {
         } else if (!groupName.equals(other.groupName)) return false;
         return true;
     }
-    
+
     @Override
     public String toString() {
         return String.format("ImageGroup[collection=%s, name=%s, size=%d]", collection.getPath(), groupName, images.size());

@@ -1,14 +1,26 @@
-= Overview of the Funcional Requirements
+= Overview of the Functional Requirements
 
 The MySite application is a web application that supports serving multiple sites, each using their own 
 hostname and configuration. The application offers various functionalities, organized in modules, E.g. meshup, 
 blogging, photo gallery, story telling etc. 
 
 Each site chooses the modules that it wants and the url path that the module is mounted on. Each module has it's own 
-site specific configuration.
+site specific configuration and requirements.
 
 A module is highly configurable and the configuration determines which information is made available
 to the web page. Which pieces of that information is used on a page and how, is determined 
 by the applied page template. One or more page templates are supplied per module, but each site can 
 use it's own custom template if it so desires. The same goes for css stylesheets. Which template and which 
 stylesheet to use, is configured in the module's site specific configuration.
+
+Below you find an overview of the modules implemented and a short summary of their purpose:
+
+|===
+| *modulename* | *purpose* 
+| gallery | Provide a view on a collection of images. It offers two templates: portfolio and slideshow.
+| single page | Show the contents of a single file
+| writing | Provide a view on a collection of text documents. The reader is invited to provide feedback.
+| fixed content | Helper module to serve static content in files from a folder in a data directory. This can 
+be text and images. When a thumbnail is required for an image, it can be created on the fly, if it does not yet exist
+| statistics | Provide a view on the access logs of the server for a specific website
+|===

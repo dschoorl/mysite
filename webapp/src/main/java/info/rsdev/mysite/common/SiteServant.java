@@ -22,51 +22,52 @@ import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
 
 @Singleton
 public class SiteServant extends HttpServlet {
-    
+
     private static final long serialVersionUID = 1L;
-    
+
     private static final Logger logger = LoggerFactory.getLogger(SiteServant.class);
     private static final Logger GLOBAL_ACCESS_LOGGER = LoggerFactory.getLogger("AccessLog");
-    private static final String GLOBAL_UNAVAILABLE_PAGE = 
-            "<!DOCTYPE html>\n" + 
-            " <head>\n" + 
-            "  <style>\n" + 
-            "    body {\n" + 
-            "        background: grey;\n" + 
-            "        font-family: Arial;\n" +
-            "        font-size: 36px }" +
-            "    section {\n" + 
-            "        background: grey;\n" + 
-            "        color: black;\n" + 
-            "        border-radius: 1em;\n" + 
-            "        padding: 1em;\n" + 
-            "        position: absolute;\n" + 
-            "        top: 50%;\n" + 
-            "        left: 50%;\n" + 
-            "        margin-right: -50%;\n" + 
-            "        transform: translate(-50%, -50%) }\n" + 
-            "  </style></head>\n" + 
-            "  <section>\n" + 
-            "\n" + 
-            "  <p>TEMPORARILY<br />&nbsp;UNAVAILABLE</p>\n" + 
-            "\n" + 
-            "  </section>\n";
-    
+    private static final String GLOBAL_UNAVAILABLE_PAGE =
+            "<!DOCTYPE html>\n" +
+                    " <head>\n" +
+                    "  <style>\n" +
+                    "    body {\n" +
+                    "        background: grey;\n" +
+                    "        font-family: Arial;\n" +
+                    "        font-size: 36px }" +
+                    "    section {\n" +
+                    "        background: grey;\n" +
+                    "        color: black;\n" +
+                    "        border-radius: 1em;\n" +
+                    "        padding: 1em;\n" +
+                    "        position: absolute;\n" +
+                    "        top: 50%;\n" +
+                    "        left: 50%;\n" +
+                    "        margin-right: -50%;\n" +
+                    "        transform: translate(-50%, -50%) }\n" +
+                    "  </style></head>\n" +
+                    "  <section>\n" +
+                    "\n" +
+                    "  <p>TEMPORARILY<br />&nbsp;UNAVAILABLE</p>\n" +
+                    "\n" +
+                    "  </section>\n";
+
     private ConfigDAI configDai = null;
-    
+
     @Inject
     public SiteServant(ConfigDAI configDao) {
         this.configDai = configDao;
     }
-    
+
     @Override
     public void init(ServletConfig config) throws ServletException {
-        //Currently this servlet is not configurable -- this may change in the future
+        // Currently this servlet is not configurable -- this may change in the
+        // future
         logger.info(String.format("Initializing Servlet %s [%s]", getServletInfo(), getClass().getName()));
         super.init(config);
         logger.info(String.format("Platform default encoding: %s", Charset.defaultCharset()));
     }
-    
+
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ModuleHandlerResult result = null;
@@ -80,49 +81,54 @@ public class SiteServant extends HttpServlet {
             if (logger.isDebugEnabled()) {
                 logger.debug(String.format("Received request: %s", modulePath));
             }
-            
+
             String hostname = request.getServerName().toLowerCase();
             SiteConfig config = configDai.getConfig(hostname);
-            
-            //get path into module context and then get page for path from the appropriate module
+
+            // get path into module context and then get page for path from the
+            // appropriate module
             moduleConfig = config.getModuleConfig(modulePath);
             if (moduleConfig == null) {
                 logger.error(String.format("No module configered to serve request '%s'", modulePath));
-                ((HttpServletResponse)response).sendError(404);
+                ((HttpServletResponse) response).sendError(404);
                 return;
             }
             if (moduleConfig.isDisabled()) {
                 logger.info(String.format("%s is disabled for %s; serving unavailable page", moduleConfig, hostname));
-                writeUnavaliablePage((HttpServletResponse)response);
+                writeUnavaliablePage((HttpServletResponse) response);
                 return;
             }
             logEntry.feedModuleConfig(moduleConfig);
             if (logger.isDebugEnabled()) {
-                logger.debug(String.format("%s will be serving %s request: %s [QuesryString=%s]", moduleConfig.getRequestHandler(), 
+                logger.debug(String.format("%s will be serving %s request: %s [QuesryString=%s]", moduleConfig.getRequestHandler(),
                         request.getMethod(), request.getServletPath(), request.getQueryString()));
             }
             List<MenuGroup> menu = config.getMenu();
-            result = moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest)request, (HttpServletResponse)response);
+            result = moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest) request,
+                    (HttpServletResponse) response);
+            if (result.equals(ModuleHandlerResult.NO_CONTENT)) {
+                response.setStatus(404);
+            }
         } catch (RuntimeException e) {
-            ((HttpServletResponse)response).setStatus(500);
+            ((HttpServletResponse) response).setStatus(500);
             throw e;
         } finally {
-            //write entry to access logfile
+            // write entry to access logfile
             Logger accessLogger = null;
             if ((moduleConfig == null) || (moduleConfig.getAccessLogger() == null)) {
                 accessLogger = GLOBAL_ACCESS_LOGGER;
             } else {
                 accessLogger = moduleConfig.getAccessLogger();
             }
-            logEntry.markFinished(result, ((HttpServletResponse)response).getStatus());
+            logEntry.markFinished(result, ((HttpServletResponse) response).getStatus());
             if (!logEntry.ignoreMe()) {
                 accessLogger.info(logEntry.toString());
             }
         }
     }
-    
+
     protected void writeUnavaliablePage(HttpServletResponse response) throws ServletException {
-        //not tailored to visited module or website
+        // not tailored to visited module or website
         response.setContentType("text/html");
         try {
             PrintWriter out = response.getWriter();
@@ -132,15 +138,15 @@ public class SiteServant extends HttpServlet {
             throw new ServletException("Cannot write unavailable page to HttpServletResponse", e);
         }
     }
-    
+
     @Override
     public String getServletInfo() {
         return "SiteServant";
     }
-    
+
     @Override
     public void destroy() {
         logger.info("Destroying servlet ".concat(getServletInfo()));
     }
-    
+
 }

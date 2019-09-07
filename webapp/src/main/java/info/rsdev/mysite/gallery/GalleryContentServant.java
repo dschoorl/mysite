@@ -57,7 +57,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
         // query images to show
         String groupName = requestParams.get(IMAGEGROUP_PARAM);
         if (groupName == null) {
-            List<ImageGroup> groups = imageCollection.getImageGroups();
+            List<ImageGroup> groups = imageCollection.getGroups();
             if (!groups.isEmpty()) {
                 if (galleryConfig.showRandomFirstPage()) {
                     // randomly generate which group to show
@@ -74,7 +74,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
                 }
             }
         }
-        List<DefaultImage> images = imageCollection.getImages(groupName);
+        List<DefaultImage> images = imageCollection.getAll(groupName);
         int imageCount = images.size();
         
         // construct page
@@ -117,11 +117,11 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
     private String determineContentId(String templateName, GalleryPageModel model) {
         //TODO: determine more intelligently; without knowledge of used template 
         if (templateName.equals("/slideshow")) {
-            return new File(model.getImagesOnPage().get(0).getImagePath()).getName();
+            return new File(model.getImagesOnPage().get(0).getPath()).getName();
         } else {
             Image focussedImage = model.getFocussedImage();
             if (focussedImage != null) {
-                return new File(focussedImage.getImagePath()).getName();
+                return new File(focussedImage.getPath()).getName();
             } else {
                 return model.getSelectedMenuItemName() + "_" + model.getPageNumber();
             }
@@ -197,7 +197,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
     
     @Override
     public MenuGroup getMenuItems(ModuleConfig config) {
-        List<ImageGroup> imageGroups = this.imageCollection.getImageGroups();
+        List<ImageGroup> imageGroups = this.imageCollection.getGroups();
         List<String> itemFilter = config.getVisibleMenuItems();
         List<MenuItem> visibleItems = null;
         if (itemFilter == null) {

@@ -12,8 +12,8 @@ public class FocussedImage implements Image {
     }
 
     @Override
-    public String getImagePath() {
-        return this.image.getImagePath();
+    public String getPath() {
+        return this.image.getPath();
     }
 
     @Override

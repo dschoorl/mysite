@@ -1,5 +1,9 @@
 = Single Page
 
+== Purpose
+The single page module creates a menu item for every text document in the mounted folder and
+provides direct access to the associated content.
+
 == Configuration
 
 The class info.rsdev.mysite.singlepage.SinglePageModuleConfig supports the following properties, on top of the 'set of general properties':

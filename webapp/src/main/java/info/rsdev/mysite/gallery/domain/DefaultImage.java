@@ -3,7 +3,8 @@ package info.rsdev.mysite.gallery.domain;
 import java.io.File;
 
 /**
- * This class represents an image that is present on this server
+ * This class represents an image that is present on this server. It is dthe default implementation
+ * for the {@link Image} definition
  */
 public class DefaultImage implements Comparable<DefaultImage>, Image {
     
@@ -31,7 +32,7 @@ public class DefaultImage implements Comparable<DefaultImage>, Image {
      * Get the path to the image on this server, relative to the internet hostname
      */
     @Override
-    public String getImagePath() {
+    public String getPath() {
         return this.imagePath;
     }
     

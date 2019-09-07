@@ -1,11 +1,8 @@
 package info.rsdev.mysite.gallery.domain;
 
-public interface Image {
-    
-    /**
-     * Get the path to the image on this server, relative to the internet hostname
-     */
-    String getImagePath();
+import info.rsdev.mysite.common.domain.resources.PathResource;
+
+public interface Image extends PathResource {
     
     /**
      * Get the path to the thumbnail on this server, relative to the internet hostname. It is calculated from the

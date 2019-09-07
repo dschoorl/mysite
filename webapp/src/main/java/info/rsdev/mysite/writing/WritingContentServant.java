@@ -22,41 +22,54 @@ import info.rsdev.mysite.writing.dao.IReadingDao;
 import info.rsdev.mysite.writing.domain.Document;
 
 /**
- * This {@link RequestHandler} implementation is responsible for coordinating access to the images from the configured image
- * collection, using the configured template.
+ * This {@link RequestHandler} implementation is responsible for coordinating
+ * access to the images from the configured image collection, using the
+ * configured template.
  */
 public class WritingContentServant implements RequestHandler, ConfigKeys {
-    
+
     private final IReadingDao dao;
-    
+
     @Inject
     public WritingContentServant(IReadingDao dao) {
         this.dao = dao;
     }
-    
+
     @Override
-    public ModuleHandlerResult handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
+    public ModuleHandlerResult handle(ModuleConfig moduleConfig, List<MenuGroup> menu, HttpServletRequest request,
+            HttpServletResponse response)
             throws ServletException, IOException {
-        if (config == null) {
+        if (moduleConfig == null) {
             throw new ConfigurationException(String.format("%s cannot be null", ModuleConfig.class.getSimpleName()));
         }
-        if (!(config instanceof WritingModuleConfig)) {
+        if (!(moduleConfig instanceof WritingModuleConfig)) {
             throw new ConfigurationException(String.format("Expected was config of type %, but encountered was %s. please check"
-                    + "the value of property '%s'", WritingModuleConfig.class.getSimpleName(), config, MODULECONFIGTYPE_KEY));
+                    + "the value of property '%s'", WritingModuleConfig.class.getSimpleName(), moduleConfig, MODULECONFIGTYPE_KEY));
         }
-        WritingModuleConfig writingConfig = (WritingModuleConfig) config;
-        
-        String path = request.getPathInfo().substring(("/"+ config.getMountPoint() + "/").length());
+        WritingModuleConfig writingConfig = (WritingModuleConfig) moduleConfig;
+
+        String path = getPathPartAfterMountpoint(request.getPathInfo(), moduleConfig.getMountPoint());
         Document selectedDocument = dao.getDocumentByName(path);
+        if (selectedDocument == null) {
+            return ModuleHandlerResult.NO_CONTENT;
+        }
         WritingPageModel model = new WritingPageModel(writingConfig, selectedDocument);
-        
+
         model.setMenu(menu);
-        
+
         String templateName = renderPage(response, model);
         String contentId = determineContentId(templateName, model);
         return new ModuleHandlerResult(templateName, contentId);
     }
-    
+
+    private String getPathPartAfterMountpoint(String pathInfo, String mountpoint) {
+        mountpoint = "/" + mountpoint;
+        if (pathInfo.startsWith(mountpoint)) {
+            return pathInfo.substring(mountpoint.length());
+        }
+        return null;
+    }
+
     private String determineContentId(String templateName, WritingPageModel model) {
         return model.getSelectedMenuItemName();
     }
@@ -75,9 +88,9 @@ public class WritingContentServant implements RequestHandler, ConfigKeys {
         } catch (IOException e) {
             throw new ServletException("Error occured during preparation of web page", e);
         }
-        return template==null?null:template.getName();
+        return template == null ? null : template.getName();
     }
-    
+
     @Override
     public MenuGroup getMenuItems(ModuleConfig config) {
         List<MenuItem> visibleItems = new ArrayList<>();
@@ -85,5 +98,5 @@ public class WritingContentServant implements RequestHandler, ConfigKeys {
         int menuPriority = config.getMenuSortingPriority();
         return new DefaultMenuGroup(visibleItems, menuTitle, menuPriority);
     }
-    
+
 }
