@@ -11,6 +11,7 @@
         <module>docs</module>
     </modules>
     <properties>
+        <asciidoctorj.version>2.1.0</asciidoctorj.version>
         <guice.version>4.2.2</guice.version>
         <imgscalr.version>4.2</imgscalr.version>
         <junit4.version>4.12</junit4.version>
@@ -52,6 +53,11 @@
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
                 <version>${junit4.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctorj</artifactId>
+                <version>${asciidoctorj.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.antlr</groupId>

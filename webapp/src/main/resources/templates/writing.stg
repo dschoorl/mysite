@@ -25,8 +25,7 @@ writing(model) ::= <<
 </nav>
 <article class="col-xs-6">
   <h1>$model.documentTitle$</h1>
-  <h2>$model.page.title$</h2>
-  $model.page.text$
+  $model.page$
 </article>
 <div class="col-xs-4"></div>
 </div>

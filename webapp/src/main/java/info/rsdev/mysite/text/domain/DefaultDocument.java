@@ -3,13 +3,15 @@ package info.rsdev.mysite.text.domain;
 import java.io.File;
 import java.util.Locale;
 
+import info.rsdev.mysite.text.asciidoc.AsciidocConverter;
+
 /**
  * This class represents a single text document in a specific language.
  */
 public class DefaultDocument implements Document, Comparable<DefaultDocument> {
 
     public static final String METADATA_INDICATOR = "_meta";
-    
+
     private static final String EXTENSION_SEPARATOR = ".";
 
     /**
@@ -26,26 +28,38 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
      */
     private final String documentName;
 
-    private final DocumentGroup imageGroup;
+    private final DocumentGroup documentGroup;
 
     private final String documentPath;
 
+    private final File document;
+
     public DefaultDocument(DocumentGroup group, File document) {
-        this.imageGroup = group;
+        this.document = document;
+        this.documentGroup = group;
         this.documentName = extractName(document);
 
         // calculate the imagePath relative to the collectionPath
-        String collectionPath = this.imageGroup.getCollection().getPath();
-        String doumentPath = document.getAbsolutePath();
-        int index = doumentPath.indexOf(collectionPath);
-        this.documentPath = doumentPath.substring(index);
+        String collectionPath = this.documentGroup.getCollection().getPath();
+        String documentPath = document.getAbsolutePath();
+        int index = documentPath.indexOf(collectionPath);
+        this.documentPath = documentPath.substring(index);
     }
-    
+
     private String extractName(File document) {
         String name = document.getName();
         int index = name.lastIndexOf(EXTENSION_SEPARATOR);
         if (index >= 0) {
             name = name.substring(0, index);
+        }
+        return name;
+    }
+
+    private String extractExtension(File document) {
+        String name = document.getName();
+        int index = name.lastIndexOf(EXTENSION_SEPARATOR);
+        if ((index >= 0) && (name.length() - index > 1)) {
+            return name.substring(index + 1);
         }
         return name;
     }
@@ -64,11 +78,15 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
     }
 
     public String getTitle() {
-        return this.getTechnicalName(); // TODO: do some real implementation
+        return this.getTechnicalName();
     }
 
     public String getContent() {
-        return null; // TODO: do some real implementation
+        if ("adoc".equalsIgnoreCase(extractExtension(document))) {
+            return AsciidocConverter.INSTANCE.convertDocument(document);
+        } else {
+            throw new UnsupportedOperationException("Currently only asciidoctor files are supported");
+        }
     }
 
     @Override
