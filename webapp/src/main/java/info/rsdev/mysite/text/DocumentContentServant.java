@@ -21,6 +21,7 @@ import info.rsdev.mysite.exception.ConfigurationException;
 import info.rsdev.mysite.text.domain.DefaultDocument;
 import info.rsdev.mysite.text.domain.DocumentCollection;
 import info.rsdev.mysite.text.domain.DocumentGroup;
+import info.rsdev.mysite.text.domain.DocumentGroupMenuItem;
 import info.rsdev.mysite.util.ServletUtils;
 
 /**
@@ -45,7 +46,8 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
         }
         if (!(moduleConfig instanceof DocumentModuleConfig)) {
             throw new ConfigurationException(String.format("Expected was config of type %, but encountered was %s. please check"
-                    + "the value of property '%s'", DocumentModuleConfig.class.getSimpleName(), moduleConfig, MODULECONFIGTYPE_KEY));
+                    + "the value of property '%s'", DocumentModuleConfig.class.getSimpleName(), moduleConfig,
+                    MODULECONFIGTYPE_KEY));
         }
         DocumentModuleConfig writingConfig = (DocumentModuleConfig) moduleConfig;
 
@@ -118,7 +120,29 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
 
     @Override
     public MenuGroup getMenuItems(ModuleConfig config) {
-        List<MenuItem> visibleItems = new ArrayList<>();
+        List<DocumentGroup> imageGroups = this.documentCollection.getGroups();
+        List<String> itemFilter = config.getVisibleMenuItems();
+        List<MenuItem> visibleItems = null;
+        if (itemFilter == null) {
+            // No filter: show all menuitems
+            visibleItems = new ArrayList<>(imageGroups.size());
+            for (DocumentGroup imageGroup : imageGroups) {
+                visibleItems.add(new DocumentGroupMenuItem(imageGroup));
+            }
+        } else {
+            // show only the menuitems present in the filter, in the order they
+            // appear in the filter
+            visibleItems = new ArrayList<>(itemFilter.size());
+            for (String itemName : itemFilter) {
+                for (DocumentGroup imageGroup : imageGroups) {
+                    if (imageGroup.getName().equals(itemName)) {
+                        visibleItems.add(new DocumentGroupMenuItem(imageGroup));
+                        break;
+                    }
+                }
+            }
+        }
+
         String menuTitle = config.getMenugroupTitle();
         int menuPriority = config.getMenuSortingPriority();
         return new DefaultMenuGroup(visibleItems, menuTitle, menuPriority);
