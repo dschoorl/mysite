@@ -13,6 +13,7 @@ import org.stringtemplate.v4.ST;
 
 import info.rsdev.mysite.common.ModuleConfig;
 import info.rsdev.mysite.common.RequestHandler;
+import info.rsdev.mysite.common.domain.CorePageModel;
 import info.rsdev.mysite.common.domain.DefaultMenuGroup;
 import info.rsdev.mysite.common.domain.MenuGroup;
 import info.rsdev.mysite.common.domain.MenuItem;
@@ -26,8 +27,8 @@ import info.rsdev.mysite.util.ServletUtils;
 
 /**
  * This {@link RequestHandler} implementation is responsible for coordinating
- * access to the images from the configured image collection, using the
- * configured template.
+ * access to the documents from the configured document collection, rendering them
+ * with the configured template.
  */
 public class DocumentContentServant implements RequestHandler, ConfigKeys {
 
@@ -51,20 +52,22 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
         }
         DocumentModuleConfig writingConfig = (DocumentModuleConfig) moduleConfig;
 
-        DocumentPageModel model = null;
+        CorePageModel<?> model = null;
         String path = getPathPartAfterMountpoint(request.getPathInfo(), moduleConfig.getMountPoint());
         String groupName = getGroupName(path);
         if (groupName == null) {
-            // TODO: Generate a homepage
+            // set a default group and continue
+            DocumentGroup group = documentCollection.getGroups().get(0);
+            model = new DocumentGroupModel(writingConfig, group);
         } else {
+            DocumentGroup documentGroup = documentCollection.getResourceGroup(groupName);
+            if (documentGroup == null) {
+                return ModuleHandlerResult.NO_CONTENT;
+            }
             String documentName = getDocumentName(path.substring(groupName.length()));
             if (documentName == null) {
-                // TODO: generate a landingpage for this group
+                model = new DocumentGroupModel(writingConfig, documentGroup);
             } else {
-                DocumentGroup documentGroup = documentCollection.getResourceGroup(groupName);
-                if (documentGroup == null) {
-                    return ModuleHandlerResult.NO_CONTENT;
-                }
                 DefaultDocument selectedDocument = documentGroup.getDocument(documentName);
                 if (selectedDocument == null) {
                     return ModuleHandlerResult.NO_CONTENT;
@@ -97,12 +100,12 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
         return ServletUtils.getFirstPathElement(path);
     }
 
-    private String determineContentId(String templateName, DocumentPageModel model) {
+    private String determineContentId(String templateName, CorePageModel<?> model) {
         return model.getSelectedMenuItemName();
     }
 
-    private String renderPage(HttpServletResponse response, DocumentPageModel pageModel) throws ServletException {
-        DocumentModuleConfig documentConfig = pageModel.getConfig();
+    private String renderPage(HttpServletResponse response, CorePageModel<?> pageModel) throws ServletException {
+        ModuleConfig documentConfig = pageModel.getConfig();
         ST template = documentConfig.getTemplate(pageModel.getSelectedMenuItemName());
         try {
             if (template == null) {

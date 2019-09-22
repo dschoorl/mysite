@@ -48,7 +48,8 @@ public class DocumentGroupMenuItem implements MenuItem {
 
     @Override
     public MenuItem setActive(boolean isActive) {
-        return this.setActive(isActive);
+        this.active = isActive;
+        return this;
     }
 
 }

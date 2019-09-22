@@ -1,6 +1,10 @@
 package info.rsdev.mysite.text.domain;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.file.Files;
 import java.util.Locale;
 
 import info.rsdev.mysite.text.asciidoc.AsciidocConverter;
@@ -69,6 +73,16 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
         return this.documentPath;
     }
 
+    public String getUrl() {
+        try {
+            return String.format("%s/%s",
+                    URLEncoder.encode(documentGroup.getName(), "UTF-8"),
+                    URLEncoder.encode(getTitle(), "UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public String getTechnicalName() {
         return this.documentName;
     }
@@ -86,6 +100,20 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
             return AsciidocConverter.INSTANCE.convertDocument(document);
         } else {
             throw new UnsupportedOperationException("Currently only asciidoctor files are supported");
+        }
+    }
+
+    public String getSummary() {
+        try {
+            String rawText = new String(Files.readAllBytes(document.toPath()));
+            if (rawText.length() < 300) {
+                return rawText;
+            } else {
+                return rawText.substring(0, 300).concat("...");
+            }
+            
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 

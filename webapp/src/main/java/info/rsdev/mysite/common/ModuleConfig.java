@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
+import org.stringtemplate.v4.ST;
 
 
 /**
@@ -65,5 +66,7 @@ public interface ModuleConfig {
     public File getAccessLogFile();
     
     public boolean isDisabled();
+    
+    public ST getTemplate(String forMenuItem);
     
 }

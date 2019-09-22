@@ -24,4 +24,10 @@ public class DocumentPageModel extends BasicPageModel<DocumentModuleConfig> {
         return this.selectedDocument.getContent();
     }
 
+    /**
+     * @return true to indicate that this model contains only a single document
+     */
+    public boolean isSingle() {
+        return true;
+    }
 }

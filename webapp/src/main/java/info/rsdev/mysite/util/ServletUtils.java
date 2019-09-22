@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -54,16 +56,20 @@ public abstract class ServletUtils {
         return path1.concat("/").concat(path2);
     }
     
-    public static String getFirstPathElement(String path) {
-        if ((path == null) || path.isEmpty()) {
+    public static String getFirstPathElement(String urlEncodedPath) {
+        if ((urlEncodedPath == null) || urlEncodedPath.isEmpty()) {
             return null;
         }
-        int indexOfSlash = path.indexOf(PATH_SEPARATOR);
-        if (indexOfSlash < 0) {
-            return path;
-        } else if (indexOfSlash == 0) {
-            return getFirstPathElement(path.substring(1));
+        int indexOfSlash = urlEncodedPath.indexOf(PATH_SEPARATOR);
+        try {
+            if (indexOfSlash < 0) {
+                return URLDecoder.decode(urlEncodedPath, "UTF-8");
+            } else if (indexOfSlash == 0) {
+                return getFirstPathElement(urlEncodedPath.substring(1));
+            }
+            return URLDecoder.decode(urlEncodedPath.substring(0, indexOfSlash), "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
-        return path.substring(0, indexOfSlash);
     }
 }
