@@ -12,7 +12,7 @@ public class DocumentPageModel extends BasicPageModel<DocumentModuleConfig> {
     private final DefaultDocument selectedDocument;
 
     public DocumentPageModel(DocumentModuleConfig config, DefaultDocument selectedDocument) {
-        super(config, selectedDocument.getTechnicalName());
+        super(config, selectedDocument.getGroup().getName());
         this.selectedDocument = selectedDocument;
     }
 

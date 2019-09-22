@@ -116,6 +116,10 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
             throw new RuntimeException(e);
         }
     }
+    
+    public DocumentGroup getGroup() {
+        return this.documentGroup;
+    }
 
     @Override
     public int compareTo(DefaultDocument o) {
