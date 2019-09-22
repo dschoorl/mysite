@@ -73,10 +73,11 @@ public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
             if (template == null) {
                 response.sendError(404);
             } else {
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("text/html; charset=UTF-8");
                 template.add("report", report);
                 template.add("model", model);
                 response.getWriter().write(template.render());
-                response.setContentType("text/html");
             }
         } catch (IOException e) {
             throw new ServletException("Error occured during preparation of web page", e);

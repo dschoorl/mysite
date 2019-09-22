@@ -111,9 +111,10 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
             if (template == null) {
                 response.sendError(404);
             } else {
+                response.setCharacterEncoding("UTF-8");
+                response.setContentType("text/html; charset=UTF-8");
                 template.add("model", pageModel);
                 response.getWriter().write(template.render());
-                response.setContentType("text/html");
             }
         } catch (IOException e) {
             throw new ServletException("Error occured during preparation of web page", e);

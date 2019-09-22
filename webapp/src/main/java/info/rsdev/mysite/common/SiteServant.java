@@ -129,7 +129,8 @@ public class SiteServant extends HttpServlet {
 
     protected void writeUnavaliablePage(HttpServletResponse response) throws ServletException {
         // not tailored to visited module or website
-        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html; charset=UTF-8");
         try {
             PrintWriter out = response.getWriter();
             out.write(GLOBAL_UNAVAILABLE_PAGE);

@@ -70,6 +70,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         if (isBinary(mimeType)) {
             writeBinary(response, resourceLocation);
         } else {
+            response.setCharacterEncoding("UTF-8");
             ServletUtils.writeText(response, resourceLocation.toFile());
         }
         return ModuleHandlerResult.NO_CONTENT;    //not worth logging in access log
