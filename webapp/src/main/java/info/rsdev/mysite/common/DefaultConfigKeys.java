@@ -34,6 +34,8 @@ public interface DefaultConfigKeys {
     
     public static final String TEMPLATE_NAME_KEY = "template";
     
+    public static final String CUSTOM_TEMPLATE_FOLDER_KEY = "customTemplateFolder";
+    
     /**
      * The path relative to the site data directory that is the root directory for this image collection
      */

@@ -17,51 +17,61 @@ import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
 public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfigKeys {
-    
+
     protected final Properties properties;
-    
+
     private ConcurrentHashMap<String, STGroup> cachedTemplateGroupByTemplateName = new ConcurrentHashMap<>();
-    
+
     public AbstractModuleConfig(Properties configProperties) {
         this.properties = configProperties;
     }
-    
+
     @Override
     public String getString(String propertyName) {
         return this.properties.getProperty(propertyName);
     }
-    
+
     protected String getString(String forMenuItem, String propertyName) {
         String propertyValue = null;
         if (forMenuItem != null) {
-            propertyValue = getString(forMenuItem + "." + propertyName); //is the property defined specific for the menu item?
+            propertyValue = getString(forMenuItem + "." + propertyName); // is
+                                                                         // the
+                                                                         // property
+                                                                         // defined
+                                                                         // specific
+                                                                         // for
+                                                                         // the
+                                                                         // menu
+                                                                         // item?
         }
         if (propertyValue == null) {
-            propertyValue = getString(propertyName);    //use default instead
+            propertyValue = getString(propertyName); // use default instead
         }
         return propertyValue;
     }
-    
+
     @Override
     public boolean getBoolean(String propertyName) {
         return Boolean.parseBoolean(this.properties.getProperty(propertyName));
     }
-    
+
     protected boolean getBoolean(String forMenuItem, String propertyName) {
         return Boolean.parseBoolean(getString(forMenuItem, propertyName));
     }
-    
+
     @Override
     public int getInteger(String propertyName) {
         return getInteger(null, propertyName);
     }
-    
+
     protected int getInteger(String forMenuItem, String propertyName) {
         String value = getString(forMenuItem, propertyName);
-        if (value == null) { return 0; }
+        if (value == null) {
+            return 0;
+        }
         return Integer.parseInt(value);
     }
-    
+
     @Override
     public String getContextPath() {
         String contextPath = getString(CONTEXTPATH_KEY);
@@ -72,7 +82,7 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         }
         return contextPath;
     }
-    
+
     @Override
     public String getMountPoint() {
         String mountPoint = getString(MOUNTPOINT_KEY);
@@ -81,7 +91,7 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         }
         return mountPoint;
     }
-    
+
     @Override
     public List<String> getVisibleMenuItems() {
         String itemString = properties.getProperty(APPROVED_MENUITEMS_KEY);
@@ -95,7 +105,7 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
     public String getMenugroupTitle() {
         return getString(MENUGROUP_TITLE_KEY);
     }
-    
+
     @Override
     public int getMenuSortingPriority() {
         String sortingPriority = getString(MENU_ORDER_PRIORITY_KEY);
@@ -104,21 +114,13 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         }
         return DEFAULT_MENU_ORDER_PRIORITY_VALUE;
     }
-    
+
     public synchronized ST getTemplate(String forMenuItem) {
         String templateName = getString(forMenuItem, TEMPLATE_NAME_KEY);
         if (!cachedTemplateGroupByTemplateName.contains(templateName)) {
-            //is the template in the external directory or within the webapp?
-            File templateDir = new File(getString(SITE_DATA_DIR_KEY), getMountPoint());
-            File templateFile = new File(templateDir, templateName.concat(".stg"));
-            URL templateResource = null;
-            if (templateFile.isFile()) {
-                try {
-                    templateResource = templateFile.toURI().toURL();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
+            // is the template in the external directory or within the webapp?
+            URL templateResource = getSiteSpecificTemplateLocation(templateName);
+            if (templateResource == null) {
                 String resourceName = "/templates/".concat(templateName).concat(".stg");
                 templateResource = Thread.currentThread().getContextClassLoader().getResource(resourceName);
             }
@@ -126,12 +128,44 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         }
         return cachedTemplateGroupByTemplateName.get(templateName).getInstanceOf(templateName);
     }
-    
+
+    /**
+     * A site specific template can be located either in a designated template folder in the site's data directory,
+     * or, as a fallback mechanism, in the folder where the collection is located. If these two locations do not hold
+     * the template file, then there is no site specific template.
+     * @param templateName the name of the template we are looking for
+     * @return the URL to the site specific template or null if there is none
+     */
+    private URL getSiteSpecificTemplateLocation(String templateName) {
+        File templateDir = null;
+        String customTemplatePath = getString(CUSTOM_TEMPLATE_FOLDER_KEY);
+        if (customTemplatePath != null) {
+            templateDir = new File(getString(SITE_DATA_DIR_KEY), customTemplatePath);
+        }
+        if ((templateDir == null) || !templateDir.isDirectory()) {
+            String collectionPath = getString(COLLECTION_PATH_KEY);
+            if (collectionPath != null) {
+                templateDir = new File(getString(SITE_DATA_DIR_KEY), collectionPath);
+            }
+        }
+        if ((templateDir != null) && templateDir.isDirectory()) {
+            File templateFile = new File(templateDir, templateName.concat(".stg"));
+            if (templateFile.isFile()) {
+                try {
+                    return templateFile.toURI().toURL();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return null;
+    }
+
     @Override
     public Logger getAccessLogger() {
         return LoggerFactory.getLogger("AccessLog");
     }
-    
+
     @Override
     public File getAccessLogFile() {
         String logDir = System.getProperty("MYSITE_LOG_DIR");
@@ -140,15 +174,15 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         }
         return new File(logDir, "mysite-accesslog.log");
     }
-    
+
     @Override
     public Map<Object, Object> getProperties() {
         return Collections.unmodifiableMap(this.properties);
     }
-    
+
     @Override
     public boolean isDisabled() {
         return getBoolean(DISABLED_KEY);
     }
-    
+
 }
