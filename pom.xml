@@ -20,9 +20,11 @@
         <opencsv.version>4.6</opencsv.version>
         <slf4j.version>1.7.26</slf4j.version>
         <stringtemplate.version>4.1</stringtemplate.version>
-        <undertow.version>2.0.22.Final</undertow.version>
+        <undertow.version>2.0.26.Final</undertow.version>
 
         <asciidoctor.plugin.version>1.5.6</asciidoctor.plugin.version>
+        <spring-boot.plugin.version>2.1.9.RELEASE</spring-boot.plugin.version>
+
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -86,6 +88,16 @@
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
+                <artifactId>jcl-over-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>jul-to-slf4j</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
@@ -99,6 +111,11 @@
                     <groupId>org.asciidoctor</groupId>
                     <artifactId>asciidoctor-maven-plugin</artifactId>
                     <version>${asciidoctor.plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

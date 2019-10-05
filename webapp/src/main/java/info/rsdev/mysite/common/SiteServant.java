@@ -75,7 +75,7 @@ public class SiteServant extends HttpServlet {
         ModuleConfig moduleConfig = null;
         try {
             String modulePath = request.getPathInfo();
-            if (modulePath == null) {
+            if ((modulePath == null) || modulePath.isEmpty()) {
                 modulePath = "/";
             }
             if (logger.isDebugEnabled()) {
@@ -89,7 +89,7 @@ public class SiteServant extends HttpServlet {
             // appropriate module
             moduleConfig = config.getModuleConfig(modulePath);
             if (moduleConfig == null) {
-                logger.error(String.format("No module configered to serve request '%s'", modulePath));
+                logger.error(String.format("No module configered to serve module path '%s' for %s", modulePath, hostname));
                 ((HttpServletResponse) response).sendError(404);
                 return;
             }
