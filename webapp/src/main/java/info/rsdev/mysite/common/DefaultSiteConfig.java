@@ -48,7 +48,7 @@ public class DefaultSiteConfig implements SiteConfig {
     }
     
     private int countPathElements(String path) {
-        if (path == null) {
+        if ((path == null) || path.isEmpty()) {
             return 0;
         }
         return path.split(Pattern.quote("/")).length;

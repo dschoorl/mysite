@@ -22,10 +22,10 @@ public class DefaultSiteConfigTest {
     @Test
     public void selectModuleWithLongestMountPointWhenMultipleCandidates() {
         List<ModuleConfig> candidates = new LinkedList<>();
-        candidates.add(createMockForMountPoint("/"));
-        candidates.add(createMockForMountPoint("/static"));
+        candidates.add(createMockForMountPoint(""));
+        candidates.add(createMockForMountPoint("static"));
         ModuleConfig bestFit = subjectUnderTest.selectBestFit(candidates);
-        assertEquals("/static", bestFit.getMountPoint());
+        assertEquals("static", bestFit.getMountPoint());
     }
     
     @Test
