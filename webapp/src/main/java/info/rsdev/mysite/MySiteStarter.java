@@ -49,7 +49,7 @@ public class MySiteStarter {
                 .addPrefixPath("/mysite", manager.start());
 
         Undertow server = Undertow.builder()
-                .addHttpListener(9080, "localhost")
+                .addHttpListener(9080, "0.0.0.0")
                 .setHandler(path)
                 .build();
         server.start();
