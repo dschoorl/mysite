@@ -28,7 +28,7 @@ public class MySiteStarter {
         /*
          * Next to Undertow, I have tried embedding Jetty and Tomcat as wel. I
          * found configuring Tomcat too cumbersome, and embedding Jetty conflicted
-         * with deploying in Tomcat server.
+         * with deploying the war file in standalone Tomcat server.
          */
         startUndertow();
     }
@@ -36,7 +36,7 @@ public class MySiteStarter {
     private static void startUndertow() throws Exception {
         DeploymentInfo servletBuilder = Servlets.deployment()
                 .setClassLoader(MySiteStarter.class.getClassLoader())
-                .setContextPath("/mysite")
+                .setContextPath("/")
                 .setDeploymentName("MySite")
                 .addListener(Servlets.listener(GuiceServletConfig.class))
                 .addFilter(Servlets.filter(GUICE_FILTER_NAME, GuiceFilter.class))
@@ -46,7 +46,7 @@ public class MySiteStarter {
         DeploymentManager manager = Servlets.defaultContainer().addDeployment(servletBuilder);
         manager.deploy();
         PathHandler path = Handlers.path(Handlers.path())
-                .addPrefixPath("/mysite", manager.start());
+                .addPrefixPath("/", manager.start());
 
         Undertow server = Undertow.builder()
                 .addHttpListener(9080, "0.0.0.0")

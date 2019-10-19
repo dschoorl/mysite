@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class DefaultSiteConfig implements SiteConfig {
     
@@ -20,14 +21,39 @@ public class DefaultSiteConfig implements SiteConfig {
      
     @Override
     public ModuleConfig getModuleConfig(String requestPath) {
+        //TODO: handle overlapping paths...
+        LinkedList<ModuleConfig> candidates = new LinkedList<>();
         for (ModuleConfig candidate: moduleConfigByMountPoint.values()) {
             if (candidate.hasHandlerFor(requestPath)) {
-                return candidate;
+                candidates.add(candidate);
             }
         }
-        return null;
+        return selectBestFit(candidates);
     }
     
+    /**
+     * when there are multiple candidates, select the one with the most path segments in the mountpoint, because
+     * mountpoint takes precendence over content path when there is overlap
+     * @param candidates
+     * @return
+     */
+    ModuleConfig selectBestFit(List<ModuleConfig> candidates) {
+        ModuleConfig bestFit = null;
+        for (ModuleConfig candidate: candidates) {
+            if ((bestFit == null) || (countPathElements(bestFit.getMountPoint()) < countPathElements(candidate.getMountPoint()))) {
+                bestFit = candidate;
+            }
+        }
+        return bestFit;
+    }
+    
+    private int countPathElements(String path) {
+        if (path == null) {
+            return 0;
+        }
+        return path.split(Pattern.quote("/")).length;
+    }
+
     @Override
     public String getSiteName() {
         return siteName;
