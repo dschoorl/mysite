@@ -12,11 +12,24 @@ import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
 
+/**
+ * This class is the entry-point of the application when it is run as an
+ * executable war file. It will start the embedded Undertow servlet container to
+ * serve the web pages. Both deploying the application into a servlet container
+ * as well as running as executable war are supported, but the application is
+ * only tested with deployment in Tomcat 9 server.
+ */
 public class MySiteStarter {
 
     private static final String GUICE_FILTER_NAME = "guiceFilter";
 
     public static void main(String[] args) throws Exception {
+
+        /*
+         * Next to Undertow, I have tried embedding Jetty and Tomcat as wel. I
+         * found configuring Tomcat too cumbersome, and embedding Jetty conflicted
+         * with deploying in Tomcat server.
+         */
         startUndertow();
     }
 
@@ -36,7 +49,7 @@ public class MySiteStarter {
                 .addPrefixPath("/mysite", manager.start());
 
         Undertow server = Undertow.builder()
-                .addHttpListener(8080, "localhost")
+                .addHttpListener(9080, "localhost")
                 .setHandler(path)
                 .build();
         server.start();
