@@ -149,7 +149,11 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
             return -1;
         }
         //sort from old to new
-        return o.createdOn.compareTo(this.createdOn);
+        int dateCompareResult = o.createdOn.compareTo(this.createdOn);
+        if (dateCompareResult == 0) {
+            return this.documentName.compareTo(o.documentName);
+        }
+        return dateCompareResult;
     }
 
     @Override
