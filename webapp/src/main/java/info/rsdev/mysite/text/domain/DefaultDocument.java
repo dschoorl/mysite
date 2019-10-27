@@ -5,9 +5,16 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import info.rsdev.mysite.text.asciidoc.AsciidocConverter;
+import info.rsdev.mysite.util.FileAttribUtils;
 
 /**
  * This class represents a single text document in a specific language.
@@ -17,6 +24,8 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
     public static final String METADATA_INDICATOR = "_meta";
 
     private static final String EXTENSION_SEPARATOR = ".";
+
+    private static final Logger LOG = LoggerFactory.getLogger(DefaultDocument.class);
 
     /**
      * The language in which the public content of the document is written.
@@ -38,10 +47,23 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
 
     private final File document;
 
+    private final LocalDateTime createdOn;
+
+    private final LocalDateTime lastModifiedOn;
+
     public DefaultDocument(DocumentGroup group, File document) {
         this.document = document;
         this.documentGroup = group;
         this.documentName = extractName(document);
+
+        BasicFileAttributes attr = null;
+        try {
+            attr = Files.readAttributes(document.toPath(), BasicFileAttributes.class);
+        } catch (IOException e) {
+            LOG.error("Cannot read timestamps from file: " + document.getAbsolutePath());
+        }
+        this.createdOn = FileAttribUtils.toLocalDateTime(attr == null ? null : attr.creationTime());
+        this.lastModifiedOn = FileAttribUtils.toLocalDateTime(attr == null ? null : attr.lastModifiedTime());
 
         // calculate the imagePath relative to the collectionPath
         String collectionPath = this.documentGroup.getCollection().getPath();
@@ -111,12 +133,12 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
             } else {
                 return rawText.substring(0, 300).concat("...");
             }
-            
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
-    
+
     public DocumentGroup getGroup() {
         return this.documentGroup;
     }
@@ -126,7 +148,17 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
         if (o == null) {
             return -1;
         }
-        return this.documentName.compareTo(o.documentName);
+        //sort from old to new
+        return o.createdOn.compareTo(this.createdOn);
     }
 
+    @Override
+    public LocalDate getDateCreated() {
+        return createdOn.toLocalDate();
+    }
+
+    @Override
+    public LocalDate getDateChanged() {
+        return lastModifiedOn.toLocalDate();
+    }
 }
