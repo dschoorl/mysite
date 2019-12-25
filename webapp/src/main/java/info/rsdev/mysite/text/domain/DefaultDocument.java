@@ -104,7 +104,7 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
     
     private Properties loadMetaData() {
         Properties metadata = new Properties();
-        File metadataPath = new File(document.getParent(), documentName + ".properties");
+        File metadataPath = new File(document.getParent(), documentName + ".xml");
         if (metadataPath.isFile()) {
             try (FileInputStream metaStream = new FileInputStream(metadataPath)) {
                 metadata.loadFromXML(metaStream);
