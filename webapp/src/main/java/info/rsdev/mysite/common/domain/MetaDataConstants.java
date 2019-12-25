@@ -19,6 +19,8 @@ public abstract class MetaDataConstants {
     
     public static final String TEASER_METAKEY = "teaser";
     
+    public static final String WORDCOUNT_METAKEY = "wordcount";
+    
     private MetaDataConstants() {
         //Do not instantiate this collection of constants
     }

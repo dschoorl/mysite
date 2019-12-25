@@ -163,16 +163,19 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
     }
 
     public String getSummary() {
-        try {
-            String rawText = new String(Files.readAllBytes(document.toPath()));
-            if (rawText.length() < 300) {
-                return rawText;
-            } else {
-                return rawText.substring(0, 300).concat("...");
+        if (metadata.containsKey(TEASER_METAKEY)) {
+            return metadata.getProperty(TEASER_METAKEY);
+        } else {
+            try {
+                String rawText = new String(Files.readAllBytes(document.toPath()));
+                if (rawText.length() < 300) {
+                    return rawText;
+                } else {
+                    return rawText.substring(0, 300).concat("...");
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
