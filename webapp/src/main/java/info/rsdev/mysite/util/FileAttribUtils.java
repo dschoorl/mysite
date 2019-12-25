@@ -1,7 +1,7 @@
 package info.rsdev.mysite.util;
 
 import java.nio.file.attribute.FileTime;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.ZoneId;
 
 public class FileAttribUtils {
@@ -9,15 +9,15 @@ public class FileAttribUtils {
     private FileAttribUtils() {
     }
 
-    public static LocalDateTime toLocalDateTime(FileTime timestamp) {
+    public static LocalDate toLocalDateTime(FileTime timestamp) {
         if (timestamp == null) {
-            return LocalDateTime.now();
+            return LocalDate.now();
         }
 
         return timestamp
                 .toInstant()
                 .atZone(ZoneId.systemDefault())
-                .toLocalDateTime();
+                .toLocalDate();
 
     }
 
