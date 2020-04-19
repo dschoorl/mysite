@@ -24,6 +24,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.tika.Tika;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +34,8 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
     
     private static final List<String> knownTextMimeTypes = Arrays.asList("text/html", "text/css", "text/plain", "text/javascript",
             "application/javascript");
+    
+    private static Tika tikaMimetypeDetector = new Tika();
     
     @Override
     public ModuleHandlerResult handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -100,7 +103,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
     protected String getMimeType(Path resource) {
         String mimeType = null;
         try {
-            mimeType = Files.probeContentType(resource);
+            mimeType = tikaMimetypeDetector.detect(resource);    //Files.probeContentType(resource);
             if (mimeType == null) {
                 try (FileInputStream stream = new FileInputStream(resource.toFile())) {
                     mimeType = URLConnection.guessContentTypeFromStream(stream);
@@ -109,7 +112,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
                     logger.debug(String.format("MimeType resolved to %s by URLConnection.guessContentTypeFromStream(%s)", mimeType, resource));
                 }
             } else if (logger.isDebugEnabled()) {
-                logger.debug(String.format("MimeType resolved to %s by Files.probeContentType(%s)", mimeType, resource));
+                logger.debug(String.format("MimeType resolved to %s by Apache Tika", mimeType, resource));
             }
         } catch (IOException e) {
             logger.error(String.format("Cannot determine mime type from content for %s", resource), e);
