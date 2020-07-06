@@ -30,7 +30,7 @@ public class FixedContentModuleConfig extends AbstractModuleConfig implements Co
     }
     
     @Override
-    public boolean hasHandlerFor(String path) { 
+    public boolean hasHandlerFor(String path) {
         return path.startsWith(properties.getProperty(MOUNTPOINT_KEY));
     }
     

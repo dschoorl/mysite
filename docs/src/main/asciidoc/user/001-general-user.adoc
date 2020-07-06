@@ -16,7 +16,7 @@ The following properties are identified as the 'set of general properties':
 
 |===
 | property name                 | Description
-| bootstraplocation             | The location of bootstrap. When not specified, the default bootstrap 
+| stylesheetlocation             | The location of bootstrap. When not specified, the default bootstrap 
 configuration is loaded from internet.
 | copyrightnotice               | A short text, preferably on a single line, indicating the copyright 
 holder to the content of the website.
@@ -44,7 +44,7 @@ root of the folder containing the collection of resources served by the module.
 Some properties are the same for every module. To prevent repeating yourself there is a mechanism to configure them globally and they
 will be picked up by every module. If you configure a property on both global level and module level, the value set on module level wins.
 
-Properties that lend themselves for configuration on global level are e.g. the copyrightnotice, bootstraplocation,
+Properties that lend themselves for configuration on global level are e.g. the copyrightnotice, stylesheetlocation,
 customTemplateFolder and disabled.
 
 The global configuration is located in the file named .properties in the root folder of the websites data directory.

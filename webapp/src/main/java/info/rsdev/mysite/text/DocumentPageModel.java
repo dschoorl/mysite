@@ -16,8 +16,8 @@ public class DocumentPageModel extends BasicPageModel<DocumentModuleConfig> {
         this.selectedDocument = selectedDocument;
     }
 
-    public String getDocumentTitle() {
-        return this.selectedDocument.getTitle();
+    public DefaultDocument getDocument() {
+        return this.selectedDocument;
     }
 
     public String getPage() {

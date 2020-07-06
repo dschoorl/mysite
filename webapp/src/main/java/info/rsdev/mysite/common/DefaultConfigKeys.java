@@ -53,7 +53,7 @@ public interface DefaultConfigKeys {
     
     public static final String MENUGROUP_TITLE_KEY = "menugroupTitle";
     
-    public static final String BOOTSTRAP_LOCATION_KEY = "bootstraplocation";
+    public static final String CSS_LOCATION_KEY = "stylesheetlocation";
     
     public static final String COPYRIGHT_NOTICE_KEY = "copyrightnotice";
     

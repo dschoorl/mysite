@@ -25,7 +25,11 @@ public class DocumentGroupMenuItem implements MenuItem {
     @Override
     public String getTargetUrl() {
         try {
-            return documentGroup.getCollection().getMountPoint().concat(URLEncoder.encode(documentGroup.getName(), UTF8));
+            String targetUrl = documentGroup.getCollection().getMountPoint();
+            if (!targetUrl.endsWith("/")) {
+                targetUrl= targetUrl.concat("/");
+            }
+            return targetUrl.concat(URLEncoder.encode(documentGroup.getName(), UTF8));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

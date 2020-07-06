@@ -7,9 +7,9 @@ statistics(model, report) ::= <<
   <title>$model.config.properties.("pageTitle")$</title>
   <meta charset='UTF-8'>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  $if(model.bootstrapLocation)$
-  <link rel="stylesheet" href="$model.bootstrapLocation$css/bootstrap.min.css">
-  <script src="$model.bootstrapLocation$js/bootstrap.min.js"></script>
+  $if(model.stylesheetLocation)$
+  <link rel="stylesheet" href="$model.stylesheetLocation$css/bootstrap.min.css">
+  <script src="$model.stylesheetLocation$js/bootstrap.min.js"></script>
   $else$
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>

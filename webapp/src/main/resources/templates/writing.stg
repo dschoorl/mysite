@@ -8,9 +8,9 @@ _start(model) ::= <<
   <meta charset='UTF-8'>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js"></script>
-  $if(model.bootstrapLocation)$
-  <script src="$model.bootstrapLocation$js/bootstrap.min.js"></script>
-  <link rel="stylesheet" href="$model.bootstrapLocation$css/bootstrap.min.css">
+  $if(model.stylesheetLocation)$
+  <script src="$model.stylesheetLocation$js/bootstrap.min.js"></script>
+  <link rel="stylesheet" href="$model.stylesheetLocation$css/bootstrap.min.css">
   $else$
   <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
   <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">

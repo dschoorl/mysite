@@ -64,7 +64,7 @@ public class DefaultSiteConfig implements SiteConfig {
         List<MenuGroup> menu = new LinkedList<>();
         for (ModuleConfig config: moduleConfigByMountPoint.values()) {
             MenuGroup menuGroup = config.getRequestHandler().getMenuItems(config);
-            if (!menuGroup.isEmpty()) {
+            if ((menuGroup != null) && !menuGroup.isEmpty()) {
                 menu.add(menuGroup);
             }
         }

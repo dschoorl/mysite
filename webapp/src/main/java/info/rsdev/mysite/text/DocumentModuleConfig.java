@@ -31,10 +31,20 @@ public class DocumentModuleConfig extends AbstractModuleConfig implements Config
     public boolean hasHandlerFor(String requestPath) {
 
         /*
-         * We can handle this request, when the requestpath starts with this
-         * modules mountpoint and it contains the content file.
+         * We can handle this request, when the requestpath equals the modules mountpoint,
+         * or starts with it (we have to compare url path elements).
          */
-        return requestPath.startsWith(properties.getProperty(MOUNTPOINT_KEY));
+        String[] requestParts = requestPath.split("/");
+        String[] mountParts = properties.getProperty(MOUNTPOINT_KEY).split("/");
+        if (mountParts.length > requestParts.length) {
+            return false;
+        }
+        for (int i=0; i<mountParts.length; i++) {
+            if (!mountParts[i].equals(requestParts[i])) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

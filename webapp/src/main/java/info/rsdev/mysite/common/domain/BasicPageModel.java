@@ -55,8 +55,8 @@ public class BasicPageModel<T extends ModuleConfig> implements CorePageModel<T> 
     }
 
     @Override
-    public String getBootstrapLocation() {
-        String location = config.getString(DefaultConfigKeys.BOOTSTRAP_LOCATION_KEY);
+    public String getStylesheetLocation() {
+        String location = config.getString(DefaultConfigKeys.CSS_LOCATION_KEY);
         String returnValue = null;
         if (location != null) {
             if (location.startsWith("/")) {

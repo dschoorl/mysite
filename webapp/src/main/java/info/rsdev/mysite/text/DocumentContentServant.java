@@ -87,7 +87,14 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
         mountpoint = "/" + mountpoint;
         if (pathInfo.startsWith(mountpoint)) {
             // TODO: strip any posible trailing forward slash
-            return pathInfo.substring(mountpoint.length());
+            String targetPath = pathInfo.substring(mountpoint.length());
+            if(targetPath.startsWith("/")) {
+                targetPath = targetPath.substring(1);
+            }
+            if (targetPath.endsWith("/")) {
+                targetPath = targetPath.substring(0, targetPath.length() - 1);
+            }
+            return targetPath;
         }
         return null;
     }

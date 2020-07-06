@@ -118,10 +118,10 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
     public synchronized ST getTemplate(String forMenuItem) {
         String templateName = getString(forMenuItem, TEMPLATE_NAME_KEY);
         if (!cachedTemplateGroupByTemplateName.contains(templateName)) {
-            // is the template in the external directory or within the webapp?
             URL templateResource = getSiteSpecificTemplateLocation(templateName);
             if (templateResource == null) {
-                String resourceName = "/templates/".concat(templateName).concat(".stg");
+                //no user supplied template provided, fallback on templates supplied by the application
+                String resourceName = "templates/".concat(templateName).concat(".stg");
                 templateResource = Thread.currentThread().getContextClassLoader().getResource(resourceName);
             }
             this.cachedTemplateGroupByTemplateName.putIfAbsent(templateName, new STGroupFile(templateResource, "UTF-8", '$', '$'));

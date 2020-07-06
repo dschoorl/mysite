@@ -4,6 +4,13 @@ public class ModuleHandlerResult {
     
     public static final ModuleHandlerResult NO_CONTENT = new ModuleHandlerResult(null, null);
     
+    public static final ModuleHandlerResult HANDLED = new ModuleHandlerResult(null, null) {
+        @Override
+        public boolean isAlreadyHandled() {
+            return true;
+        }
+    };
+    
     private final String contentId;
     
     private final String templateName;
@@ -19,6 +26,10 @@ public class ModuleHandlerResult {
 
     public String getTemplateName() {
         return templateName;
+    }
+    
+    public boolean isAlreadyHandled() {
+        return false;
     }
 
 }

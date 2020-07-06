@@ -106,7 +106,8 @@ public class SiteServant extends HttpServlet {
             List<MenuGroup> menu = config.getMenu();
             result = moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest) request,
                     (HttpServletResponse) response);
-            if (result.equals(ModuleHandlerResult.NO_CONTENT)) {
+            
+            if (!result.isAlreadyHandled() && result.equals(ModuleHandlerResult.NO_CONTENT)) {
                 response.setStatus(404);
             }
         } catch (RuntimeException e) {

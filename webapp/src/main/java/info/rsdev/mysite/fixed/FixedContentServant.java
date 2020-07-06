@@ -14,7 +14,6 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLConnection;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -78,7 +77,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         }
         return ModuleHandlerResult.NO_CONTENT;    //not worth logging in access log
     }
-    
+
     private void writeBinary(HttpServletResponse response, Path resourceLocation) throws IOException {
         if (logger.isDebugEnabled()) {
             logger.debug(String.format("Write BINARY response for %s", resourceLocation));
