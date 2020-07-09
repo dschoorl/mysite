@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import info.rsdev.mysite.common.domain.MenuGroup;
 import info.rsdev.mysite.common.domain.accesslog.AccessLogEntryV1;
 import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
+import info.rsdev.mysite.exception.ConfigurationException;
 
 @Singleton
 public class SiteServant extends HttpServlet {
@@ -110,6 +111,10 @@ public class SiteServant extends HttpServlet {
             if (!result.isAlreadyHandled() && result.equals(ModuleHandlerResult.NO_CONTENT)) {
                 response.setStatus(404);
             }
+        } catch (ConfigurationException e) {
+            HttpServletResponse httpResponse = (HttpServletResponse)response;
+            httpResponse.setStatus(500);
+            httpResponse.getWriter().write(e.getLocalizedMessage());
         } catch (RuntimeException e) {
             ((HttpServletResponse) response).setStatus(500);
             throw e;
