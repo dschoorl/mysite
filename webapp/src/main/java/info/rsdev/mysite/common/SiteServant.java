@@ -113,8 +113,9 @@ public class SiteServant extends HttpServlet {
             }
         } catch (ConfigurationException e) {
             HttpServletResponse httpResponse = (HttpServletResponse)response;
-            httpResponse.setStatus(500);
+            httpResponse.setStatus(404);
             httpResponse.getWriter().write(e.getLocalizedMessage());
+            logger.info(e.getLocalizedMessage());
         } catch (RuntimeException e) {
             ((HttpServletResponse) response).setStatus(500);
             throw e;
