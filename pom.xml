@@ -14,7 +14,7 @@
         <asciidoctorj.version>2.1.0</asciidoctorj.version>
         <guice.version>4.2.2</guice.version>
         <imgscalr.version>4.2</imgscalr.version>
-        <junit4.version>4.12</junit4.version>
+        <junit4.version>4.13.1</junit4.version>
         <log4j2.version>2.13.3</log4j2.version>
         <mockito.version>2.28.2</mockito.version>
         <opencsv.version>4.6</opencsv.version>
