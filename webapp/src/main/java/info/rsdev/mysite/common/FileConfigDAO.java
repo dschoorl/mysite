@@ -174,7 +174,7 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
     @Override
     public SiteConfig getConfig(String hostname) {
         if (!siteConfigByAlias.containsKey(hostname)) {
-            throw new ConfigurationException(String.format("Not serving: %s", hostname));
+            throw new ConfigurationException(String.format("Not available: %s", hostname));
         }
         return siteConfigByAlias.get(hostname);
     }
