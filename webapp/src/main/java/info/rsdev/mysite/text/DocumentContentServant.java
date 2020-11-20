@@ -23,6 +23,7 @@ import info.rsdev.mysite.text.domain.DefaultDocument;
 import info.rsdev.mysite.text.domain.DocumentCollection;
 import info.rsdev.mysite.text.domain.DocumentGroup;
 import info.rsdev.mysite.text.domain.DocumentGroupMenuItem;
+import info.rsdev.mysite.text.domain.RecentDocumentGroup;
 import info.rsdev.mysite.util.ServletUtils;
 
 /**
@@ -157,6 +158,11 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
         String menuTitle = config.getMenugroupTitle();
         int menuPriority = config.getMenuSortingPriority();
         return new DefaultMenuGroup(visibleItems, menuTitle, menuPriority);
+    }
+
+    public void addRecentDocumentsGroup(String recentDocumentsGroupName, int daysCutoffPoint) {
+        RecentDocumentGroup virualGroup = new RecentDocumentGroup(documentCollection, recentDocumentsGroupName, daysCutoffPoint);
+        documentCollection.addVirtualDocumentGroup(virualGroup);
     }
 
 }

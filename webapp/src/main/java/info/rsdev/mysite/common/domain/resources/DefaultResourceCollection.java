@@ -9,30 +9,32 @@ import java.util.LinkedList;
 import java.util.List;
 
 import info.rsdev.mysite.exception.ConfigurationException;
-import info.rsdev.mysite.gallery.domain.DefaultImage;
 import info.rsdev.mysite.util.DirectoryFilter;
 
 /**
  * <p>
  * The responsibility of this class is to inventory the given collection
- * directory and all of it's subdirectories for images. Supported image types
- * are png, jpg and gif. The images in a subdirectory are considered to be a
- * group, and the name of the subdirectory is considered to be the group name.
+ * directory and all of it's subdirectories for resources of a specific type.
+ * The resources in a subdirectory are considered to be a group, and the name of
+ * the subdirectory is considered to be the group name.
  * </p>
  * <p>
  * When there are more subdirectories (on different levels) with the same name,
- * they are considered to form a single group of images. When a group contains
- * multiple images with the same name, only the last image is included in the
+ * they are considered to form a single group of resources. When a group contains
+ * multiple resources with the same name, only the last image is included in the
  * collection,
  * </p>
+ *
+ * @param <G> The type of resource group. A resource group understands the type of resources it contains
+ * @param <T> The type of resource that is located on the filesystem
  */
 public abstract class DefaultResourceCollection<G extends ResourceGroup<T>, T extends PathResource>
         implements ResourceCollection<T> {
 
     /**
-     * The list of {@link DefaultImage}s in the imagegroup directory.
+     * The collection of resources per resource group.
      */
-    protected final List<G> resourceGroups = new LinkedList<>();
+    protected final LinkedList<G> resourceGroups = new LinkedList<>();
 
     private final String collectionPath;
 
@@ -94,8 +96,7 @@ public abstract class DefaultResourceCollection<G extends ResourceGroup<T>, T ex
         File[] subdirectories = groupDir.listFiles(DirectoryFilter.INSTANCE);
         for (File subDirectory : subdirectories) {
             // take inventory of resourcegroup in subdirectory and merge with
-            // our
-            // resource group
+            // our resource group
             groups.addAll(inventory(sitePath, subDirectory, false));
         }
 

@@ -15,7 +15,7 @@ public class DocumentGroup implements ResourceGroup<DefaultDocument> {
 
     private final String groupName;
 
-    private SortedSet<DefaultDocument> documents = new TreeSet<>();
+    protected SortedSet<DefaultDocument> documents = new TreeSet<>();
 
     public DocumentGroup(DocumentCollection collection, String name) {
         this.collection = collection;

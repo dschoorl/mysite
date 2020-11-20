@@ -20,6 +20,11 @@ public class DocumentModuleConfig extends AbstractModuleConfig implements Config
         String servletPath =
                 ServletUtils.concatenatePaths(properties.getProperty(CONTEXTPATH_KEY), properties.getProperty(MOUNTPOINT_KEY));
         this.requestHandler = new DocumentContentServant(new File(getString(SITE_DATA_DIR_KEY)), getString(COLLECTION_PATH_KEY), servletPath);
+        
+        String recentDocumentsGroupName = getString(RECENT_DOCUMENTS_GROUP_NAME_KEY);
+        if (recentDocumentsGroupName != null) {
+            this.requestHandler.addRecentDocumentsGroup(recentDocumentsGroupName, getInteger(RECENT_DOCUMENTS_DAYS_KEY));
+        }
     }
 
     @Override

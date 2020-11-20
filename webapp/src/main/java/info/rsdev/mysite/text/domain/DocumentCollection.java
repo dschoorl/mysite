@@ -26,5 +26,9 @@ public class DocumentCollection extends DefaultResourceCollection<DocumentGroup,
     public FileFilter getResourceFilter() {
         return DocumentFileFilter.INSTANCE;
     }
-    
+
+    public void addVirtualDocumentGroup(DocumentGroup virtualGroup) {
+        this.resourceGroups.addFirst(virtualGroup);
+    }
+
 }

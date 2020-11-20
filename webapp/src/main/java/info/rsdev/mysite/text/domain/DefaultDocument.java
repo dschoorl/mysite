@@ -136,7 +136,7 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
         try {
             return String.format("%s/%s",
                     URLEncoder.encode(documentGroup.getName(), "UTF-8"),
-                    URLEncoder.encode(getTitle(), "UTF-8"));
+                    URLEncoder.encode(getTechnicalName(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
@@ -151,6 +151,9 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
     }
 
     public String getTitle() {
+        if ((metadata != null) && metadata.containsKey(TITLE_METAKEY)) {
+            return metadata.getProperty(TITLE_METAKEY);
+        }
         return this.getTechnicalName();
     }
 
