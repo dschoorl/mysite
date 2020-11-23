@@ -120,7 +120,8 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         if (!cachedTemplateGroupByTemplateName.contains(templateName)) {
             URL templateResource = getSiteSpecificTemplateLocation(templateName);
             if (templateResource == null) {
-                //no user supplied template provided, fallback on templates supplied by the application
+                // no user supplied template provided, fallback on templates
+                // supplied by the application
                 String resourceName = "templates/".concat(templateName).concat(".stg");
                 templateResource = Thread.currentThread().getContextClassLoader().getResource(resourceName);
             }
@@ -130,9 +131,11 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
     }
 
     /**
-     * A site specific template can be located either in a designated template folder in the site's data directory,
-     * or, as a fallback mechanism, in the folder where the collection is located. If these two locations do not hold
-     * the template file, then there is no site specific template.
+     * A site specific template can be located either in a designated template
+     * folder in the site's data directory, or, as a fallback mechanism, in the
+     * folder where the collection is located. If these two locations do not
+     * hold the template file, then there is no site specific template.
+     * 
      * @param templateName the name of the template we are looking for
      * @return the URL to the site specific template or null if there is none
      */
@@ -170,7 +173,10 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
     public File getAccessLogFile() {
         String logDir = System.getProperty("MYSITE_LOG_DIR");
         if ((logDir == null) || logDir.isEmpty()) {
-            throw new IllegalStateException("The value of Java system property 'MYSITE_LOG_DIR' is not set");
+            logDir = System.getProperty("MYSITE_LOG_DIR");
+            if ((logDir == null) || logDir.isEmpty()) {
+                throw new IllegalStateException("The value of Java system property 'MYSITE_LOG_DIR' is not set");
+            }
         }
         return new File(logDir, "mysite-accesslog.log");
     }

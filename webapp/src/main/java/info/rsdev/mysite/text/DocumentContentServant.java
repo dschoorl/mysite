@@ -109,6 +109,9 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
     }
 
     private String determineContentId(String templateName, CorePageModel<?> model) {
+        if (model instanceof DocumentPageModel) {
+            return ((DocumentPageModel)model).getDocument().getTitle();
+        }
         return model.getSelectedMenuItemName();
     }
 

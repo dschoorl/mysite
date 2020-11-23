@@ -12,14 +12,17 @@ import java.util.Locale;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * Version 1 of the AccessLogEntry. The version determines which data will be collected per request.
+ * Version 1 of the AccessLogEntry. The version determines which data will be
+ * collected per request.
  */
 public class AccessLogEntryV1 implements AccessLogEntry {
-    
+
     private static final String EMPTY = "";
-    
+
     private static final String LOG_VERSION = "v1";
-    
+
+    private static final String IP_UNKNOWN = "unknown";
+
     private static interface V1 {
         public int VERSION_ID = 0;
         public int DATE = 1;
@@ -40,58 +43,62 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         public int OS_TYPE = 16;
         public int BROWSER_TYPE = 17;
     }
-    
+
     private Calendar timestampRequestReceived = GregorianCalendar.getInstance();
-    
+
     private int durationInMs = 0;
-    
+
     private String ipRequester = EMPTY;
-    
-    private Locale countryRequester = null;    //derived from ipRequester
-    
+
+    private Locale countryRequester = null; // derived from ipRequester
+
     /**
      * The request method, like GET or POST
      */
     private String httpMethod = EMPTY;
-    
+
     private String serverHostname = EMPTY;
-    
+
     private String website = EMPTY;
-    
+
     /**
-     * The path relative to the mountpoint that was requested, including query parameters
+     * The path relative to the mountpoint that was requested, including query
+     * parameters
      */
     private String path = EMPTY;
-    
+
     private int statusCode = -1;
-    
+
     private String sessionId = EMPTY;
-    
+
     private String mountpoint = EMPTY;
-    
+
     private String templateName = EMPTY;
-    
+
     private String contentId = EMPTY;
-    
+
     private String userAgentString = EMPTY;
-    
+
     @SuppressWarnings("unused")
-    private Boolean isCrawler = null;  //derived from userAgentString
-    
-    private String osVersion = EMPTY;  //derived from userAgentString
-    
-    private String browserVersion = EMPTY; //derived from userAgentString
-    
+    private Boolean isCrawler = null; // derived from userAgentString
+
+    private String osVersion = EMPTY; // derived from userAgentString
+
+    private String browserVersion = EMPTY; // derived from userAgentString
+
     /**
-     * Create an empty {@link AccessLogEntryV1} for the purpose of writing a line to the access log file. Only the creation 
-     * timestamp is set and all text fields are initialized to empty strings The fields will be filled externally from the http 
-     * request and Module configuration by calling the appropriate methods.
+     * Create an empty {@link AccessLogEntryV1} for the purpose of writing a
+     * line to the access log file. Only the creation timestamp is set and all
+     * text fields are initialized to empty strings The fields will be filled
+     * externally from the http request and Module configuration by calling the
+     * appropriate methods.
      */
-    public AccessLogEntryV1() {}
-    
+    public AccessLogEntryV1() {
+    }
+
     /**
-     * Create a new {@link AccessLogEntryV1} from data that was read from the access log file. It's purpose is to aid in generating
-     * statistics.
+     * Create a new {@link AccessLogEntryV1} from data that was read from the
+     * access log file. It's purpose is to aid in generating statistics.
      * 
      * @param rawLogdata
      */
@@ -102,7 +109,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         if ((rawLogdata.length != 18) || !rawLogdata[V1.VERSION_ID].equals(LOG_VERSION)) {
             throw new IllegalArgumentException("logdata does not represent a valid V1 access log entry");
         }
-        
+
         String date = rawLogdata[V1.DATE];
         String time = rawLogdata[V1.TIME];
         synchronized (dateFormatter) {
@@ -115,7 +122,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
 
         this.durationInMs = Integer.parseInt(rawLogdata[V1.DURATION]);
         this.ipRequester = rawLogdata[V1.IP];
-        this.countryRequester = rawLogdata[V1.COUNTRY].isEmpty()?null:new Locale(rawLogdata[V1.COUNTRY]);
+        this.countryRequester = rawLogdata[V1.COUNTRY].isEmpty() ? null : new Locale(rawLogdata[V1.COUNTRY]);
         this.httpMethod = rawLogdata[V1.METHOD];
         this.serverHostname = rawLogdata[V1.SERVER_HOST];
         this.website = rawLogdata[V1.WEBSITE];
@@ -129,36 +136,58 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         this.osVersion = rawLogdata[V1.OS_TYPE];
         this.browserVersion = rawLogdata[V1.BROWSER_TYPE];
     }
-    
+
     public AccessLogEntryV1 feedModuleConfig(ModuleConfig config) {
         mountpoint = config.getMountPoint();
-//        templateName = config.getString(DefaultConfigKeys.TEMPLATE_NAME_KEY);
+        // templateName = config.getString(DefaultConfigKeys.TEMPLATE_NAME_KEY);
         website = config.getString(DefaultConfigKeys.SITENAME_KEY);
         return this;
     }
-    
+
     public AccessLogEntryV1 feedRequest(HttpServletRequest request) {
         httpMethod = request.getMethod();
-        ipRequester = request.getRemoteAddr();
-        //TODO: resolve ip-to-country using E.g. http://www.freegeoip.net
+        ipRequester = getClientAddress(request);
+        // TODO: resolve ip-to-country using E.g. http://www.freegeoip.net
         sessionId = request.getSession().getId();
         serverHostname = request.getServerName();
-        //TODO: resolve os / browser using E.g. http://www.useragentstring.com/pages/api.php
-        //TODO: derive isCrawler from User-Agent string
+        // TODO: resolve os / browser using E.g.
+        // http://www.useragentstring.com/pages/api.php
+        // TODO: derive isCrawler from User-Agent string
         userAgentString = request.getHeader("User-Agent");
         if (request.getRequestURI() != null) {
             path = request.getRequestURI();
         }
-        
+
         if (request.getQueryString() != null) {
-            path = path.concat("?").concat(request.getQueryString());   //URL encoded
+            path = path.concat("?").concat(request.getQueryString()); // URL
+                                                                      // encoded
         }
         return this;
     }
-    
+
+    private String getClientAddress(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || IP_UNKNOWN.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || IP_UNKNOWN.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || IP_UNKNOWN.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || IP_UNKNOWN.equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || IP_UNKNOWN.equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();   //in case no proxy server is used
+        }
+        return ip;
+    }
+
     public AccessLogEntryV1 markFinished(ModuleHandlerResult result, int statusCode) {
         this.statusCode = statusCode;
-        this.durationInMs = (int)(System.currentTimeMillis() - this.timestampRequestReceived.getTimeInMillis());
+        this.durationInMs = (int) (System.currentTimeMillis() - this.timestampRequestReceived.getTimeInMillis());
         this.statusCode = statusCode;
         if (result != null) {
             this.contentId = result.getContentId();
@@ -166,14 +195,20 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         }
         return this;
     }
-    
+
     protected String quote(String quotable) {
         if ((quotable == null) || quotable.isEmpty()) {
             return EMPTY;
         }
-        return "\"".concat(quotable.replaceAll("\"", "\"\"")).concat("\""); //escape double quotes within the string value
+        return "\"".concat(quotable.replaceAll("\"", "\"\"")).concat("\""); // escape
+                                                                            // double
+                                                                            // quotes
+                                                                            // within
+                                                                            // the
+                                                                            // string
+                                                                            // value
     }
-    
+
     @Override
     public String toString() {
         return String.format("%s,%tF,%tT,%d,%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s",
@@ -182,7 +217,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
                 timestampRequestReceived,
                 durationInMs,
                 quote(ipRequester),
-                quote(countryRequester==null?null:countryRequester.toString()),
+                quote(countryRequester == null ? null : countryRequester.toString()),
                 quote(httpMethod),
                 quote(serverHostname),
                 quote(website),
@@ -193,10 +228,9 @@ public class AccessLogEntryV1 implements AccessLogEntry {
                 quote(templateName),
                 quote(contentId),
                 quote(userAgentString),
-//                EMPTY,                      //placeholder for boolean value 'isCrawler' 
+                // EMPTY, //placeholder for boolean value 'isCrawler'
                 quote(osVersion),
-                quote(browserVersion)
-                );
+                quote(browserVersion));
     }
 
     @Override
@@ -233,7 +267,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
     public String getWebsite() {
         return this.website;
     }
-    
+
     @Override
     public String getVersion() {
         return LOG_VERSION;
@@ -282,5 +316,5 @@ public class AccessLogEntryV1 implements AccessLogEntry {
     public boolean ignoreMe() {
         return getContentId() == null;
     }
-    
+
 }
