@@ -165,7 +165,9 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
 
     public void addRecentDocumentsGroup(String recentDocumentsGroupName, int daysCutoffPoint) {
         RecentDocumentGroup virualGroup = new RecentDocumentGroup(documentCollection, recentDocumentsGroupName, daysCutoffPoint);
-        documentCollection.addVirtualDocumentGroup(virualGroup);
+        if (!virualGroup.getAll().isEmpty()) {
+            documentCollection.addVirtualDocumentGroup(virualGroup);
+        }
     }
 
 }

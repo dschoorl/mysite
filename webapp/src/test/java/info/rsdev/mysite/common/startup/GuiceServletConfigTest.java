@@ -1,10 +1,9 @@
 package info.rsdev.mysite.common.startup;
 
+import static org.junit.Assert.*;
+
 import org.junit.Before;
 import org.junit.Test;
-
-import info.rsdev.mysite.common.startup.GuiceServletConfig;
-import static org.junit.Assert.*;
 
 
 public class GuiceServletConfigTest {

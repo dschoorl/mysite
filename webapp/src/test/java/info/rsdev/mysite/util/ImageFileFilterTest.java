@@ -1,12 +1,10 @@
 package info.rsdev.mysite.util;
 
-import info.rsdev.mysite.util.ImageFileFilter;
+import static org.junit.Assert.*;
 
 import java.io.File;
 
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class ImageFileFilterTest {
     
