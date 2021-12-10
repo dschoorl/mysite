@@ -14,17 +14,17 @@
         <asciidoctorj.version>2.1.0</asciidoctorj.version>
         <guice.version>4.2.2</guice.version>
         <imgscalr.version>4.2</imgscalr.version>
-        <junit4.version>4.13.1</junit4.version>
-        <log4j2.version>2.13.3</log4j2.version>
+        <junit4.version>4.13.2</junit4.version>
+        <log4j2.version>2.15.0</log4j2.version>
         <mockito.version>2.28.2</mockito.version>
         <opencsv.version>4.6</opencsv.version>
-        <slf4j.version>1.7.26</slf4j.version>
-        <stringtemplate.version>4.1</stringtemplate.version>
-        <undertow.version>2.0.30.Final</undertow.version>
+        <slf4j.version>1.7.32</slf4j.version>
+        <stringtemplate.version>4.3.1</stringtemplate.version>
+        <undertow.version>2.0.42.Final</undertow.version>
         <tika.version>1.24</tika.version>
 
         <asciidoctor.plugin.version>1.5.6</asciidoctor.plugin.version>
-        <spring-boot.plugin.version>2.1.9.RELEASE</spring-boot.plugin.version>
+        <spring-boot.plugin.version>2.6.1</spring-boot.plugin.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>

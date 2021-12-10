@@ -18,6 +18,7 @@ public class AccessLogReportTest {
     private static final Logger logger = LoggerFactory.getLogger(AccessLogReportTest.class);
     
     @Test
+    @Ignore
     public void testResolveCountry() {
         Locale country = AccessLogReport.resolveCountry("87.212.128.27", null);
         assertEquals(new Locale("", "NL"), country);
