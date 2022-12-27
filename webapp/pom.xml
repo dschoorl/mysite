@@ -10,7 +10,6 @@
     <artifactId>mysite</artifactId>
     <packaging>war</packaging>
     <name>mysite-webapp</name>
-
     <build>
         <finalName>mysite</finalName>
         <plugins>
@@ -36,19 +35,14 @@
             </plugin>
         </plugins>
     </build>
-
     <dependencies>
         <dependency>
-            <groupId>com.google.inject</groupId>
-            <artifactId>guice</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.google.inject.extensions</groupId>
-            <artifactId>guice-servlet</artifactId>
+            <groupId>com.guicedee.servlets</groupId>
+            <artifactId>guiced-servlets</artifactId>
         </dependency>
         <dependency>
             <groupId>io.undertow</groupId>
-            <artifactId>undertow-servlet</artifactId>
+            <artifactId>undertow-servlet-jakartaee9</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

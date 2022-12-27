@@ -7,7 +7,7 @@ import java.io.File;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

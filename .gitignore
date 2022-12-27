@@ -9,6 +9,7 @@ hs_err_pid*
 .classpath
 .project
 .settings
+.factorypath
 target
 
 #ignore temp-files

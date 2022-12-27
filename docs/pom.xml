@@ -10,7 +10,6 @@
     <artifactId>mysite-docs</artifactId>
     <packaging>pom</packaging>
     <name>mysite-docs</name>
-
     <build>
         <plugins>
             <plugin>

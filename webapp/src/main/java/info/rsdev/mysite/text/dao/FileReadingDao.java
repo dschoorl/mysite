@@ -2,7 +2,7 @@ package info.rsdev.mysite.text.dao;
 
 import java.io.File;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 import info.rsdev.mysite.common.startup.PropertiesModule.ContentRoot;
 import info.rsdev.mysite.common.startup.PropertiesModule.ContextPath;

@@ -6,41 +6,34 @@
     <packaging>pom</packaging>
     <version>0.1-SNAPSHOT</version>
     <name>mysite-pom</name>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>3.0.1</version>
+        <relativePath />
+    </parent>
     <modules>
         <module>webapp</module>
         <module>docs</module>
     </modules>
     <properties>
-        <asciidoctorj.version>2.1.0</asciidoctorj.version>
-        <guice.version>4.2.2</guice.version>
+        <asciidoctorj.version>2.5.7</asciidoctorj.version>
+        <guiced.servlets.version>1.2.2.1-jre17</guiced.servlets.version>
         <imgscalr.version>4.2</imgscalr.version>
-        <junit4.version>4.13.2</junit4.version>
-        <log4j2.version>2.17.2</log4j2.version>
-        <mockito.version>2.28.2</mockito.version>
-        <opencsv.version>4.6</opencsv.version>
-        <slf4j.version>1.7.32</slf4j.version>
-        <stringtemplate.version>4.3.1</stringtemplate.version>
-        <undertow.version>2.0.42.Final</undertow.version>
-        <tika.version>1.24</tika.version>
-
-        <asciidoctor.plugin.version>1.5.6</asciidoctor.plugin.version>
-        <spring-boot.plugin.version>2.7.0</spring-boot.plugin.version>
-
+        <opencsv.version>5.7.1</opencsv.version>
+        <stringtemplate.version>4.3.4</stringtemplate.version>
+        <undertow.version>2.2.13.Final</undertow.version>
+        <tika.version>2.6.0</tika.version>
+        <asciidoctor.plugin.version>2.2.2</asciidoctor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
     </properties>
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>com.google.inject</groupId>
-                <artifactId>guice</artifactId>
-                <version>${guice.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.google.inject.extensions</groupId>
-                <artifactId>guice-servlet</artifactId>
-                <version>${guice.version}</version>
+                <groupId>com.guicedee.servlets</groupId>
+                <artifactId>guiced-servlets</artifactId>
+                <version>${guiced.servlets.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.opencsv</groupId>
@@ -49,28 +42,13 @@
             </dependency>
             <dependency>
                 <groupId>io.undertow</groupId>
-                <artifactId>undertow-servlet</artifactId>
+                <artifactId>undertow-servlet-jakartaee9</artifactId>
                 <version>${undertow.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit4.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.antlr</groupId>
                 <artifactId>ST4</artifactId>
                 <version>${stringtemplate.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-core</artifactId>
-                <version>${log4j2.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.logging.log4j</groupId>
-                <artifactId>log4j-slf4j-impl</artifactId>
-                <version>${log4j2.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.tika</groupId>
@@ -87,29 +65,8 @@
                 <artifactId>imgscalr-lib</artifactId>
                 <version>${imgscalr.version}</version>
             </dependency>
-            <dependency>
-                <groupId>org.mockito</groupId>
-                <artifactId>mockito-core</artifactId>
-                <version>${mockito.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jcl-over-slf4j</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>jul-to-slf4j</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
         </dependencies>
     </dependencyManagement>
-
     <build>
         <pluginManagement>
             <plugins>
@@ -117,11 +74,6 @@
                     <groupId>org.asciidoctor</groupId>
                     <artifactId>asciidoctor-maven-plugin</artifactId>
                     <version>${asciidoctor.plugin.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.springframework.boot</groupId>
-                    <artifactId>spring-boot-maven-plugin</artifactId>
-                    <version>${spring-boot.plugin.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

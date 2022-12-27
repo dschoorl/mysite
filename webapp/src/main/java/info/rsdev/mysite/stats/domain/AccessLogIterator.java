@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.opencsv.CSVReader;
+import com.opencsv.exceptions.CsvValidationException;
 
 import info.rsdev.mysite.common.domain.accesslog.AccessLogEntry;
 
@@ -52,7 +53,7 @@ public class AccessLogIterator implements Iterator<AccessLogEntry> {
             if (nextLine == null) {
                 close();
             }
-        } catch (IOException e) {
+        } catch (IOException | CsvValidationException e) {
             close();
             throw new RuntimeException(e);
         }

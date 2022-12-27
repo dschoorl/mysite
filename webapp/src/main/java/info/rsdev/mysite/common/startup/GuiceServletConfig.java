@@ -3,9 +3,9 @@ package info.rsdev.mysite.common.startup;
 import java.io.File;
 import java.util.Collection;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletRegistration;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletRegistration;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;

@@ -5,13 +5,13 @@ import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -90,7 +90,7 @@ public class SiteServant extends HttpServlet {
             // appropriate module
             moduleConfig = config.getModuleConfig(modulePath);
             if (moduleConfig == null) {
-                logger.error(String.format("No module configered to serve module path '%s' for %s", modulePath, hostname));
+                logger.error(String.format("No module configured to serve module path '%s' for %s", modulePath, hostname));
                 ((HttpServletResponse) response).sendError(404);
                 return;
             }

@@ -1,6 +1,6 @@
 package info.rsdev.mysite;
 
-import javax.servlet.DispatcherType;
+import jakarta.servlet.DispatcherType;
 
 import com.google.inject.servlet.GuiceFilter;
 
