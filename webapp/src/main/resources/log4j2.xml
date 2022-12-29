@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="INFO">
     <Appenders>
-        <File name="AccessLog" fileName="${env:MYSITE_LOG_DIR}/mysite-accesslog.log" />
-        <File name="ApplicationLog" fileName="${env:MYSITE_LOG_DIR}/mysite-applicationlog.log">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %C{1}:%L - %msg%n" />
+        <File name="AccessLog" fileName="${env:MYSITE_LOG_DIR}/mysite-access.log" />
+        <File name="ApplicationLog" fileName="${env:MYSITE_LOG_DIR}/mysite-application.log">
+            <PatternLayout pattern="%d{ISO8601} [%t] %-5level %C{1}:%L - %msg%n" />
         </File>
         <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %C{1}:%L - %msg%n" />
+            <PatternLayout pattern="%d{ISO8601} [%t] %-5level %C{1}:%L - %msg%n" />
         </Console>
     </Appenders>
     <Loggers>
@@ -17,8 +17,5 @@
         <Logger name="AccessLog" level="INFO" additivity="false">
             <AppenderRef ref="AccessLog" />
         </Logger>
-
-        <Logger name="org.asciidoctor" level="DEBUG" />
-
     </Loggers>
 </Configuration>
