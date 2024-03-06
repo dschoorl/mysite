@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>info.rsdev.mysite</groupId>
@@ -9,7 +10,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>3.0.1</version>
+        <version>3.2.3</version>
         <relativePath />
     </parent>
     <modules>
@@ -17,23 +18,29 @@
         <module>docs</module>
     </modules>
     <properties>
-        <asciidoctorj.version>2.5.7</asciidoctorj.version>
-        <guiced.servlets.version>1.2.2.1-jre17</guiced.servlets.version>
+        <asciidoctorj.version>2.5.11</asciidoctorj.version>
+<!--        <guiced.servlets.version>1.2.2.1-jre17</guiced.servlets.version>-->
+        <guice-servlet.version>7.0.0</guice-servlet.version>
         <imgscalr.version>4.2</imgscalr.version>
-        <opencsv.version>5.7.1</opencsv.version>
+        <opencsv.version>5.9</opencsv.version>
         <stringtemplate.version>4.3.4</stringtemplate.version>
-        <undertow.version>2.2.13.Final</undertow.version>
-        <tika.version>2.6.0</tika.version>
-        <asciidoctor.plugin.version>2.2.2</asciidoctor.plugin.version>
+        <undertow.version>2.3.12.Final</undertow.version>
+        <tika.version>2.9.1</tika.version>
+        <asciidoctor.plugin.version>3.0.0</asciidoctor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.release>17</maven.compiler.release>
+        <maven.compiler.release>21</maven.compiler.release>
     </properties>
     <dependencyManagement>
         <dependencies>
+            <!--            <dependency>-->
+            <!--                <groupId>com.guicedee.servlets</groupId>-->
+            <!--                <artifactId>guiced-servlets</artifactId>-->
+            <!--                <version>${guiced.servlets.version}</version>-->
+            <!--            </dependency>-->
             <dependency>
-                <groupId>com.guicedee.servlets</groupId>
-                <artifactId>guiced-servlets</artifactId>
-                <version>${guiced.servlets.version}</version>
+                <groupId>com.google.inject.extensions</groupId>
+                <artifactId>guice-servlet</artifactId>
+                <version>${guice-servlet.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.opencsv</groupId>
@@ -42,7 +49,7 @@
             </dependency>
             <dependency>
                 <groupId>io.undertow</groupId>
-                <artifactId>undertow-servlet-jakartaee9</artifactId>
+                <artifactId>undertow-servlet</artifactId>
                 <version>${undertow.version}</version>
             </dependency>
             <dependency>

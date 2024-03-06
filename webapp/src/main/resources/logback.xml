@@ -1,0 +1,31 @@
+<configuration>
+    <import class="ch.qos.logback.classic.encoder.PatternLayoutEncoder" />
+    <import class="ch.qos.logback.core.FileAppender" />
+    <import class="ch.qos.logback.core.ConsoleAppender" />
+
+    <appender name="AccessLog" class="FileAppender">
+        <file>${MYSITE_LOG_DIR}/mysite-access.log</file>
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="ApplicationLog" class="FileAppender">
+        <file>${MYSITE_LOG_DIR}/mysite-application.log</file>
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{ISO8601} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="Console" class="ConsoleAppender">
+        <encoder class="PatternLayoutEncoder">
+            <pattern>%d{ISO8601} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="Console" />
+        <appender-ref ref="ApplicationLog" />
+    </root>
+    <Logger name="AccessLog" level="INFO" additivity="false">
+        <appender-ref ref="AccessLog" />
+    </Logger>
+</configuration>

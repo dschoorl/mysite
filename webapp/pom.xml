@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
@@ -24,7 +25,9 @@
                         <configuration>
                             <requiresUnpack>
                                 <dependency>
-                                    <!-- If not unpacked, asciidoctor cannot load it's gems from spring created fat jar-->
+                                    <!-- If not unpacked, asciidoctor cannot
+                                    load it's gems from spring created fat
+                                    jar-->
                                     <groupId>org.asciidoctor</groupId>
                                     <artifactId>asciidoctorj</artifactId>
                                 </dependency>
@@ -37,12 +40,16 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>com.guicedee.servlets</groupId>
-            <artifactId>guiced-servlets</artifactId>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject.extensions</groupId>
+            <artifactId>guice-servlet</artifactId>
         </dependency>
         <dependency>
             <groupId>io.undertow</groupId>
-            <artifactId>undertow-servlet-jakartaee9</artifactId>
+            <artifactId>undertow-servlet</artifactId>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -55,11 +62,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
+            <artifactId>log4j-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.tika</groupId>
@@ -81,6 +84,10 @@
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>log4j-over-slf4j</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
