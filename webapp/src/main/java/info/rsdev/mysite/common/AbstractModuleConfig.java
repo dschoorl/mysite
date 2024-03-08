@@ -34,15 +34,8 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
     protected String getString(String forMenuItem, String propertyName) {
         String propertyValue = null;
         if (forMenuItem != null) {
-            propertyValue = getString(forMenuItem + "." + propertyName); // is
-                                                                         // the
-                                                                         // property
-                                                                         // defined
-                                                                         // specific
-                                                                         // for
-                                                                         // the
-                                                                         // menu
-                                                                         // item?
+            // is the property defined specific for the menu item?
+            propertyValue = getString(forMenuItem + "." + propertyName);
         }
         if (propertyValue == null) {
             propertyValue = getString(propertyName); // use default instead
@@ -133,8 +126,8 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
     /**
      * A site specific template can be located either in a designated template
      * folder in the site's data directory, or, as a fallback mechanism, in the
-     * folder where the collection is located. If these two locations do not
-     * hold the template file, then there is no site specific template.
+     * folder where the collection is located. If these two locations do not hold
+     * the template file, then there is no site specific template.
      * 
      * @param templateName the name of the template we are looking for
      * @return the URL to the site specific template or null if there is none
@@ -171,14 +164,14 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
 
     @Override
     public File getAccessLogFile() {
-        String logDir = System.getProperty("MYSITE_LOG_DIR");
+        String logDir = System.getenv("MYSITE_LOG_DIR");
         if ((logDir == null) || logDir.isEmpty()) {
             logDir = System.getProperty("MYSITE_LOG_DIR");
             if ((logDir == null) || logDir.isEmpty()) {
-                throw new IllegalStateException("The value of Java system property 'MYSITE_LOG_DIR' is not set");
+                throw new IllegalStateException("'MYSITE_LOG_DIR' is not set as Java system property nor as Environment variable");
             }
         }
-        return new File(logDir, "mysite-accesslog.log");
+        return new File(logDir, "mysite-access.log");
     }
 
     @Override

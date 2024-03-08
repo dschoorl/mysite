@@ -7,11 +7,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.hash.Hashing;
 
 public abstract class ServletUtils {
     
@@ -71,5 +74,13 @@ public abstract class ServletUtils {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+    
+    @SuppressWarnings("deprecation")
+    public static String asMd5(String ipAddress) {
+        if (ipAddress == null) {
+            return null;
+        }
+        return Hashing.md5().hashString(ipAddress, StandardCharsets.UTF_8).toString();
     }
 }

@@ -68,7 +68,7 @@ total(stats) ::= <<
 
 bycountry(stats) ::= <<
   <tr>
-      <td>$stats.groupedBy.displayCountry$</td>
+      <td>$stats.groupedBy$</td>
       <td>$stats.visits$</td><td>$stats.newVisitors$</td><td>$stats.pageViews$</td><td>$stats.uniquePageViews$</td>
   </tr>
 >>

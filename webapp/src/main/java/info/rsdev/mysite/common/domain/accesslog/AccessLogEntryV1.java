@@ -1,14 +1,19 @@
 package info.rsdev.mysite.common.domain.accesslog;
 
-import info.rsdev.mysite.common.DefaultConfigKeys;
-import info.rsdev.mysite.common.ModuleConfig;
-
+import java.nio.charset.StandardCharsets;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Locale;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.hash.Hashing;
+
+import info.rsdev.mysite.common.DefaultConfigKeys;
+import info.rsdev.mysite.common.ModuleConfig;
+import info.rsdev.mysite.stats.Ip2CountryService;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
@@ -16,6 +21,8 @@ import jakarta.servlet.http.HttpServletRequest;
  * collected per request.
  */
 public class AccessLogEntryV1 implements AccessLogEntry {
+    
+    private static final Logger logger = LoggerFactory.getLogger(AccessLogEntryV1.class);
 
     private static final String EMPTY = "";
 
@@ -28,7 +35,11 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         public int DATE = 1;
         public int TIME = 2;
         public int DURATION = 3;
-        public int IP = 4;
+        /*
+         * TODO: do not log IP but a hash from the IP. This allows us to: (1) simplify
+         * AVG compliance and (2) still detect previous visits from same IP
+         */
+        public int IP_MD5_HASH = 4;
         public int COUNTRY = 5;
         public int METHOD = 6;
         public int SERVER_HOST = 7;
@@ -48,9 +59,12 @@ public class AccessLogEntryV1 implements AccessLogEntry {
 
     private int durationInMs = 0;
 
-    private String ipRequester = EMPTY;
+    /**
+     * An MD5 hash of the requester's IP address
+     */
+    private String requesterIpHash = EMPTY;
 
-    private Locale countryRequester = null; // derived from ipRequester
+    private String countryRequester = null; // looked up in ip2country table
 
     /**
      * The request method, like GET or POST
@@ -87,18 +101,17 @@ public class AccessLogEntryV1 implements AccessLogEntry {
     private String browserVersion = EMPTY; // derived from userAgentString
 
     /**
-     * Create an empty {@link AccessLogEntryV1} for the purpose of writing a
-     * line to the access log file. Only the creation timestamp is set and all
-     * text fields are initialized to empty strings The fields will be filled
-     * externally from the http request and Module configuration by calling the
-     * appropriate methods.
+     * Create an empty {@link AccessLogEntryV1} for the purpose of writing a line to
+     * the access log file. Only the creation timestamp is set and all text fields
+     * are initialized to empty strings The fields will be filled externally from
+     * the http request and Module configuration by calling the appropriate methods.
      */
     public AccessLogEntryV1() {
     }
 
     /**
-     * Create a new {@link AccessLogEntryV1} from data that was read from the
-     * access log file. It's purpose is to aid in generating statistics.
+     * Create a new {@link AccessLogEntryV1} from data that was read from the access
+     * log file. It's purpose is to aid in generating statistics.
      * 
      * @param rawLogdata
      */
@@ -121,8 +134,8 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         }
 
         this.durationInMs = Integer.parseInt(rawLogdata[V1.DURATION]);
-        this.ipRequester = rawLogdata[V1.IP];
-        this.countryRequester = rawLogdata[V1.COUNTRY].isEmpty() ? null : new Locale(rawLogdata[V1.COUNTRY]);
+        this.requesterIpHash = rawLogdata[V1.IP_MD5_HASH];
+        this.countryRequester = rawLogdata[V1.COUNTRY];
         this.httpMethod = rawLogdata[V1.METHOD];
         this.serverHostname = rawLogdata[V1.SERVER_HOST];
         this.website = rawLogdata[V1.WEBSITE];
@@ -144,10 +157,15 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         return this;
     }
 
-    public AccessLogEntryV1 feedRequest(HttpServletRequest request) {
+    @SuppressWarnings("deprecation")
+    public AccessLogEntryV1 feedRequest(HttpServletRequest request, Ip2CountryService ip2CountryLookup) {
         httpMethod = request.getMethod();
-        ipRequester = getClientAddress(request);
-        // TODO: resolve ip-to-country using E.g. http://www.freegeoip.net
+        String ipAddress = getClientAddress(request);
+        if (ipAddress == null) {
+            logger.info("No client ip address resolved from request");
+        }
+        requesterIpHash = Hashing.md5().hashString(ipAddress, StandardCharsets.UTF_8).toString();
+        countryRequester = ip2CountryLookup.getCountryCode(ipAddress);
         sessionId = request.getSession().getId();
         serverHostname = request.getServerName();
         // TODO: resolve os / browser using E.g.
@@ -180,7 +198,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
             ip = request.getHeader("HTTP_X_FORWARDED_FOR");
         }
         if (ip == null || ip.length() == 0 || IP_UNKNOWN.equalsIgnoreCase(ip)) {
-            ip = request.getRemoteAddr();   //in case no proxy server is used
+            ip = request.getRemoteAddr(); // in case no proxy server is used
         }
         return ip;
     }
@@ -211,31 +229,17 @@ public class AccessLogEntryV1 implements AccessLogEntry {
 
     @Override
     public String toString() {
-        return String.format("%s,%tF,%tT,%d,%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s",
-                quote(LOG_VERSION),
-                timestampRequestReceived,
-                timestampRequestReceived,
-                durationInMs,
-                quote(ipRequester),
-                quote(countryRequester == null ? null : countryRequester.toString()),
-                quote(httpMethod),
-                quote(serverHostname),
-                quote(website),
-                quote(path),
-                statusCode,
-                quote(sessionId),
-                quote(mountpoint),
-                quote(templateName),
-                quote(contentId),
-                quote(userAgentString),
+        return String.format("%s,%tF,%tT,%d,%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s", quote(LOG_VERSION),
+                timestampRequestReceived, timestampRequestReceived, durationInMs, quote(requesterIpHash), quote(countryRequester),
+                quote(httpMethod), quote(serverHostname), quote(website), quote(path), statusCode, quote(sessionId),
+                quote(mountpoint), quote(templateName), quote(contentId), quote(userAgentString),
                 // EMPTY, //placeholder for boolean value 'isCrawler'
-                quote(osVersion),
-                quote(browserVersion));
+                quote(osVersion), quote(browserVersion));
     }
 
     @Override
-    public String getIpRequester() {
-        return this.ipRequester;
+    public String getRequesterIpHash() {
+        return this.requesterIpHash;
     }
 
     @Override
@@ -274,18 +278,13 @@ public class AccessLogEntryV1 implements AccessLogEntry {
     }
 
     @Override
-    public Locale getCountry() {
+    public String getCountry() {
         return this.countryRequester;
     }
 
     @Override
-    public void setCountry(Locale country) {
-        this.countryRequester = country;
-    }
-
-    @Override
     public Calendar getTimestamp() {
-        return null;
+        return this.timestampRequestReceived;
     }
 
     @Override

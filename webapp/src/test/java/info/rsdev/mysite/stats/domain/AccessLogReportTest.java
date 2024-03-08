@@ -3,39 +3,26 @@ package info.rsdev.mysite.stats.domain;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static org.junit.Assert.*;
 
 public class AccessLogReportTest {
     
     private static final Logger logger = LoggerFactory.getLogger(AccessLogReportTest.class);
     
     @Test
-    @Ignore
-    public void testResolveCountry() {
-        Locale country = AccessLogReport.resolveCountry("87.212.128.27", null);
-        assertEquals(new Locale("", "NL"), country);
-        assertEquals("Nederland", country.getDisplayCountry(new Locale("nl", "NL")));
-    }
-    
-    @Test  @Ignore
     public void processLogfile() throws IOException {
         //the file location is temporary, test too, maybe
-        File logFile = new File("/home/dschoorl/myown/websites/mysite/sites/sylviaborst.nl/logs/mysite-accesslog.log");
+        File logFile = new File("/home/dschoorl/data/websites/mysite/sites/sylviaborst.nl/logs/mysite-accesslog.log");
         ConcurrentHashMap<String, String> crawlerUserAgents = new ConcurrentHashMap<>();
-        ConcurrentHashMap<String, Locale> ip2Country = new ConcurrentHashMap<>();
         
         Long startTime = System.currentTimeMillis();
         
         //code copied and adjusted from StatsContentServant
-        AccessLogReport report = new AccessLogReport("sylviaborst.nl", ip2Country, crawlerUserAgents);
+        AccessLogReport report = new AccessLogReport("sylviaborst.nl", crawlerUserAgents);
         AccessLogIterator logItems = new AccessLogIterator(logFile);
         int entryCount = 0;
         while (logItems.hasNext()) {
@@ -49,8 +36,6 @@ public class AccessLogReportTest {
         for (VisitorsByMonth previous: report.getOlderMonths()) {
             print(previous);
         }
-        logger.info(String.format("Resolved %d IP addresses to country codes", ip2Country.size()));
-        
         logger.info("Split by Country for Latest month:");
         print(report.getVisitorsByCountryLatestMonth());
         logger.info("Split by Country for Latest month, grand total:");
@@ -62,10 +47,9 @@ public class AccessLogReportTest {
         }
     }
     
-    private void print(List<VisitorsAndPageViews<Locale>> visitorsByCountry) {
-        Locale dutch = new Locale("nl");
-        for (VisitorsAndPageViews<Locale> stats: visitorsByCountry) {
-            String country = stats.getGroupedBy().getDisplayCountry(dutch);
+    private void print(List<VisitorsAndPageViews<String>> visitorsByCountry) {
+        for (VisitorsAndPageViews<String> stats: visitorsByCountry) {
+            String country = stats.getGroupedBy();
             logger.info(String.format("Country = %s, visits = %d, new = %d, recurrent = %d, pageViews = %d, uniquePageViews = %d",
                     country,
                     stats.getVisits(),

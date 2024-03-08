@@ -1,10 +1,21 @@
 package info.rsdev.mysite.common;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.nio.file.Path;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import info.rsdev.mysite.common.domain.MenuGroup;
+import info.rsdev.mysite.common.domain.accesslog.AccessLogEntryV1;
+import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
+import info.rsdev.mysite.common.startup.PropertiesModule.ContentRoot;
+import info.rsdev.mysite.exception.ConfigurationException;
+import info.rsdev.mysite.stats.Ip2CountryService;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.servlet.ServletConfig;
@@ -13,19 +24,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import info.rsdev.mysite.common.domain.MenuGroup;
-import info.rsdev.mysite.common.domain.accesslog.AccessLogEntryV1;
-import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
-import info.rsdev.mysite.exception.ConfigurationException;
-
 @Singleton
 public class SiteServant extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-
+    
     private static final Logger logger = LoggerFactory.getLogger(SiteServant.class);
     private static final Logger GLOBAL_ACCESS_LOGGER = LoggerFactory.getLogger("AccessLog");
     private static final String GLOBAL_UNAVAILABLE_PAGE =
@@ -54,10 +57,14 @@ public class SiteServant extends HttpServlet {
                     "  </section>\n";
 
     private ConfigDAI configDai = null;
+    
+    private Ip2CountryService ip2CountryLookup;
 
     @Inject
-    public SiteServant(ConfigDAI configDao) {
+    public SiteServant(ConfigDAI configDao, @ContentRoot File contentRoot) {
         this.configDai = configDao;
+        Path ip2CountryCsvFile = contentRoot.toPath().resolve("IP2LOCATION-LITE-DB1.CSV");
+        this.ip2CountryLookup = new Ip2CountryService(ip2CountryCsvFile);
     }
 
     @Override
@@ -72,7 +79,7 @@ public class SiteServant extends HttpServlet {
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         ModuleHandlerResult result = null;
-        AccessLogEntryV1 logEntry = new AccessLogEntryV1().feedRequest(request);
+        AccessLogEntryV1 logEntry = new AccessLogEntryV1().feedRequest(request, ip2CountryLookup);
         ModuleConfig moduleConfig = null;
         try {
             String modulePath = request.getPathInfo();

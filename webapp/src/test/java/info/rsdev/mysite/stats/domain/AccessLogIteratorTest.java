@@ -36,7 +36,7 @@ public class AccessLogIteratorTest {
         assertTrue(logRecords.hasNext());
         AccessLogEntry entry = this.logRecords.next();
         assertNotNull(entry);
-        assertEquals("127.0.0.1", entry.getIpRequester());
+        assertEquals("127.0.0.1", entry.getRequesterIpHash());
         
         //roundtrip test
         assertEquals(content, entry.toString());

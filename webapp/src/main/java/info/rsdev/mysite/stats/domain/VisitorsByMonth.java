@@ -7,15 +7,13 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import info.rsdev.mysite.common.domain.accesslog.AccessLogEntry;
+import info.rsdev.mysite.stats.Ip2CountryService;
 
 public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
-    
-    private static final Locale UNKNOWN = new Locale("XX");
     
     private final String website;
     
@@ -29,7 +27,7 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
      */
     private List<VisitorsAndPageViews<Integer>> visitorsByMonthday = null;
     
-    private Map<Locale, VisitorsAndPageViews<Locale>> visitorsByCountry = new HashMap<>();
+    private Map<String, VisitorsAndPageViews<String>> visitorsByCountry = new HashMap<>();
     
     private Set<String> previouslyVisitedFrom = new HashSet<>();
     
@@ -109,7 +107,7 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
         boolean isNewByDay = processDayStats(logEntry, this.previouslyVisitedFrom);
         boolean isNewByCountry = processCountryStats(logEntry, this.previouslyVisitedFrom);
         if (isNewByDay || isNewByCountry) {
-            this.previouslyVisitedFrom.add(logEntry.getIpRequester());
+            this.previouslyVisitedFrom.add(logEntry.getRequesterIpHash());
         }
     }
     
@@ -119,13 +117,13 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
     }
     
     private boolean processCountryStats(AccessLogEntry logEntry, Set<String> previouslyVisitedFrom) {
-        Locale country = logEntry.getCountry();
+        String country = logEntry.getCountry();
         if (country == null) {
-            country = UNKNOWN;
+            country = Ip2CountryService.UNKNOWN_COUNTRYCODE;
         }
-        VisitorsAndPageViews<Locale> visitors = visitorsByCountry.get(country);
+        VisitorsAndPageViews<String> visitors = visitorsByCountry.get(country);
         if (visitors == null) {
-            visitors = new VisitorsAndPageViews<Locale>(country);
+            visitors = new VisitorsAndPageViews<String>(country);
             visitorsByCountry.put(country, visitors);
         }
         return visitors.process(logEntry, previouslyVisitedFrom);
@@ -183,7 +181,7 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
         return this.website;
     }
 
-    public Collection<VisitorsAndPageViews<Locale>> getByCountry() {
+    public Collection<VisitorsAndPageViews<String>> getByCountry() {
         //TODO: order so that country with highest visits is top ranked
         return visitorsByCountry.values();
     }

@@ -1,5 +1,12 @@
 package info.rsdev.mysite.stats;
 
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.stringtemplate.v4.ST;
+
 import info.rsdev.mysite.common.DefaultConfigKeys;
 import info.rsdev.mysite.common.ModuleConfig;
 import info.rsdev.mysite.common.RequestHandler;
@@ -12,18 +19,9 @@ import info.rsdev.mysite.exception.ConfigurationException;
 import info.rsdev.mysite.gallery.GalleryModuleConfig;
 import info.rsdev.mysite.stats.domain.AccessLogIterator;
 import info.rsdev.mysite.stats.domain.AccessLogReport;
-
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.ConcurrentHashMap;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import org.stringtemplate.v4.ST;
 
 /**
  * This {@link RequestHandler} implementation is responsible for coordinating access to the images from the configured image
@@ -36,11 +34,6 @@ public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
      */
     private final ConcurrentHashMap<String, String> crawlerUserAgents = new ConcurrentHashMap<>();
 
-    /**
-     * Cache the queries for ip2Country mapping
-     */
-    private final ConcurrentHashMap<String, Locale> ip2Country = new ConcurrentHashMap<>();
-    
     @Override
     public ModuleHandlerResult handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -54,7 +47,7 @@ public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
         }
         StatsModuleConfig statsConfig = (StatsModuleConfig) config;
         
-        AccessLogReport report = new AccessLogReport(config.getString(SITENAME_KEY), this.ip2Country, this.crawlerUserAgents);
+        AccessLogReport report = new AccessLogReport(config.getString(SITENAME_KEY), this.crawlerUserAgents);
         AccessLogIterator logItems = new AccessLogIterator(statsConfig.getAccessLogFile());
         while (logItems.hasNext()) {
             report.process(logItems.next());

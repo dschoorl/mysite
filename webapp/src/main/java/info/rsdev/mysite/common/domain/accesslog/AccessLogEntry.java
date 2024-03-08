@@ -1,11 +1,14 @@
 package info.rsdev.mysite.common.domain.accesslog;
 
 import java.util.Calendar;
-import java.util.Locale;
 
 public interface AccessLogEntry {
     
-    public String getIpRequester();
+    /**
+     * Get the MD5 hash for the IP address
+     * @return
+     */
+    public String getRequesterIpHash();
     
     public int getYear();
     
@@ -25,9 +28,7 @@ public interface AccessLogEntry {
      */
     public String getVersion();
 
-    public Locale getCountry();
-
-    public void setCountry(Locale country);
+    public String getCountry();
 
     public Calendar getTimestamp();
 

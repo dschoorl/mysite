@@ -49,7 +49,7 @@ public class VisitorsAndPageViews<T> {
         if (!sessionIds.contains(logEntry.getSessionId()) && isPageView(logEntry)) {
             visits++;
             sessionIds.add(logEntry.getSessionId());
-            String ipAddress = logEntry.getIpRequester();
+            String ipAddress = logEntry.getRequesterIpHash();
             if (previouslyVisitedFrom.contains(ipAddress)) {
                 this.recurrentVisitors++;
             } else {

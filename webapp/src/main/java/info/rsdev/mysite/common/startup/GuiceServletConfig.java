@@ -80,9 +80,8 @@ public class GuiceServletConfig extends GuiceServletContextListener {
     protected String getContextPath(String servletContextPath, String urlMapping) {
         if (urlMapping != null) {
             if (urlMapping.endsWith("/*")) {
-                urlMapping = urlMapping.substring(0, urlMapping.length() - 1); // remove
-                                                                               // trailing
-                                                                               // astrix
+                // remove trailing astrix
+                urlMapping = urlMapping.substring(0, urlMapping.length() - 1);
             } else if (!urlMapping.endsWith("/")) {
                 // remove possible resource name mapping
                 String lastPart = urlMapping;
@@ -91,10 +90,8 @@ public class GuiceServletConfig extends GuiceServletContextListener {
                     lastPart = urlMapping.substring(slashIndex);
                 }
                 if (lastPart.contains("*.") || lastPart.contains(".")) {
-                    urlMapping = urlMapping.substring(0, slashIndex + 1); // include
-                                                                          // the
-                                                                          // forward
-                                                                          // slash
+                    // include the forward slash
+                    urlMapping = urlMapping.substring(0, slashIndex + 1);
                 } else {
                     urlMapping = urlMapping.concat("/");
                 }
