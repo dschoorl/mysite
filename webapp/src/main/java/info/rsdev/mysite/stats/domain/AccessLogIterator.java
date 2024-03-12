@@ -23,21 +23,24 @@ import info.rsdev.mysite.common.domain.accesslog.AccessLogEntry;
  * This class is not thread safe!
  */
 public class AccessLogIterator implements Iterator<AccessLogEntry> {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AccessLogIterator.class);
-    
+
     private static final Map<String, Constructor<AccessLogEntry>> cachedConstructors = new ConcurrentHashMap<>();
-    
+
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
-    
+
     private SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_TIME_FORMAT);
-    
+
     private CSVReader csvReader = null;
-    
+
     private String[] nextLine = null;
-    
+
+    private final String filePath;
+
     public AccessLogIterator(File logfile) throws FileNotFoundException {
-        logger.info("Processing logfile " + logfile.getAbsolutePath());
+        filePath = logfile.getAbsolutePath();
+        logger.info("Processing logfile {}", filePath);
         csvReader = new CSVReader(new FileReader(logfile));
         readNextlineIntoBuffer();
     }
@@ -58,7 +61,7 @@ public class AccessLogIterator implements Iterator<AccessLogEntry> {
             throw new RuntimeException(e);
         }
     }
-    
+
     /**
      * Close the underlying {@link CSVReader}, because we are done with it
      */
@@ -69,38 +72,55 @@ public class AccessLogIterator implements Iterator<AccessLogEntry> {
             logger.error("Exception occured when closing Access logfile", e1);
         }
     }
-    
+
     @Override
     public AccessLogEntry next() {
         String[] tmp = nextLine;
         readNextlineIntoBuffer();
-        return makeAccessLogEntry(tmp);
+        try {
+            return makeAccessLogEntry(tmp);
+        } catch (IllegalArgumentException e) {
+            logger.debug("Ignore log entry {} in {}: {}", csvReader.getLinesRead(), filePath, e.getMessage());
+            if (!hasNext()) {
+                throw e;
+            }
+
+            // Warning: line below could lead to stack overflow when many, many subsequent
+            // errors exist
+            return next();
+        }
+
     }
-    
+
     @Override
     public void remove() {
         throw new UnsupportedOperationException("remove");
     }
-    
+
     private AccessLogEntry makeAccessLogEntry(String[] fields) {
         String typeName = AccessLogEntry.class.getName().concat(fields[0].toUpperCase());
         Constructor<AccessLogEntry> logEntryConstructor = cachedConstructors.get(typeName);
-        
+
         if (logEntryConstructor == null) {
             try {
                 @SuppressWarnings("unchecked")
-                Class<AccessLogEntry> clazz = (Class<AccessLogEntry>)getClass().getClassLoader().loadClass(typeName);
+                Class<AccessLogEntry> clazz = (Class<AccessLogEntry>) getClass().getClassLoader().loadClass(typeName);
                 logEntryConstructor = clazz.getDeclaredConstructor(dateFormatter.getClass(), String[].class);
             } catch (ClassNotFoundException | NoSuchMethodException | SecurityException e) {
-                throw new IllegalStateException("Could not find a valid Constructor to create AccessLogEntry for version "
-                        .concat(fields[0]), e);
+                throw new IllegalStateException(
+                        "Could not find a valid Constructor to create AccessLogEntry for version ".concat(fields[0]), e);
             }
         }
         try {
             return logEntryConstructor.newInstance(new Object[] { dateFormatter, fields });
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException("Could not create AccessLogEntry for version ".concat(fields[0]), e);
+        } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof RuntimeException) {
+                throw (RuntimeException) e.getCause();
+            }
             throw new IllegalStateException("Could not create AccessLogEntry for version ".concat(fields[0]), e);
         }
     }
-    
+
 }

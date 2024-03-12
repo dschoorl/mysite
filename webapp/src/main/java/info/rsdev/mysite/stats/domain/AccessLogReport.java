@@ -9,10 +9,8 @@ import java.util.List;
 //import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import info.rsdev.mysite.common.domain.accesslog.AccessLogEntry;
-import info.rsdev.mysite.util.ServletUtils;
 
 /**
  * This class is responsible to preprocess the log entries, meaning: complete
@@ -22,22 +20,7 @@ import info.rsdev.mysite.util.ServletUtils;
  */
 public class AccessLogReport {
 
-    /**
-     * Cache the queries for UserAgent strings to Bot/crawler agents. The value of
-     * the entry is a static string 'Crawler'
-     */
-    @SuppressWarnings("unused")
-    private ConcurrentHashMap<String, String> crawlerUserAgents = null;
-
     private final String targetWebsite;
-
-    /**
-     * The ip numbers to ignore when they appear in the logfile. Crawlers are
-     * ignored automatically (a crawler is identified by their User-Agent string.
-     * The list is read from the module configuration file.
-     */
-    private Set<String> ipHashesToIgnore = Set.of(ServletUtils.asMd5("87.212.128.27"),
-            ServletUtils.asMd5("143.176.159.198")/* , ServletUtils.asMd5("127.0.0.1") */); // TODO: configure in properties file
 
     private final Map<String, VisitorsByMonth> visitorsByMonth = new HashMap<>();
 
@@ -46,13 +29,12 @@ public class AccessLogReport {
     private static final String[] months = { "januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus",
             "september", "oktober", "november", "december" };
 
-    public AccessLogReport(String targetSite, ConcurrentHashMap<String, String> crawlerUserAgents) {
-        this.crawlerUserAgents = crawlerUserAgents;
+    public AccessLogReport(String targetSite) {
         this.targetWebsite = targetSite;
     }
 
     public void process(AccessLogEntry logEntry) {
-        if (mustIgnore(logEntry.getRequesterIpHash()) || isCrawler(logEntry) || isNotTargetSite(logEntry)) {
+        if (isCrawler(logEntry.getUserAgentString()) || isNotTargetSite(logEntry)) {
             return;
         }
         String mapKey = String.format("%4d-%2d-%s", logEntry.getYear(), logEntry.getMonth(), logEntry.getWebsite());
@@ -68,23 +50,22 @@ public class AccessLogReport {
         return !targetWebsite.equalsIgnoreCase(logEntry.getWebsite());
     }
 
-    private boolean isCrawler(AccessLogEntry logEntry) {
-        String uas = logEntry.getUserAgentString();
-        boolean isBrowser = uas.contains("Firefox") || uas.contains("Gecko") || uas.contains("MSIE");
-        if (isBrowser) {
-            browserUserAgents.add(uas);
+    protected boolean isCrawler(String userAgentString) {
+        String uas = userAgentString.toLowerCase();
+        boolean hasBotInName = uas.contains("bot");
+        hasBotInName |= uas.contains("crawler");
+        hasBotInName |= uas.contains("spider");
+        hasBotInName |= uas.contains("slurp");
+        if (!hasBotInName) {
+            browserUserAgents.add(userAgentString);
         }
-        return !isBrowser;
+        return hasBotInName;
     }
 
     public List<String> getBrowserAgentStrings() {
         ArrayList<String> agents = new ArrayList<>(this.browserUserAgents);
         Collections.sort(agents);
         return agents;
-    }
-
-    private boolean mustIgnore(String ipAddress) {
-        return this.ipHashesToIgnore.contains(ipAddress);
     }
 
     public VisitorsByMonth getLatestMonth() {

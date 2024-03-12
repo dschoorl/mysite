@@ -21,7 +21,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * collected per request.
  */
 public class AccessLogEntryV1 implements AccessLogEntry {
-    
+
     private static final Logger logger = LoggerFactory.getLogger(AccessLogEntryV1.class);
 
     private static final String EMPTY = "";
@@ -30,7 +30,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
 
     private static final String IP_UNKNOWN = "unknown";
 
-    private static interface V1 {
+    static interface V1 {
         public int VERSION_ID = 0;
         public int DATE = 1;
         public int TIME = 2;
@@ -94,7 +94,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
     private String userAgentString = EMPTY;
 
     @SuppressWarnings("unused")
-    private Boolean isCrawler = null; // derived from userAgentString
+    private boolean isCrawler = false; // derived from userAgentString
 
     private String osVersion = EMPTY; // derived from userAgentString
 
@@ -160,13 +160,13 @@ public class AccessLogEntryV1 implements AccessLogEntry {
     @SuppressWarnings("deprecation")
     public AccessLogEntryV1 feedRequest(HttpServletRequest request, Ip2CountryService ip2CountryLookup) {
         httpMethod = request.getMethod();
+        sessionId = request.getSession().getId();
         String ipAddress = getClientAddress(request);
         if (ipAddress == null) {
             logger.info("No client ip address resolved from request");
         }
-        requesterIpHash = Hashing.md5().hashString(ipAddress, StandardCharsets.UTF_8).toString();
+        requesterIpHash = Hashing.md5().hashString(sessionId + ipAddress, StandardCharsets.UTF_8).toString();
         countryRequester = ip2CountryLookup.getCountryCode(ipAddress);
-        sessionId = request.getSession().getId();
         serverHostname = request.getServerName();
         // TODO: resolve os / browser using E.g.
         // http://www.useragentstring.com/pages/api.php
@@ -225,6 +225,9 @@ public class AccessLogEntryV1 implements AccessLogEntry {
                                                                             // the
                                                                             // string
                                                                             // value
+
+        // escape every double quote within the string with two double quotes
+//        return "\"".concat(quotable.replace("\"", "\"\"")).concat("\"");
     }
 
     @Override

@@ -3,7 +3,6 @@ package info.rsdev.mysite.stats;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.stringtemplate.v4.ST;
 
@@ -29,11 +28,6 @@ import jakarta.servlet.http.HttpServletResponse;
  */
 public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
     
-    /**
-     * Cache the queries for UserAgent strings to Bot/crawler agents. The value of the entry is a static string 'Crawler'
-     */
-    private final ConcurrentHashMap<String, String> crawlerUserAgents = new ConcurrentHashMap<>();
-
     @Override
     public ModuleHandlerResult handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -47,7 +41,7 @@ public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
         }
         StatsModuleConfig statsConfig = (StatsModuleConfig) config;
         
-        AccessLogReport report = new AccessLogReport(config.getString(SITENAME_KEY), this.crawlerUserAgents);
+        AccessLogReport report = new AccessLogReport(config.getString(SITENAME_KEY));
         AccessLogIterator logItems = new AccessLogIterator(statsConfig.getAccessLogFile());
         while (logItems.hasNext()) {
             report.process(logItems.next());
