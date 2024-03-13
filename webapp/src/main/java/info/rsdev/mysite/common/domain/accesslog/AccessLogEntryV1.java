@@ -165,8 +165,12 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         if (ipAddress == null) {
             logger.info("No client ip address resolved from request");
         }
-        requesterIpHash = Hashing.md5().hashString(sessionId + ipAddress, StandardCharsets.UTF_8).toString();
+
+        // countryCode as salt -- I know, still easy to generate rainbow table and find out
+        // the ip address behind the hash code, but it is a slightly bigger obstacle
+        // than no salt. And I need to detect returning visitors, so... that's why :-(
         countryRequester = ip2CountryLookup.getCountryCode(ipAddress);
+        requesterIpHash = Hashing.md5().hashString(countryRequester + ipAddress, StandardCharsets.UTF_8).toString();
         serverHostname = request.getServerName();
         // TODO: resolve os / browser using E.g.
         // http://www.useragentstring.com/pages/api.php
@@ -182,7 +186,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         }
         return this;
     }
-
+    
     private String getClientAddress(HttpServletRequest request) {
         String ip = request.getHeader("X-Forwarded-For");
         if (ip == null || ip.length() == 0 || IP_UNKNOWN.equalsIgnoreCase(ip)) {
