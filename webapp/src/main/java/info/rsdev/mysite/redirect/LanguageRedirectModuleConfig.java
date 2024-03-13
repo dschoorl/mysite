@@ -36,10 +36,10 @@ public class LanguageRedirectModuleConfig extends AbstractModuleConfig implement
     private Map<Locale, String> readLocaleToPathMapping() {
         Map<Locale, String> localesByPath = new HashMap<>();
         for (Entry<Object, Object> entry: getProperties().entrySet()) {
-            if (((String)entry.getKey()).startsWith(LOCALE_PREFIX_KEY)) {
+            if (((String)entry.getKey()).startsWith(LOCALE_PREFIX_KEY + ".")) {
                 String localeName = ((String)entry.getKey()).substring(LOCALE_PREFIX_KEY.length()+1);
                 if (StringUtils.isNotBlank(localeName)) {
-                    localesByPath.put(new Locale(localeName), (String)entry.getValue());
+                    localesByPath.put(Locale.forLanguageTag(localeName), (String)entry.getValue());
                 }
             }
         }
@@ -63,6 +63,6 @@ public class LanguageRedirectModuleConfig extends AbstractModuleConfig implement
 
     public Optional<Locale> getDefaultLocale() {
         String defaultLocaleName = getString(DEFAULT_LOCALE_KEY_NAME);
-        return defaultLocaleName == null ? Optional.empty() : Optional.of(new Locale(defaultLocaleName));
+        return defaultLocaleName == null ? Optional.empty() : Optional.of(Locale.forLanguageTag(defaultLocaleName));
     }
 }

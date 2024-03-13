@@ -59,4 +59,6 @@ public interface DefaultConfigKeys {
     
     public static final String DISABLED_KEY = "disabled";
     
+    public static final String LOCALE_KEY = "locale";
+    
 }

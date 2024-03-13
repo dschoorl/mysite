@@ -62,7 +62,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         if (!resourceLocation.toFile().isFile()) {
             String resource = ServletUtils.concatenatePaths(request.getContextPath(), pathInfo);
             response.sendError(404, String.format("Resource %s does not exist", resource));
-            return null;
+            return ModuleHandlerResult.NO_CONTENT;
         }
         String mimeType = getMimeType(resourceLocation);
         if ((mimeType == null) || !mimeType.equals("text/html")) {

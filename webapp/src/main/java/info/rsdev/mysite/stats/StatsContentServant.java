@@ -64,6 +64,7 @@ public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
                 response.setContentType("text/html; charset=UTF-8");
                 template.add("report", report);
                 template.add("model", model);
+//                template.add("locale", config.getLocale().getLanguage());
                 response.getWriter().write(template.render());
             }
         } catch (IOException e) {

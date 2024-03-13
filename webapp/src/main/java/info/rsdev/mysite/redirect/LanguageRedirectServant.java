@@ -30,9 +30,9 @@ public class LanguageRedirectServant implements RequestHandler, ConfigKeys {
             throw new ConfigurationException(String.format("%s cannot be null", ModuleConfig.class.getSimpleName()));
         }
         if (!(config instanceof LanguageRedirectModuleConfig)) {
-            throw new ConfigurationException(String.format("Expected was config of type %, but encountered was %s. please check"
-                    + "the value of property '%s'", LanguageRedirectModuleConfig.class.getSimpleName(), config,
-                    MODULECONFIGTYPE_KEY));
+            throw new ConfigurationException(String.format(
+                    "Expected was config of type %, but encountered was %s. please check" + "the value of property '%s'",
+                    LanguageRedirectModuleConfig.class.getSimpleName(), config, MODULECONFIGTYPE_KEY));
         }
         LanguageRedirectModuleConfig redirectConfig = (LanguageRedirectModuleConfig) config;
         Map<Locale, String> localesByPath = redirectConfig.getLocalesToPathMapping();
@@ -46,22 +46,22 @@ public class LanguageRedirectServant implements RequestHandler, ConfigKeys {
                 break;
             }
         }
-        
+
         if (redirectPath == null) {
-            //redirect to default language
+            // redirect to default language
             Locale defaultLocale = redirectConfig.getDefaultLocale().orElse(null);
             redirectPath = localesByPath.get(defaultLocale);
         }
-        
+
         if ((redirectPath == null) && !localesByPath.isEmpty()) {
-            redirectPath = localesByPath.values().iterator().next();    //arbitrairly select a localization
+            redirectPath = localesByPath.values().iterator().next(); // arbitrary select a localization
         }
 
         if (redirectPath != null) {
             response.sendRedirect(redirectPath);
             return ModuleHandlerResult.HANDLED;
         }
-        
+
         return ModuleHandlerResult.NO_CONTENT;
     }
 

@@ -37,6 +37,7 @@ false, shows the regular content
 | customTemplateFolder          | The path to a folder inside the website data directory where custom templates are
 located. Currently only stringtemplate group files are supported. This is an alternative to locating the template in the
 root of the folder containing the collection of resources served by the module.
+| locale                        | The language code for the content served by this module. If none provided, the Java platform default Locale is used 
 |===
 
 == Global configuration

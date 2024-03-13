@@ -111,7 +111,7 @@ public class SiteServant extends HttpServlet {
                 logger.debug(String.format("%s will be serving %s request: %s [QuesryString=%s]", moduleConfig.getRequestHandler(),
                         request.getMethod(), request.getServletPath(), request.getQueryString()));
             }
-            List<MenuGroup> menu = config.getMenu();
+            List<MenuGroup> menu = config.getMenu(moduleConfig.getLocale());
             result = moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest) request,
                     (HttpServletResponse) response);
             

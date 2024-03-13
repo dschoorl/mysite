@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -182,6 +183,16 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
     @Override
     public boolean isDisabled() {
         return getBoolean(DISABLED_KEY);
+    }
+
+    @Override
+    public Locale getLocale() {
+        String configuredLocale = getString(LOCALE_KEY);
+        if (configuredLocale == null || configuredLocale.trim().isEmpty()) {
+            configuredLocale = Locale.getDefault().getLanguage();
+        }
+
+        return Locale.of(configuredLocale);
     }
 
 }

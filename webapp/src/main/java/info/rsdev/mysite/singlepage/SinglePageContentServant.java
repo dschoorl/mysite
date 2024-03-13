@@ -63,6 +63,7 @@ public class SinglePageContentServant implements RequestHandler, ConfigKeys {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("text/html; charset=UTF-8");
                 template.add("model", pageModel);
+//                template.add("locale", singlepageConfig.getLocale().getLanguage());
                 response.getWriter().write(template.render());
             }
         } catch (IOException e) {

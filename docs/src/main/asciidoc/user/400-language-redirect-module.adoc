@@ -1,0 +1,17 @@
+= Language Redirect module
+
+== Purpose
+This module adds support for multi-lingual websites. When a request is received by this module, it will inspect the request header for accepted browser locales and tries to match them with the configured locales for the website. It redirects to the URL path that is the best match to render localized content.
+
+The trick to have multiple modules each having (more or less) the same content in different locales.
+
+== Configuration
+
+The class info.rsdev.mysite.redirect.LanguageRedirectModuleConfig supports the following properties (it ignores any of the 'set of general properties'):
+
+|===
+| *property name*               | *Description*
+| locale.<languageCode>         | The value contains the redirect path for the given languageCode. E.g. `locale.en=english` will map the path /english to the language code `en`.
+| defaultLocale                 | The language code to apply when there is no match between the configured languages and the browser accepted languages. It must be one of the locales mapped via above property.
+|===
+

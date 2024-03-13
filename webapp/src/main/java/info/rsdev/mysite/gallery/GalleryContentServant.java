@@ -138,6 +138,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
                 response.setContentType("text/html; charset=UTF-8");
                 response.setCharacterEncoding("UTF-8");
                 template.add("model", pageModel);
+//                template.add("locale", galleryConfig.getLocale().getLanguage());
                 response.getWriter().write(template.render());
             }
         } catch (IOException e) {
