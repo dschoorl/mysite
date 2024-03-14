@@ -1,0 +1,28 @@
+= Modules
+
+== Introduction
+
+MySite is developed in modules. Each module deliver support for serving specific content to the user, such as text documents or an image gallery. A module is linked to a path segment of a url and configured in a separate file.
+
+== Link a module to a URL
+
+In MySite, you create properties files in the website's root directory to configure a module, where the filename is the name of the path segment in the URL where the module must be 'mounted' on. If you want your website to have a blog at the URL '/blog', then you create the file `blog.properties`.
+
+You tell MySite what module to use for the url `/blog` by specifying the `ModuleConfigType` property in the properties file. At present the following types can be selected by the user:
+
+1. info.rsdev.mysite.fixed.FixedContentModuleConfig
+1. info.rsdev.mysite.singlepage.SinglePageModuleConfig
+1. info.rsdev.mysite.text.DocumentModuleConfig
+1. info.rsdev.mysite.gallery.GalleryModuleConfig
+1. info.rsdev.mysite.stats.StatsModuleConfig
+1. info.rsdev.mysite.redirect.LanguageRedirectModuleConfig
+
+There is also a system module. It is mounted by the system, replacing a module selected by the user, in case such module is misconfigured and not operational. Via the error module, this problem is exposed to website visitors:
+
+1. info.rsdev.mysite.common.ErrorModuleConfig
+
+== Link a module to the site's root
+
+The root of the website in the URL is denoted with the forward slash `/` or by nothing, just the hostname of the website, such as `www.spacecookies.com`. To link a module to the site's root URL, we create `root.properties` for this. This means that the website cannot have a path segment called root, so `/root` is not possible.
+
+The `root.properties` file contains the configuration for the module as explained in the section above ('Link a module to a URL').

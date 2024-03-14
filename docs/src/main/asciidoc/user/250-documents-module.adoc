@@ -1,0 +1,14 @@
+= Document
+
+== Purpose
+The document module ...
+
+== Configuration
+
+The class info.rsdev.mysite.text.DocumentModuleConfig supports the following properties, on top of the 'set of general properties':
+
+|===
+| *property name*               | *Description*
+| recentDocumentsGroupName      | bladiba.
+| recentDocumentDays            | bladiba.
+|===
