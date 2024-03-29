@@ -34,7 +34,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
     private static final List<String> knownTextMimeTypes = Arrays.asList("text/html", "text/css", "text/plain", "text/javascript",
             "application/javascript");
     
-    private static Tika tikaMimetypeDetector = new Tika();
+    private static final Tika tikaMimetypeDetector = new Tika();
     
     @Override
     public ModuleHandlerResult handle(ModuleConfig config, List<MenuGroup> menu, HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -74,6 +74,10 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         } else {
             response.setCharacterEncoding("UTF-8");
             ServletUtils.writeText(response, resourceLocation.toFile());
+        }
+        if (mimeType.equals("text/html")) {
+            //only log html content in the access log
+            return new ModuleHandlerResult(null, fixedConfig.getSiteRoot().relativize(resourceLocation).toString());
         }
         return ModuleHandlerResult.NO_CONTENT;    //not worth logging in access log
     }

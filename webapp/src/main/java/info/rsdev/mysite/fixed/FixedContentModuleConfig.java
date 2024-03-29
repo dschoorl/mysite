@@ -35,7 +35,7 @@ public class FixedContentModuleConfig extends AbstractModuleConfig implements Co
     }
     
     /**
-     * Obtain the path the to filesystem where the site specific static content is stored. 
+     * Obtain the path the to file system where the site specific static content is stored. 
      * @return
      */
     public Path getSiteRoot() {
