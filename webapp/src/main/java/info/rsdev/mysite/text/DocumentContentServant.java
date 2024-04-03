@@ -57,9 +57,21 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
         String path = getPathPartAfterMountpoint(request.getPathInfo(), moduleConfig.getMountPoint());
         String groupName = getGroupName(path);
         if (groupName == null) {
-            // set a default group and continue
-            DocumentGroup group = documentCollection.getGroups().get(0);
-            model = new DocumentGroupModel(writingConfig, group);
+            // set a default group and continue -- prefer menuitem order from configuration file
+            DocumentGroup group = null;
+            if (menu != null && !menu.isEmpty()) {
+                List<MenuItem> menuItems = menu.get(0).getMenuItems();
+                if (menuItems != null && !menuItems.isEmpty()) {
+                    if (menuItems.get(0) instanceof DocumentGroupMenuItem item) {
+                        group = documentCollection.getResourceGroup(item.getCaption());
+                        model = new DocumentGroupModel(writingConfig, group);
+                    }
+                }
+            }
+            if (group == null) {
+                documentCollection.getGroups().get(0);
+                model = new DocumentGroupModel(writingConfig, group);
+            }
         } else {
             DocumentGroup documentGroup = documentCollection.getResourceGroup(groupName);
             if (documentGroup == null) {
