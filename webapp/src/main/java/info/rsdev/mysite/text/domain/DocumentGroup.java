@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -14,10 +15,13 @@ public class DocumentGroup implements ResourceGroup<DefaultDocument> {
     private final DocumentCollection collection;
 
     private final String groupName;
+    
+    private final Locale language;
 
     protected SortedSet<DefaultDocument> documents = new TreeSet<>();
 
-    public DocumentGroup(DocumentCollection collection, String name) {
+    public DocumentGroup(DocumentCollection collection, String name, Locale language) {
+        this.language = language;
         this.collection = collection;
         this.groupName = name;
     }
@@ -39,7 +43,7 @@ public class DocumentGroup implements ResourceGroup<DefaultDocument> {
 
     @Override
     public DefaultDocument createAndAddNewResource(File resourcePath) {
-        DefaultDocument newDocument = new DefaultDocument(this, resourcePath);
+        DefaultDocument newDocument = new DefaultDocument(this, resourcePath, language);
         this.documents.add(newDocument);
         return newDocument;
     }

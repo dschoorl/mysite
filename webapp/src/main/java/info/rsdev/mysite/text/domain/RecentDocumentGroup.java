@@ -18,7 +18,7 @@ public class RecentDocumentGroup extends DocumentGroup {
     private LocalDate lastUpdated = null;
 
     public RecentDocumentGroup(DocumentCollection collection, String name, int daysCutoffPoint) {
-        super(collection, name);
+        super(collection, name, collection.getLanguage());
         this.daysCutoffPoint = daysCutoffPoint;
         collectRecentDocuments();
     }

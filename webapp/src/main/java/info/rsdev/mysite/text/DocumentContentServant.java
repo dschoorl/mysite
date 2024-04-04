@@ -4,10 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import java.util.Locale;
 
 import org.stringtemplate.v4.ST;
 
@@ -25,6 +22,9 @@ import info.rsdev.mysite.text.domain.DocumentGroup;
 import info.rsdev.mysite.text.domain.DocumentGroupMenuItem;
 import info.rsdev.mysite.text.domain.RecentDocumentGroup;
 import info.rsdev.mysite.util.ServletUtils;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This {@link RequestHandler} implementation is responsible for coordinating
@@ -35,8 +35,8 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
 
     private final DocumentCollection documentCollection;
 
-    public DocumentContentServant(File siteDir, String collectionPath, String mountPoint) {
-        this.documentCollection = new DocumentCollection(siteDir, collectionPath, mountPoint);
+    public DocumentContentServant(File siteDir, String collectionPath, String mountPoint, Locale language) {
+        this.documentCollection = new DocumentCollection(siteDir, collectionPath, mountPoint, language);
     }
 
     @Override
@@ -137,7 +137,6 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("text/html; charset=UTF-8");
                 template.add("model", pageModel);
-//                template.add("locale", documentConfig.getLocale().getLanguage());
                 response.getWriter().write(template.render());
             }
         } catch (IOException e) {

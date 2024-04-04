@@ -27,4 +27,5 @@ public interface CorePageModel<T extends ModuleConfig> {
      */
     public String getStylesheetLocation();
 
+    public String getLanguage();
 }

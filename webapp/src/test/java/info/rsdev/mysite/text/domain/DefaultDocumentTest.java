@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 import java.io.File;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -23,7 +24,7 @@ public class DefaultDocumentTest {
         DocumentCollection mockCollection = mock(DocumentCollection.class);
         when(mockGroup.getCollection()).thenReturn(mockCollection);
         when(mockCollection.getPath()).thenReturn(new File("").getAbsolutePath());
-        subjectUnderTest = new DefaultDocument(mockGroup, document.toFile());
+        subjectUnderTest = new DefaultDocument(mockGroup, document.toFile(), Locale.getDefault());
     }
 
     @Test

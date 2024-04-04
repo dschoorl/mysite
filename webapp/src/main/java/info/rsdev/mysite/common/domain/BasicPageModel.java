@@ -73,4 +73,9 @@ public class BasicPageModel<T extends ModuleConfig> implements CorePageModel<T> 
         return returnValue;
     }
 
+    @Override
+    public String getLanguage() {
+        return config.getLocale().getLanguage();
+    }
+
 }

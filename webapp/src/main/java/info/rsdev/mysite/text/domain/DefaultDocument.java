@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import info.rsdev.mysite.text.asciidoc.AsciidocConverter;
+import info.rsdev.mysite.util.DocumentFileFilter;
 import info.rsdev.mysite.util.FileAttribUtils;
 
 /**
@@ -32,22 +33,21 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
     /**
      * The language in which the public content of the document is written.
      */
-    private final Locale language = new Locale("nl");
+    private final Locale language;
 
     /**
-     * The name of the document known to the application. It is a technical name
-     * and not a functional name, E.g. it is not the title. It must be unique
-     * within the mountpoint of the website, so that it can be used in an URL
-     * (after proper encoding). Enforcement of this constraint is currently not
-     * implemented.
+     * The name of the document known to the application. It is a technical name and
+     * not a functional name, E.g. it is not the title. It must be unique within the
+     * mountpoint of the website, so that it can be used in an URL (after proper
+     * encoding). Enforcement of this constraint is currently not implemented.
      */
     private final String documentName;
 
     private final DocumentGroup documentGroup;
 
     /**
-     * The path to the document relative to the path of the collection. This is 
-     * used to create the uri to the web resource
+     * The path to the document relative to the path of the collection. This is used
+     * to create the uri to the web resource
      */
     private final String documentPath;
 
@@ -60,15 +60,24 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
 
     private final Properties metadata;
 
-    public DefaultDocument(DocumentGroup group, File document) {
-        this.document = document;
+    public DefaultDocument(DocumentGroup group, File document, Locale language) {
+        this.language = language;
         this.documentGroup = group;
         this.documentName = extractName(document);
+        if (document.getName().endsWith("." + DocumentFileFilter.META_ONLY_EXT)) {
+            this.document = null;
+            this.documentPath = null;
+            this.metadata = loadMetaData(document);
+        } else {
+            this.document = document;
+            this.metadata = loadMetaData();
+            this.documentPath = getRelativeDocumentPath(this.documentGroup.getCollection().getPath());
+        }
 
-        //determine date created on from metadata or else from file attributes
-        this.metadata = loadMetaData();
+        // determine date created on from metadata or else from file attributes
         if (metadata.containsKey(CREATED_ON_METAKEY)) {
-            this.createdOn = LocalDate.parse((CharSequence)this.metadata.get(CREATED_ON_METAKEY), DateTimeFormatter.ISO_LOCAL_DATE);
+            this.createdOn = LocalDate.parse((CharSequence) this.metadata.get(CREATED_ON_METAKEY),
+                    DateTimeFormatter.ISO_LOCAL_DATE);
         } else {
             BasicFileAttributes attr = null;
             try {
@@ -78,12 +87,12 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
             }
             this.createdOn = FileAttribUtils.toLocalDateTime(attr == null ? null : attr.creationTime());
         }
-        
-        this.documentPath = getRelativeDocumentPath(this.documentGroup.getCollection().getPath());
+
     }
-    
+
     /**
      * Calculate the documentPath relative to the collectionPath
+     * 
      * @param collectionPath
      * @return
      */
@@ -91,7 +100,7 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
         String documentPath = document.getAbsolutePath();
         int index = documentPath.indexOf(collectionPath);
         return documentPath.substring(index);
-}    
+    }
 
     private String extractName(File document) {
         String name = document.getName();
@@ -101,10 +110,14 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
         }
         return name;
     }
-    
+
     private Properties loadMetaData() {
-        Properties metadata = new Properties();
         File metadataPath = new File(document.getParent(), documentName + ".xml");
+        return loadMetaData(metadataPath);
+    }
+
+    private Properties loadMetaData(File metadataPath) {
+        Properties metadata = new Properties();
         if (metadataPath.isFile()) {
             try (FileInputStream metaStream = new FileInputStream(metadataPath)) {
                 metadata.loadFromXML(metaStream);
@@ -133,9 +146,14 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
     }
 
     public String getUrl() {
+        if (document == null) {
+            // when there is no document, it can not be displayed on a single page.
+            // Only it's teaser from the metadata can be displayed on the document group page.
+            return null;
+        }
+
         try {
-            return String.format("%s/%s",
-                    URLEncoder.encode(documentGroup.getName(), "UTF-8"),
+            return String.format("%s/%s", URLEncoder.encode(documentGroup.getName(), "UTF-8"),
                     URLEncoder.encode(getTechnicalName(), "UTF-8"));
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -158,7 +176,7 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
     }
 
     public String getContent() {
-        if ("adoc".equalsIgnoreCase(extractExtension(document))) {
+        if (DocumentFileFilter.ADOC_EXT.equalsIgnoreCase(extractExtension(document))) {
             return AsciidocConverter.INSTANCE.convertDocument(document);
         } else {
             throw new UnsupportedOperationException("Currently only asciidoctor files are supported");
@@ -191,7 +209,7 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
         if (o == null) {
             return -1;
         }
-        //sort from new to old
+        // sort from new to old
         int dateCompareResult = o.createdOn.compareTo(this.createdOn);
         if (dateCompareResult == 0) {
             return this.documentName.compareTo(o.documentName);
@@ -207,8 +225,8 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
     @Override
     public LocalDate getDateChanged() {
         if (this.metadata.containsKey(LAST_MODIFIED_ON_METAKEY)) {
-            return LocalDate.parse((CharSequence)this.metadata.get(LAST_MODIFIED_ON_METAKEY), DateTimeFormatter.ISO_LOCAL_DATE);
+            return LocalDate.parse((CharSequence) this.metadata.get(LAST_MODIFIED_ON_METAKEY), DateTimeFormatter.ISO_LOCAL_DATE);
         }
-        return this.createdOn;  //fallback to date created when last modified is not provided
+        return this.createdOn; // fallback to date created when last modified is not provided
     }
 }
