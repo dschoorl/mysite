@@ -75,8 +75,8 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             response.setCharacterEncoding("UTF-8");
             ServletUtils.writeText(response, resourceLocation.toFile());
         }
-        if (mimeType.equals("text/html")) {
-            //only log html content in the access log
+        if (mimeType.equals("text/html") || mimeType.equals("application/pdf")) {
+            //only log html AND pdf content in the access log
             return new ModuleHandlerResult(null, fixedConfig.getSiteRoot().relativize(resourceLocation).toString());
         }
         return ModuleHandlerResult.NO_CONTENT;    //not worth logging in access log
