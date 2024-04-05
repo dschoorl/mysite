@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Objects;
 
 import info.rsdev.mysite.exception.ConfigurationException;
 import info.rsdev.mysite.util.DirectoryFilter;
@@ -40,7 +42,9 @@ public abstract class DefaultResourceCollection<G extends ResourceGroup<T>, T ex
 
     private final String mountPoint;
 
-    public DefaultResourceCollection(File siteDir, String collectionPath, String mountPoint) {
+    private final Locale language;
+
+    public DefaultResourceCollection(File siteDir, String collectionPath, String mountPoint, Locale language) {
         if (collectionPath == null) {
             throw new NullPointerException("Directory to resource collection cannot be null");
         }
@@ -50,6 +54,7 @@ public abstract class DefaultResourceCollection<G extends ResourceGroup<T>, T ex
         }
         this.collectionPath = collectionPath;
         this.mountPoint = mountPoint;
+        this.language = Objects.requireNonNull(language);
 
         // TODO: run in a separate thread?
         this.resourceGroups.addAll(inventory(siteDir.toPath(), collectionDir, true));
@@ -82,6 +87,10 @@ public abstract class DefaultResourceCollection<G extends ResourceGroup<T>, T ex
 
     public String getMountPoint() {
         return this.mountPoint;
+    }
+
+    public Locale getLanguage() {
+        return this.language;
     }
 
     public abstract G createAndAddNewGroup(String groupName);

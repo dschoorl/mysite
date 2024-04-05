@@ -6,11 +6,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
-
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 import org.stringtemplate.v4.ST;
 
@@ -26,6 +23,9 @@ import info.rsdev.mysite.gallery.domain.Image;
 import info.rsdev.mysite.gallery.domain.ImageCollection;
 import info.rsdev.mysite.gallery.domain.ImageGroup;
 import info.rsdev.mysite.gallery.domain.ImageGroupMenuItem;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This {@link RequestHandler} implementation is responsible for coordinating access to the images from the configured image
@@ -36,7 +36,7 @@ public class GalleryContentServant implements RequestHandler, ConfigKeys, Reques
     private final ImageCollection imageCollection;
     
     public GalleryContentServant(File siteDir, String collectionPath, String mountPoint) {
-        this.imageCollection = new ImageCollection(siteDir, collectionPath, mountPoint);
+        this.imageCollection = new ImageCollection(siteDir, collectionPath, mountPoint, Locale.getDefault());
     }
     
     @Override

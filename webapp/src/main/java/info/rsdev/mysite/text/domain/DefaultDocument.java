@@ -11,7 +11,9 @@ import java.nio.file.Files;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.slf4j.Logger;
@@ -61,7 +63,7 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
     private final Properties metadata;
 
     public DefaultDocument(DocumentGroup group, File document, Locale language) {
-        this.language = language;
+        this.language = Objects.requireNonNull(language);
         this.documentGroup = group;
         this.documentName = extractName(document);
         if (document.getName().endsWith("." + DocumentFileFilter.META_ONLY_EXT)) {
@@ -220,6 +222,11 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
     @Override
     public LocalDate getDateCreated() {
         return this.createdOn;
+    }
+
+    public String getDateCreatedFormatted() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.FULL).withLocale(this.language);
+        return formatter.format(createdOn);
     }
 
     @Override

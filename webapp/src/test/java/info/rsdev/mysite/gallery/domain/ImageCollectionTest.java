@@ -2,6 +2,7 @@ package info.rsdev.mysite.gallery.domain;
 
 import java.io.File;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -14,7 +15,7 @@ public class ImageCollectionTest {
 
     @Before
     public void setup() {
-        this.collection = new ImageCollection(new File("src/test/resources/sites/site1.com"), "images", "");
+        this.collection = new ImageCollection(new File("src/test/resources/sites/site1.com"), "images", "", Locale.US);
     }
 
     @Test

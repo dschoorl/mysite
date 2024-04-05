@@ -9,18 +9,15 @@ import info.rsdev.mysite.util.DocumentFileFilter;
 
 public class DocumentCollection extends DefaultResourceCollection<DocumentGroup, DefaultDocument> {
     
-    private final Locale language;
-
     public DocumentCollection(File siteDir, String collectionPath, String mountPoint, Locale language) {
-        super(siteDir, collectionPath, mountPoint);
-        this.language = language;
+        super(siteDir, collectionPath, mountPoint, language);
     }
 
     @Override
     public DocumentGroup createAndAddNewGroup(String groupName) {
         DocumentGroup target = getResourceGroup(groupName);
         if (target == null) {
-            target = new DocumentGroup(this, groupName, language);
+            target = new DocumentGroup(this, groupName, getLanguage());
             this.resourceGroups.add(target);
         }
         return target;
@@ -34,9 +31,4 @@ public class DocumentCollection extends DefaultResourceCollection<DocumentGroup,
     public void addVirtualDocumentGroup(DocumentGroup virtualGroup) {
         this.resourceGroups.addFirst(virtualGroup);
     }
-    
-    public Locale getLanguage() {
-        return this.language;
-    }
-
 }

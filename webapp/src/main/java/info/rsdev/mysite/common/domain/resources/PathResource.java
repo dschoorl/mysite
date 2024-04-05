@@ -7,7 +7,7 @@ package info.rsdev.mysite.common.domain.resources;
 public interface PathResource {
 
     /**
-     * Get the path to the image on this server, relative to the internet
+     * Get the path to the resource on this server, relative to the internet
      * hostname
      */
     String getPath();

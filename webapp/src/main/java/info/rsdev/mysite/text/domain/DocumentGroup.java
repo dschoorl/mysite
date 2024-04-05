@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -21,7 +22,7 @@ public class DocumentGroup implements ResourceGroup<DefaultDocument> {
     protected SortedSet<DefaultDocument> documents = new TreeSet<>();
 
     public DocumentGroup(DocumentCollection collection, String name, Locale language) {
-        this.language = language;
+        this.language = Objects.requireNonNull(language);
         this.collection = collection;
         this.groupName = name;
     }

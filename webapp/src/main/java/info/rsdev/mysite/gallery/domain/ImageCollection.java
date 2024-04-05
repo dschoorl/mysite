@@ -2,6 +2,7 @@ package info.rsdev.mysite.gallery.domain;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.util.Locale;
 
 import info.rsdev.mysite.common.domain.resources.DefaultResourceCollection;
 import info.rsdev.mysite.util.ImageFileFilter;
@@ -22,8 +23,8 @@ import info.rsdev.mysite.util.ImageFileFilter;
  */
 public class ImageCollection extends DefaultResourceCollection<ImageGroup, DefaultImage> {
 
-    public ImageCollection(File siteDir, String collectionPath, String mountPoint) {
-        super(siteDir, collectionPath, mountPoint);
+    public ImageCollection(File siteDir, String collectionPath, String mountPoint, Locale language) {
+        super(siteDir, collectionPath, mountPoint, language);
     }
 
     @Override
