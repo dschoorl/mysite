@@ -7,6 +7,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,9 +115,10 @@ public class SiteServant extends HttpServlet {
                 logger.debug(String.format("%s will be serving %s request: %s [QuesryString=%s]", moduleConfig.getRequestHandler(),
                         request.getMethod(), request.getServletPath(), request.getQueryString()));
             }
-            List<MenuGroup> menu = config.getMenu(moduleConfig.getLocale());
-            result = moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest) request,
-                    (HttpServletResponse) response);
+            Locale moduleLocale = moduleConfig.getLocale();
+            LocalizationContext.setLocalizations(config.getTranslations().getTranslations(moduleLocale));
+            List<MenuGroup> menu = config.getMenu(moduleLocale);
+            result = moduleConfig.getRequestHandler().handle(moduleConfig, menu, request, response);
 
             if (!result.isAlreadyHandled() && result.equals(ModuleHandlerResult.NO_CONTENT)) {
                 response.setStatus(404);
@@ -130,6 +132,9 @@ public class SiteServant extends HttpServlet {
             ((HttpServletResponse) response).setStatus(500);
             throw e;
         } finally {
+            //cleanup the threadlocal for translations
+            LocalizationContext.clear();
+
             // write entry to access logfile
             Logger accessLogger = null;
             if ((moduleConfig == null) || (moduleConfig.getAccessLogger() == null)) {

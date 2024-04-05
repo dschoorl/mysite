@@ -73,7 +73,7 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
             }
             SiteConfig siteConfig = getConfig(subdirectory, siteConfigByAlias.values());
             if (siteConfig == null) {
-                siteConfig = new DefaultSiteConfig(subdirectory, readmoduleConfig(location));
+                siteConfig = new DefaultSiteConfig(subdirectory, readmoduleConfig(location), location);
             }
             if (siteConfigByAlias.containsKey(alias)) {
                 String previousName = this.siteConfigByAlias.get(alias).getSiteName();

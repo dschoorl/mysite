@@ -3,6 +3,7 @@ package info.rsdev.mysite.common;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class DefaultSiteConfigTest {
     
     @Before
     public void setup() {
-        subjectUnderTest = new DefaultSiteConfig("test", Collections.emptyMap());
+        subjectUnderTest = new DefaultSiteConfig("test", Collections.emptyMap(), new File("."));
     }
 
     @Test

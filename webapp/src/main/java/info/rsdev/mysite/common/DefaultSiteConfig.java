@@ -1,5 +1,6 @@
 package info.rsdev.mysite.common;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,6 +9,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import info.rsdev.mysite.common.domain.MenuGroup;
+import info.rsdev.mysite.common.domain.SiteTranslations;
 
 public class DefaultSiteConfig implements SiteConfig {
 
@@ -18,10 +20,13 @@ public class DefaultSiteConfig implements SiteConfig {
     private String siteName = null;
 
     private Map<String, ModuleConfig> moduleConfigByMountPoint = new HashMap<>();
+    
+    private final SiteTranslations translations;
 
-    public DefaultSiteConfig(String siteName, Map<String, ModuleConfig> configByMountpoint) {
+    public DefaultSiteConfig(String siteName, Map<String, ModuleConfig> configByMountpoint, File siteRoot) {
         this.siteName = siteName;
         this.moduleConfigByMountPoint.putAll(configByMountpoint);
+        this.translations = new SiteTranslations(siteRoot);
     }
 
     @Override
@@ -78,6 +83,11 @@ public class DefaultSiteConfig implements SiteConfig {
             }
         }
         return menu;
+    }
+
+    @Override
+    public SiteTranslations getTranslations() {
+        return this.translations;
     }
 
 }

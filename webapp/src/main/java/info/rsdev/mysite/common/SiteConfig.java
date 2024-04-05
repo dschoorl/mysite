@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Locale;
 
 import info.rsdev.mysite.common.domain.MenuGroup;
+import info.rsdev.mysite.common.domain.SiteTranslations;
 
 /**
  * This class contains the global configuration for the website
@@ -28,5 +29,7 @@ public interface SiteConfig {
      *         empty list if there are none
      */
     public List<MenuGroup> getMenu(Locale applicableLocale);
+    
+    public SiteTranslations getTranslations();
 
 }
