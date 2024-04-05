@@ -12,6 +12,12 @@ public interface SiteConfig {
 
     public ModuleConfig getModuleConfig(String moduleContextPath);
 
+    /**
+     * The unified name of the site. It resolves to a directory in the content root.
+     * Multiple aliases can use the same site name.
+     * 
+     * @return the unified name of the site
+     */
     public String getSiteName();
 
     /**

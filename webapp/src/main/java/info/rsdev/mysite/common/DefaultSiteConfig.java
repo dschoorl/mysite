@@ -11,6 +11,10 @@ import info.rsdev.mysite.common.domain.MenuGroup;
 
 public class DefaultSiteConfig implements SiteConfig {
 
+    /**
+     * The name of the site as it appears as subdirectory in the content root.
+     * Basically: content root + siteName = site root.
+     */
     private String siteName = null;
 
     private Map<String, ModuleConfig> moduleConfigByMountPoint = new HashMap<>();

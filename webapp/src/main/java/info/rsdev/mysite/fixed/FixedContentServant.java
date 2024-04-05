@@ -1,5 +1,16 @@
 package info.rsdev.mysite.fixed;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.net.URLConnection;
+import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.tika.Tika;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import info.rsdev.mysite.common.ModuleConfig;
 import info.rsdev.mysite.common.RequestHandler;
 import info.rsdev.mysite.common.domain.DefaultMenuGroup;
@@ -9,23 +20,9 @@ import info.rsdev.mysite.exception.ConfigurationException;
 import info.rsdev.mysite.gallery.domain.DefaultImage;
 import info.rsdev.mysite.util.ServletUtils;
 import info.rsdev.mysite.util.ThumbnailCreator;
-
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URLConnection;
-import java.nio.file.Path;
-import java.util.Arrays;
-import java.util.List;
-
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
-import org.apache.tika.Tika;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class FixedContentServant implements RequestHandler, ConfigKeys {
     
@@ -70,7 +67,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         }
         response.setContentType(mimeType);
         if (isBinary(mimeType)) {
-            writeBinary(response, resourceLocation);
+            ServletUtils.writeBinary(response, resourceLocation);
         } else {
             response.setCharacterEncoding("UTF-8");
             ServletUtils.writeText(response, resourceLocation.toFile());
@@ -82,23 +79,6 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         return ModuleHandlerResult.NO_CONTENT;    //not worth logging in access log
     }
 
-    private void writeBinary(HttpServletResponse response, Path resourceLocation) throws IOException {
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("Write BINARY response for %s", resourceLocation));
-        }
-        ServletOutputStream out = response.getOutputStream();
-        try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream(resourceLocation.toFile()), 2048)) {
-            byte[] buffer = new byte[2048];
-            int bytesRead = 0;
-            while ((bytesRead = reader.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-        } catch (IOException e) {
-            logger.error(String.format("Error reading %s file", resourceLocation), e);
-        }
-        out.flush();
-    }
-    
     private boolean isBinary(String mimeType) {
         return !knownTextMimeTypes.contains(mimeType);
     }

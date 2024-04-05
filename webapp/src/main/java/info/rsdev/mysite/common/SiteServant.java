@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import info.rsdev.mysite.common.domain.accesslog.ModuleHandlerResult;
 import info.rsdev.mysite.common.startup.PropertiesModule.ContentRoot;
 import info.rsdev.mysite.exception.ConfigurationException;
 import info.rsdev.mysite.stats.Ip2CountryService;
+import info.rsdev.mysite.util.ServletUtils;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import jakarta.servlet.ServletConfig;
@@ -28,41 +30,31 @@ import jakarta.servlet.http.HttpServletResponse;
 public class SiteServant extends HttpServlet {
 
     private static final long serialVersionUID = 1L;
-    
+
     private static final Logger logger = LoggerFactory.getLogger(SiteServant.class);
     private static final Logger GLOBAL_ACCESS_LOGGER = LoggerFactory.getLogger("AccessLog");
-    private static final String GLOBAL_UNAVAILABLE_PAGE =
-            "<!DOCTYPE html>\n" +
-                    " <head>\n" +
-                    "  <style>\n" +
-                    "    body {\n" +
-                    "        background: grey;\n" +
-                    "        font-family: Arial;\n" +
-                    "        font-size: 36px }" +
-                    "    section {\n" +
-                    "        background: grey;\n" +
-                    "        color: black;\n" +
-                    "        border-radius: 1em;\n" +
-                    "        padding: 1em;\n" +
-                    "        position: absolute;\n" +
-                    "        top: 50%;\n" +
-                    "        left: 50%;\n" +
-                    "        margin-right: -50%;\n" +
-                    "        transform: translate(-50%, -50%) }\n" +
-                    "  </style></head>\n" +
-                    "  <section>\n" +
-                    "\n" +
-                    "  <p>TEMPORARILY<br />&nbsp;UNAVAILABLE</p>\n" +
-                    "\n" +
-                    "  </section>\n";
+    private static final String GLOBAL_UNAVAILABLE_PAGE = "<!DOCTYPE html>\n" + " <head>\n" + "  <style>\n" + "    body {\n"
+            + "        background: grey;\n" + "        font-family: Arial;\n" + "        font-size: 36px }" + "    section {\n"
+            + "        background: grey;\n" + "        color: black;\n" + "        border-radius: 1em;\n"
+            + "        padding: 1em;\n" + "        position: absolute;\n" + "        top: 50%;\n" + "        left: 50%;\n"
+            + "        margin-right: -50%;\n" + "        transform: translate(-50%, -50%) }\n" + "  </style></head>\n"
+            + "  <section>\n" + "\n" + "  <p>TEMPORARILY<br />&nbsp;UNAVAILABLE</p>\n" + "\n" + "  </section>\n";
+
+    private static final String ROBOTS_TXT = "robots.txt";
+    private static final String FAVICON = "favicon.ico";
+    private static final String FAVICON_URL = "/" + FAVICON;
+    private static final String ROBOTS_TXT_URL = "/" + ROBOTS_TXT;
 
     private ConfigDAI configDai = null;
-    
+
     private Ip2CountryService ip2CountryLookup;
+
+    private final File contentRoot;
 
     @Inject
     public SiteServant(ConfigDAI configDao, @ContentRoot File contentRoot) {
         this.configDai = configDao;
+        this.contentRoot = contentRoot;
         Path ip2CountryCsvFile = contentRoot.toPath().resolve("IP2LOCATION-LITE-DB1.CSV");
         this.ip2CountryLookup = new Ip2CountryService(ip2CountryCsvFile);
     }
@@ -78,6 +70,17 @@ public class SiteServant extends HttpServlet {
 
     @Override
     public void service(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        if (isFaviconOrRobotsRequest(request.getPathInfo())) {
+            try {
+                shortCircuitFaviconOrRobotsRequest(request.getPathInfo(), request, response);
+            } catch (IOException e) {
+                logger.error("Error loading {}: {}", request.getPathInfo(), e.getMessage());
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+            return;
+        }
+
         ModuleHandlerResult result = null;
         AccessLogEntryV1 logEntry = new AccessLogEntryV1().feedRequest(request, ip2CountryLookup);
         ModuleConfig moduleConfig = null;
@@ -114,12 +117,12 @@ public class SiteServant extends HttpServlet {
             List<MenuGroup> menu = config.getMenu(moduleConfig.getLocale());
             result = moduleConfig.getRequestHandler().handle(moduleConfig, menu, (HttpServletRequest) request,
                     (HttpServletResponse) response);
-            
+
             if (!result.isAlreadyHandled() && result.equals(ModuleHandlerResult.NO_CONTENT)) {
                 response.setStatus(404);
             }
         } catch (ConfigurationException e) {
-            HttpServletResponse httpResponse = (HttpServletResponse)response;
+            HttpServletResponse httpResponse = (HttpServletResponse) response;
             httpResponse.setStatus(404);
             httpResponse.getWriter().write(e.getLocalizedMessage());
             logger.info(e.getLocalizedMessage());
@@ -138,6 +141,43 @@ public class SiteServant extends HttpServlet {
             if (!logEntry.ignoreMe()) {
                 accessLogger.info(logEntry.toString());
             }
+        }
+    }
+
+    private boolean isFaviconOrRobotsRequest(String pathInfo) {
+        return FAVICON_URL.equals(pathInfo) || ROBOTS_TXT_URL.equals(pathInfo);
+    }
+
+    private void shortCircuitFaviconOrRobotsRequest(String pathInfo, HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        String hostname = request.getServerName().toLowerCase();
+        SiteConfig config = configDai.getConfig(hostname);
+        Path siteRoot = contentRoot.toPath().resolve(config.getSiteName());
+        if (FAVICON_URL.equals(pathInfo)) {
+            handleFaviconRequest(siteRoot, response);
+        } else {
+            handleRobotsTxtRequest(siteRoot, response);
+        }
+    }
+
+    private void handleFaviconRequest(Path siteRoot, HttpServletResponse response) throws IOException {
+        Path robotsFile = siteRoot.resolve(FAVICON);
+        if (Files.exists(robotsFile)) {
+            response.setContentType("image/x-icon");
+            ServletUtils.writeBinary(response, robotsFile);
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+        }
+    }
+
+    private void handleRobotsTxtRequest(Path siteRoot, HttpServletResponse response) throws IOException {
+        Path robotsFile = siteRoot.resolve(ROBOTS_TXT);
+        if (Files.exists(robotsFile)) {
+            response.setCharacterEncoding("UTF-8");
+            response.setContentType("text/plain; charset=UTF-8");
+            ServletUtils.writeText(response, robotsFile.toFile());
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
     }
 

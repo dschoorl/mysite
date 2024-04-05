@@ -5,6 +5,7 @@ import info.rsdev.mysite.common.RequestHandler;
 import info.rsdev.mysite.exception.ConfigurationException;
 
 import java.nio.file.FileSystems;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
@@ -45,7 +46,7 @@ public class FixedContentModuleConfig extends AbstractModuleConfig implements Co
                 throw new ConfigurationException(String.format("Property not defined: %s", SITE_DATA_DIR_KEY));
             }
             Path siteRoot = FileSystems.getDefault().getPath(siteDataDir);
-            if (!siteRoot.toFile().isDirectory()) {
+            if (!Files.isDirectory(siteRoot)) {
                 throw new ConfigurationException(String.format("%s points to a not-existing directory: '%s'.", SITE_DATA_DIR_KEY ,siteRoot));
             }
             this.siteRoot = siteRoot;
