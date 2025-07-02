@@ -28,8 +28,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This {@link RequestHandler} implementation is responsible for coordinating
- * access to the documents from the configured document collection, rendering them
- * with the configured template.
+ * access to the documents from the configured document collection, rendering
+ * them with the configured template.
  */
 public class DocumentContentServant implements RequestHandler, ConfigKeys {
 
@@ -41,36 +41,45 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
 
     @Override
     public ModuleHandlerResult handle(ModuleConfig moduleConfig, List<MenuGroup> menu, HttpServletRequest request,
-            HttpServletResponse response)
-            throws ServletException, IOException {
+            HttpServletResponse response) throws ServletException, IOException {
         if (moduleConfig == null) {
             throw new ConfigurationException(String.format("%s cannot be null", ModuleConfig.class.getSimpleName()));
         }
         if (!(moduleConfig instanceof DocumentModuleConfig)) {
-            throw new ConfigurationException(String.format("Expected was config of type %, but encountered was %s. please check"
-                    + "the value of property '%s'", DocumentModuleConfig.class.getSimpleName(), moduleConfig,
-                    MODULECONFIGTYPE_KEY));
+            throw new ConfigurationException(String.format(
+                    "Expected was config of type %, but encountered was %s. please check" + "the value of property '%s'",
+                    DocumentModuleConfig.class.getSimpleName(), moduleConfig, MODULECONFIGTYPE_KEY));
         }
         DocumentModuleConfig writingConfig = (DocumentModuleConfig) moduleConfig;
 
         CorePageModel<?> model = null;
         String path = getPathPartAfterMountpoint(request.getPathInfo(), moduleConfig.getMountPoint());
         String groupName = getGroupName(path);
+
         if (groupName == null) {
-            // set a default group and continue -- prefer menuitem order from configuration file
-            DocumentGroup group = null;
-            if (menu != null && !menu.isEmpty()) {
-                List<MenuItem> menuItems = menu.get(0).getMenuItems();
-                if (menuItems != null && !menuItems.isEmpty()) {
-                    if (menuItems.get(0) instanceof DocumentGroupMenuItem item) {
-                        group = documentCollection.getResourceGroup(item.getCaption());
-                        model = new DocumentGroupModel(writingConfig, group);
+            // if there is a landingPage defined, use that
+            if (writingConfig.hasLandingPage()) {
+                return serveLandingPage(response, writingConfig.getLandingPage());
+            } else {
+
+                // set a default group and continue -- prefer menuitem order from configuration
+                // file
+                DocumentGroup group = null;
+                if (menu != null && !menu.isEmpty()) {
+                    List<MenuItem> menuItems = menu.get(0).getMenuItems();
+                    if (menuItems != null && !menuItems.isEmpty()) {
+                        if (menuItems.get(0) instanceof DocumentGroupMenuItem item) {
+                            group = documentCollection.getResourceGroup(item.getCaption());
+                            model = new DocumentGroupModel(writingConfig, group);
+                        }
                     }
                 }
-            }
-            if (group == null) {
-                documentCollection.getGroups().get(0);
-                model = new DocumentGroupModel(writingConfig, group);
+                if (group == null) {
+                    // Show contents of the first group. This will be a generated (virtual) group of
+                    // recent items (if present)
+                    documentCollection.getGroups().get(0);
+                    model = new DocumentGroupModel(writingConfig, group);
+                }
             }
         } else {
             DocumentGroup documentGroup = documentCollection.getResourceGroup(groupName);
@@ -96,12 +105,23 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
         return new ModuleHandlerResult(templateName, contentId);
     }
 
+    private ModuleHandlerResult serveLandingPage(HttpServletResponse response, String landingPageName)
+            throws IOException {
+        // the landing page is always assumed to be an html (text) page
+        File resourceLocation = documentCollection.getResourcesRootDir();
+        File landingPage = new File(resourceLocation, landingPageName);
+        response.setContentType("text/html");
+        response.setCharacterEncoding("UTF-8");
+        ServletUtils.writeText(response, landingPage);
+        return new ModuleHandlerResult(null, documentCollection.getMountPoint().concat("/").concat(landingPageName));
+    }
+
     private String getPathPartAfterMountpoint(String pathInfo, String mountpoint) {
         mountpoint = "/" + mountpoint;
         if (pathInfo.startsWith(mountpoint)) {
             // TODO: strip any posible trailing forward slash
             String targetPath = pathInfo.substring(mountpoint.length());
-            if(targetPath.startsWith("/")) {
+            if (targetPath.startsWith("/")) {
                 targetPath = targetPath.substring(1);
             }
             if (targetPath.endsWith("/")) {
@@ -122,7 +142,7 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
 
     private String determineContentId(String templateName, CorePageModel<?> model) {
         if (model instanceof DocumentPageModel) {
-            return ((DocumentPageModel)model).getDocument().getTitle();
+            return ((DocumentPageModel) model).getDocument().getTitle();
         }
         return model.getSelectedMenuItemName();
     }
@@ -181,5 +201,5 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
             documentCollection.addVirtualDocumentGroup(virualGroup);
         }
     }
-
+    
 }

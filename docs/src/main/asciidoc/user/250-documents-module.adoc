@@ -1,7 +1,7 @@
 = Document
 
 == Purpose
-The document module ...
+The document module is used to present one or more folders containing ascciidoc documents to the visitor. 
 
 == Configuration
 
@@ -9,6 +9,7 @@ The class info.rsdev.mysite.text.DocumentModuleConfig supports the following pro
 
 |===
 | *property name*               | *Description*
-| recentDocumentsGroupName      | bladiba.
-| recentDocumentDays            | bladiba.
+| recentDocumentsGroupName      | The property name that holds the name of the menu item to display the recent documents under. This allows the site to display recent documents from all the different categories in a single 'meta'-category, based on document age.
+| recentDocumentDays            | The property name that holds an integer value of the maximum age in days of a document to still be considered recent. Defaults to 90 days.
+| landingPage                   | This property name holds the name of a static resource that is located in the module's root folder and will be served when the path in the module's folder is empty.
 |===

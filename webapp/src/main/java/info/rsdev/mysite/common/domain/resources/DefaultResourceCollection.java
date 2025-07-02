@@ -43,21 +43,23 @@ public abstract class DefaultResourceCollection<G extends ResourceGroup<T>, T ex
     private final String mountPoint;
 
     private final Locale language;
+    
+    private final File resourcesRootDir;
 
     public DefaultResourceCollection(File siteDir, String collectionPath, String mountPoint, Locale language) {
         if (collectionPath == null) {
             throw new NullPointerException("Directory to resource collection cannot be null");
         }
-        File collectionDir = new File(siteDir, collectionPath);
-        if (!collectionDir.isDirectory()) {
-            throw new ConfigurationException(String.format("Not a directory: %s", collectionDir.getAbsolutePath()));
+        this.resourcesRootDir = new File(siteDir, collectionPath);
+        if (!resourcesRootDir.isDirectory()) {
+            throw new ConfigurationException(String.format("Not a directory: %s", resourcesRootDir.getAbsolutePath()));
         }
         this.collectionPath = collectionPath;
         this.mountPoint = mountPoint;
         this.language = Objects.requireNonNull(language);
 
         // TODO: run in a separate thread?
-        this.resourceGroups.addAll(inventory(siteDir.toPath(), collectionDir, true));
+        this.resourceGroups.addAll(inventory(siteDir.toPath(), resourcesRootDir, true));
     }
 
     public List<T> getAll(String groupName) {
@@ -87,6 +89,10 @@ public abstract class DefaultResourceCollection<G extends ResourceGroup<T>, T ex
 
     public String getMountPoint() {
         return this.mountPoint;
+    }
+    
+    public File getResourcesRootDir() {
+        return this.resourcesRootDir;
     }
 
     public Locale getLanguage() {

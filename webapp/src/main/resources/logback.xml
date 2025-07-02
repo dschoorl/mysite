@@ -5,6 +5,7 @@
 
     <appender name="AccessLog" class="FileAppender">
         <file>${MYSITE_LOG_DIR}/mysite-access.log</file>
+        <prudent>true</prudent>
         <encoder class="PatternLayoutEncoder">
             <pattern>%msg%n</pattern>
         </encoder>

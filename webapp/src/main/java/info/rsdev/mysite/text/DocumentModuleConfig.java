@@ -52,4 +52,12 @@ public class DocumentModuleConfig extends AbstractModuleConfig implements Config
         return true;
     }
 
+    public boolean hasLandingPage() {
+        return properties.getProperty(LANDING_PAGE) != null;
+    }
+
+    public String getLandingPage() {
+        return properties.getProperty(LANDING_PAGE);
+    }
+
 }

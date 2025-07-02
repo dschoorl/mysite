@@ -1,15 +1,14 @@
 package info.rsdev.mysite.text.asciidoc;
 
-import static org.asciidoctor.Asciidoctor.Factory.*;
+import static org.asciidoctor.Asciidoctor.Factory.create;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.util.Collections;
-import java.util.Map;
 
 import org.asciidoctor.Asciidoctor;
+import org.asciidoctor.Options;
 
 public class AsciidocConverter {
 
@@ -30,8 +29,8 @@ public class AsciidocConverter {
         }
     }
 
-    private Map<String, Object> getDefaultOptions() {
-        return Collections.emptyMap();
+    private Options getDefaultOptions() {
+        return Options.builder().build();
     }
 
 }
