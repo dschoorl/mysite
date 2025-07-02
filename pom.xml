@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>3.2.3</version>
+        <version>3.5.3</version>
         <relativePath />
     </parent>
     <modules>
@@ -19,28 +19,28 @@
     </modules>
     <properties>
         <asciidoctorj.version>2.5.11</asciidoctorj.version>
-<!--        <guiced.servlets.version>1.2.2.1-jre17</guiced.servlets.version>-->
         <guice-servlet.version>7.0.0</guice-servlet.version>
         <imgscalr.version>4.2</imgscalr.version>
-        <opencsv.version>5.9</opencsv.version>
+        <opencsv.version>5.11.2</opencsv.version>
         <stringtemplate.version>4.3.4</stringtemplate.version>
-        <undertow.version>2.3.12.Final</undertow.version>
+        <undertow.version>2.3.18.Final</undertow.version>
         <tika.version>2.9.1</tika.version>
         <asciidoctor.plugin.version>3.0.0</asciidoctor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
+        <skipOWASP>true</skipOWASP>
     </properties>
     <dependencyManagement>
         <dependencies>
-            <!--            <dependency>-->
-            <!--                <groupId>com.guicedee.servlets</groupId>-->
-            <!--                <artifactId>guiced-servlets</artifactId>-->
-            <!--                <version>${guiced.servlets.version}</version>-->
-            <!--            </dependency>-->
             <dependency>
                 <groupId>com.google.inject.extensions</groupId>
                 <artifactId>guice-servlet</artifactId>
                 <version>${guice-servlet.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>33.4.8-jre</version>
             </dependency>
             <dependency>
                 <groupId>com.opencsv</groupId>
@@ -84,5 +84,28 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>12.1.3</version>
+                <configuration>
+                    <skip>${skipOWASP}</skip>
+                    <failBuildOnCVSS>0</failBuildOnCVSS>
+                    <excludes>info.rsdev.*</excludes>
+                    <suppressionFiles>
+                        <suppressionFile>owasp-depcheck-exclusions.xml</suppressionFile>
+                    </suppressionFiles>
+                    <nvdApiKey>c7e58815-c717-4127-9f8e-3d35619688c2</nvdApiKey>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
     </build>
 </project>
