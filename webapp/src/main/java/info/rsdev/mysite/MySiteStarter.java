@@ -1,6 +1,7 @@
 package info.rsdev.mysite;
 
-import jakarta.servlet.DispatcherType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.servlet.GuiceFilter;
 
@@ -11,6 +12,7 @@ import io.undertow.server.handlers.PathHandler;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import jakarta.servlet.DispatcherType;
 
 /**
  * This class is the entry-point of the application when it is run as an
@@ -20,6 +22,15 @@ import io.undertow.servlet.api.DeploymentManager;
  * only tested with deployment in Tomcat 9 server.
  */
 public class MySiteStarter {
+
+    /**
+     * Dev mode is turned on by setting a system property named
+     * {@value #DEVMODE_SYSPROP_KEY} to 'true'. This can be done, for instance,
+     * during application startup.
+     */
+    public static final String DEVMODE_SYSPROP_KEY = "mysite.devmode";
+    
+    private static final Logger logger = LoggerFactory.getLogger(MySiteStarter.class);
 
     private static final String GUICE_FILTER_NAME = "guiceFilter";
 
@@ -34,6 +45,11 @@ public class MySiteStarter {
     }
 
     private static void startUndertow() throws Exception {
+        boolean isDevModeOn = Boolean.parseBoolean(System.getProperty(MySiteStarter.DEVMODE_SYSPROP_KEY, "false"));
+        if (isDevModeOn) {
+            logger.info("MySite is running in DevMode");
+        }
+        
         DeploymentInfo servletBuilder = Servlets.deployment()
                 .setClassLoader(MySiteStarter.class.getClassLoader())
                 .setContextPath("/")

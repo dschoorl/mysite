@@ -18,7 +18,7 @@
         <module>docs</module>
     </modules>
     <properties>
-        <asciidoctorj.version>2.5.11</asciidoctorj.version>
+        <asciidoctorj.version>2.5.13</asciidoctorj.version>
         <guice-servlet.version>7.0.0</guice-servlet.version>
         <imgscalr.version>4.2</imgscalr.version>
         <opencsv.version>5.11.2</opencsv.version>

@@ -86,4 +86,12 @@ public interface ModuleConfig {
      * @return the applicable locale
      */
     public Locale getLocale();
+
+    /**
+     * Determine if the development mode is turned on for this module. That means
+     * that caching for css and templates is turned of.
+     * 
+     * @return true when turned on, false otherwise
+     */
+    public boolean isDevModeEnabled();
 }

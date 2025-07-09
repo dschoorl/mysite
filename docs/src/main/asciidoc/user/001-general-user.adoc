@@ -16,8 +16,8 @@ The following properties are identified as the 'set of general properties':
 
 |===
 | property name                 | Description
-| stylesheetlocation             | The location of bootstrap. When not specified, the default bootstrap 
-configuration is loaded from internet.
+| stylesheetlocation             | The path to your css file. When not specified, a default bootstrap 
+configuration is loaded from internet to be used as your stylesheet.
 | copyrightnotice               | A short text, preferably on a single line, indicating the copyright 
 holder to the content of the website.
 | menugroupTitle                | The title of the menu group. Can be rendered by the page template 

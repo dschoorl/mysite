@@ -1,3 +1,5 @@
 = Install and configure the application
 
 TODO: describe
+
+The application can be started in development mode with the startup parameter `-Dmysite.devmode=true` provided as a JVM argument. When the application runs in development mode, caching of templates and web resources will be disabled as much as possible.

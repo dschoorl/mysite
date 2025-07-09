@@ -62,7 +62,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
             return ModuleHandlerResult.NO_CONTENT;
         }
         String mimeType = getMimeType(resourceLocation);
-        if ((mimeType == null) || !mimeType.equals("text/html")) {
+        if (mimeType != null && !mimeType.equals("text/html") && !fixedConfig.isDevModeEnabled()) {
             response.addHeader("Cache-Control", "max-age="+60*60*24*7); //cache everything, except html files, for one week
         }
         response.setContentType(mimeType);

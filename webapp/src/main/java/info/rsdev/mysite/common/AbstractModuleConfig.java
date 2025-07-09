@@ -17,13 +17,18 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
 
+import info.rsdev.mysite.MySiteStarter;
+
 public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfigKeys {
 
     protected final Properties properties;
 
+    protected final boolean isDevModeOn;
+
     private ConcurrentHashMap<String, STGroup> cachedTemplateGroupByTemplateName = new ConcurrentHashMap<>();
 
     public AbstractModuleConfig(Properties configProperties) {
+        this.isDevModeOn = Boolean.parseBoolean(System.getProperty(MySiteStarter.DEVMODE_SYSPROP_KEY, "false"));
         this.properties = configProperties;
     }
 
@@ -111,17 +116,25 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
 
     public synchronized ST getTemplate(String forMenuItem) {
         String templateName = getString(forMenuItem, TEMPLATE_NAME_KEY);
-        if (!cachedTemplateGroupByTemplateName.contains(templateName)) {
-            URL templateResource = getSiteSpecificTemplateLocation(templateName);
-            if (templateResource == null) {
-                // no user supplied template provided, fallback on templates
-                // supplied by the application
-                String resourceName = "templates/".concat(templateName).concat(".stg");
-                templateResource = Thread.currentThread().getContextClassLoader().getResource(resourceName);
-            }
-            this.cachedTemplateGroupByTemplateName.putIfAbsent(templateName, new STGroupFile(templateResource, "UTF-8", '$', '$'));
+        STGroup templateGroup = cachedTemplateGroupByTemplateName.get(templateName);
+        if (templateGroup == null) {
+            templateGroup = getTemplateGroup(templateName);
         }
-        return cachedTemplateGroupByTemplateName.get(templateName).getInstanceOf(templateName);
+        if (!isDevModeEnabled() && !cachedTemplateGroupByTemplateName.contains(templateName)) {
+                this.cachedTemplateGroupByTemplateName.putIfAbsent(templateName, templateGroup);
+        }
+        return templateGroup.getInstanceOf(templateName);
+    }
+
+    private STGroup getTemplateGroup(String templateName) {
+        URL templateResource = getSiteSpecificTemplateLocation(templateName);
+        if (templateResource == null) {
+            // no user supplied template provided, fallback on templates
+            // supplied by the application
+            String resourceName = "templates/".concat(templateName).concat(".stg");
+            templateResource = Thread.currentThread().getContextClassLoader().getResource(resourceName);
+        }
+        return new STGroupFile(templateResource, "UTF-8", '$', '$');
     }
 
     /**
@@ -193,6 +206,11 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         }
 
         return Locale.of(configuredLocale);
+    }
+
+    @Override
+    public boolean isDevModeEnabled() {
+        return this.isDevModeOn;
     }
 
 }
