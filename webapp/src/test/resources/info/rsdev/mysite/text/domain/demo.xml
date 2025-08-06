@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="author">David Es</entry>
+<entry key="createDate">2011-10-30</entry>
+<entry key="wordcount">426</entry>
+<entry key="title">The page title</entry>
+<entry key="teaser">This is the teaser text</entry>
+<entry key="description">The meta description</entry>
+</properties>

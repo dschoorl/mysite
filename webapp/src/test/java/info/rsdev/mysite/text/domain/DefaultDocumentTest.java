@@ -1,7 +1,9 @@
 package info.rsdev.mysite.text.domain;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.nio.file.Path;
@@ -31,6 +33,11 @@ public class DefaultDocumentTest {
     public void test() {
         String html = subjectUnderTest.getContent();
         assertNotNull(html);
+    }
+    
+    @Test
+    public void returnDescriptionFromMetadataIfPresent() {
+        assertThat(subjectUnderTest.getDescription()).isEqualTo("The meta description");
     }
 
 }

@@ -176,6 +176,13 @@ public class DefaultDocument implements Document, Comparable<DefaultDocument> {
         }
         return this.getTechnicalName();
     }
+    
+    public String getDescription() {
+        if ((metadata != null) && metadata.containsKey(DESCRIPTION_METAKEY)) {
+            return metadata.getProperty(DESCRIPTION_METAKEY);
+        }
+        return this.getSummary();
+    }
 
     public String getContent() {
         if (DocumentFileFilter.ADOC_EXT.equalsIgnoreCase(extractExtension(document))) {

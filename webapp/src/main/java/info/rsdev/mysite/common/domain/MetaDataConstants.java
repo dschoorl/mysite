@@ -23,6 +23,8 @@ public abstract class MetaDataConstants {
     
     public static final String TITLE_METAKEY = "title";
     
+    public static final String DESCRIPTION_METAKEY = "description";
+    
     private MetaDataConstants() {
         //Do not instantiate this collection of constants
     }
