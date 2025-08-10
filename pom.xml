@@ -10,7 +10,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
-        <version>3.5.3</version>
+        <version>3.5.4</version>
         <relativePath />
     </parent>
     <modules>
@@ -28,6 +28,10 @@
         <asciidoctor.plugin.version>3.0.0</asciidoctor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
+        
+        <!-- Upgrade to higher version than managed by Spring Boot 3.5.4 due to vulnerabilities -->
+        <commons-lang3.version>3.18.0</commons-lang3.version>
+        
         <skipOWASP>true</skipOWASP>
     </properties>
     <dependencyManagement>
