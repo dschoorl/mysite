@@ -105,6 +105,24 @@ public abstract class ServletUtils {
             throw new RuntimeException(e);
         }
     }
+    
+    public static String getPathPartAfterMountpoint(String pathInfo, String mountpoint) {
+        mountpoint = "/" + mountpoint;
+        if (pathInfo.startsWith(mountpoint)) {
+            // TODO: strip any posible trailing forward slash
+            String targetPath = pathInfo.substring(mountpoint.length());
+            if (targetPath.startsWith("/")) {
+                targetPath = targetPath.substring(1);
+            }
+            if (targetPath.endsWith("/")) {
+                targetPath = targetPath.substring(0, targetPath.length() - 1);
+            }
+            return targetPath;
+        }
+        return null;
+    }
+
+
 
     @SuppressWarnings("deprecation")
     public static String asMd5(String ipAddress) {

@@ -53,7 +53,7 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
         DocumentModuleConfig writingConfig = (DocumentModuleConfig) moduleConfig;
 
         CorePageModel<?> model = null;
-        String path = getPathPartAfterMountpoint(request.getPathInfo(), moduleConfig.getMountPoint());
+        String path = ServletUtils.getPathPartAfterMountpoint(request.getPathInfo(), moduleConfig.getMountPoint());
         String groupName = getGroupName(path);
 
         if (groupName == null) {
@@ -114,22 +114,6 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
         response.setCharacterEncoding("UTF-8");
         ServletUtils.writeText(response, landingPage);
         return new ModuleHandlerResult(null, documentCollection.getMountPoint().concat("/").concat(landingPageName));
-    }
-
-    private String getPathPartAfterMountpoint(String pathInfo, String mountpoint) {
-        mountpoint = "/" + mountpoint;
-        if (pathInfo.startsWith(mountpoint)) {
-            // TODO: strip any posible trailing forward slash
-            String targetPath = pathInfo.substring(mountpoint.length());
-            if (targetPath.startsWith("/")) {
-                targetPath = targetPath.substring(1);
-            }
-            if (targetPath.endsWith("/")) {
-                targetPath = targetPath.substring(0, targetPath.length() - 1);
-            }
-            return targetPath;
-        }
-        return null;
     }
 
     private String getGroupName(String path) {

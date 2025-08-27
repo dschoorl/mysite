@@ -12,6 +12,10 @@ public interface AccessLogEntry {
     
     public int getYear();
     
+    /**
+     * Determine the number of the month, ranging from 0 (January) to 11 (December)
+     * @return the (zero-based) number of the month
+     */
     public int getMonth();
     
     public int getDayOfMonth();
