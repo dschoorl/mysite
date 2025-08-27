@@ -74,7 +74,7 @@ public class FixedContentServant implements RequestHandler, ConfigKeys {
         }
         if (mimeType.equals("text/html") || mimeType.equals("application/pdf")) {
             //only log html AND pdf content in the access log
-            return new ModuleHandlerResult(null, fixedConfig.getSiteRoot().relativize(resourceLocation).toString());
+            return new ModuleHandlerResult("static", fixedConfig.getSiteRoot().relativize(resourceLocation).toString());
         }
         return ModuleHandlerResult.NO_CONTENT;    //not worth logging in access log
     }
