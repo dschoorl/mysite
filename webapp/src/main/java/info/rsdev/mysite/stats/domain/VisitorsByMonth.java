@@ -29,6 +29,8 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
     
     private Map<String, VisitorsAndPageViews<String>> visitorsByCountry = new HashMap<>();
     
+    private Map<String, VisitorsAndPageViews<String>> visitorsByUrl = new HashMap<>();
+    
     private Set<String> previouslyVisitedFrom = new HashSet<>();
     
     public VisitorsByMonth(String website, int month, int year) {
@@ -106,7 +108,8 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
         
         boolean isNewByDay = processDayStats(logEntry, this.previouslyVisitedFrom);
         boolean isNewByCountry = processCountryStats(logEntry, this.previouslyVisitedFrom);
-        if (isNewByDay || isNewByCountry) {
+        boolean isNewByUrl = processVisitedUrlStats(logEntry, this.previouslyVisitedFrom);
+        if (isNewByDay || isNewByCountry || isNewByUrl) {
             this.previouslyVisitedFrom.add(logEntry.getRequesterIpHash());
         }
     }
@@ -128,7 +131,17 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
         }
         return visitors.process(logEntry, previouslyVisitedFrom);
     }
-    
+
+    private boolean processVisitedUrlStats(AccessLogEntry logEntry, Set<String> previouslyVisitedFrom) {
+        String contentId = logEntry.getContentId();
+        VisitorsAndPageViews<String> visitors = visitorsByUrl.get(contentId);
+        if (visitors == null) {
+            visitors = new VisitorsAndPageViews<String>(contentId);
+            visitorsByUrl.put(contentId, visitors);
+        }
+        return visitors.process(logEntry, previouslyVisitedFrom);
+    }
+
     public int getNewVisitors() {
         int total = 0;
         for (VisitorsAndPageViews<Integer> daily: visitorsByMonthday) {
@@ -182,11 +195,14 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
     }
 
     public Collection<VisitorsAndPageViews<String>> getByCountry() {
-        //TODO: order so that country with highest visits is top ranked
         return visitorsByCountry.values();
     }
-    
+
     public List<VisitorsAndPageViews<Integer>> getByDay() {
         return visitorsByMonthday;
+    }
+
+    public Collection<VisitorsAndPageViews<String>> getByContent() {
+        return visitorsByUrl.values();
     }
 }

@@ -42,6 +42,14 @@ statistics(model, report) ::= <<
 	</tbody>
 	</table>
 	
+    <h5>Opvragingen per url $report.title$<h5>
+    <table class="table"><thead><th>url</th><th>Bezoeken</th><th>Waarvan nieuw *)</th><th>Pagina's</th><th>Unieke pagina's per sessie</th></thead>
+    <tbody>
+    $report.visitorsByUrlLatestMonth:bycountry()$
+    $report.latestMonth:total()$
+    </tbody>
+    </table>
+    
   $endif$
 </section>
 $if(model.copyrightNotice)$

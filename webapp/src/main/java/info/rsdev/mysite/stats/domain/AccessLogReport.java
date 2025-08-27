@@ -130,6 +130,18 @@ public class AccessLogReport {
         return latestMonth;
     }
 
+    public List<VisitorsAndPageViews<String>> getVisitorsByUrlLatestMonth() {
+        if (visitorsByMonth.isEmpty()) {
+            return Collections.emptyList();
+        }
+        ArrayList<VisitorsByMonth> visitors = new ArrayList<>(visitorsByMonth.values());
+        Collections.sort(visitors);
+
+        List<VisitorsAndPageViews<String>> latestMonth = new ArrayList<>(visitors.get(0).getByContent());
+        Collections.sort(latestMonth, SortOnPageViews.INSTANCE);
+        return latestMonth;
+    }
+
     public String getTitle() {
         VisitorsByMonth latestMonth = getLatestMonth();
         return String.format(
