@@ -34,7 +34,7 @@ public class AccessLogReport {
     }
 
     public void process(AccessLogEntry logEntry) {
-        if (isCrawler(logEntry.getUserAgentString()) || isNotTargetSite(logEntry)) {
+        if (isNotTargetSite(logEntry) || isCrawler(logEntry.getUserAgentString())) {
             return;
         }
         String mapKey = String.format("%4d-%2d-%s", logEntry.getYear(), logEntry.getMonth(), logEntry.getWebsite());
@@ -50,16 +50,28 @@ public class AccessLogReport {
         return !targetWebsite.equalsIgnoreCase(logEntry.getWebsite());
     }
 
+    /**
+     * Best effort to determine if the request is done by a user or by a crawler, based on the User Agent String
+     * @param userAgentString
+     * @return true if the request is likely done by a crawler, false otherwise
+     */
     protected boolean isCrawler(String userAgentString) {
         String uas = userAgentString.toLowerCase();
-        boolean hasBotInName = uas.contains("bot");
-        hasBotInName |= uas.contains("crawler");
-        hasBotInName |= uas.contains("spider");
-        hasBotInName |= uas.contains("slurp");
-        if (!hasBotInName) {
+        boolean couldBeUser = uas.startsWith("mozilla");
+        couldBeUser |= uas.startsWith("firefox");
+        couldBeUser |= uas.startsWith("blackberry");
+        couldBeUser |= uas.startsWith("chrome");
+        couldBeUser |= uas.startsWith("opera");
+        boolean ohWaitLooksLikeCrawler = couldBeUser && uas.contains("bot");
+        ohWaitLooksLikeCrawler |= uas.contains("crawler");
+        ohWaitLooksLikeCrawler |= uas.contains("spider");
+        ohWaitLooksLikeCrawler |= uas.contains("slurp");
+        ohWaitLooksLikeCrawler |= uas.contains("http");
+        ohWaitLooksLikeCrawler |= uas.contains("@");
+        if (!ohWaitLooksLikeCrawler) {
             browserUserAgents.add(userAgentString);
         }
-        return hasBotInName;
+        return ohWaitLooksLikeCrawler;
     }
 
     public List<String> getBrowserAgentStrings() {
