@@ -24,7 +24,7 @@
         <opencsv.version>5.11.2</opencsv.version>
         <stringtemplate.version>4.3.4</stringtemplate.version>
         <undertow.version>2.3.18.Final</undertow.version>
-        <tika.version>2.9.1</tika.version>
+        <tika.version>3.2.2</tika.version>
         <asciidoctor.plugin.version>3.0.0</asciidoctor.plugin.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.release>21</maven.compiler.release>
