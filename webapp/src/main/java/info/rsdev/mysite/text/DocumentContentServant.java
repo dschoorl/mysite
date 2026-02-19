@@ -113,7 +113,7 @@ public class DocumentContentServant implements RequestHandler, ConfigKeys {
         response.setContentType("text/html");
         response.setCharacterEncoding("UTF-8");
         ServletUtils.writeText(response, landingPage);
-        return new ModuleHandlerResult(null, documentCollection.getMountPoint().concat("/").concat(landingPageName));
+        return new ModuleHandlerResult("static", documentCollection.getMountPoint().concat("/").concat(landingPageName));
     }
 
     private String getGroupName(String path) {

@@ -37,7 +37,7 @@ statistics(model, report) ::= <<
 	<h5>Analyse per land van herkomst $report.title$<h5>
 	<table class="table"><thead><th>Land</th><th>Bezoeken</th><th>Waarvan nieuw *)</th><th>Pagina's</th><th>Unieke pagina's per sessie</th></thead>
 	<tbody>
-	$report.visitorsByCountryLatestMonth:bycountry()$
+	$report.visitorsByCountryLatestMonth:byidentifier()$
 	$report.latestMonth:total()$
 	</tbody>
 	</table>
@@ -45,7 +45,7 @@ statistics(model, report) ::= <<
     <h5>Opvragingen per url $report.title$<h5>
     <table class="table"><thead><th>url</th><th>Bezoeken</th><th>Waarvan nieuw *)</th><th>Pagina's</th><th>Unieke pagina's per sessie</th></thead>
     <tbody>
-    $report.visitorsByUrlLatestMonth:bycountry()$
+    $report.visitorsByUrlLatestMonth:byidentifier()$
     $report.latestMonth:total()$
     </tbody>
     </table>
@@ -67,17 +67,16 @@ daily(stats) ::= <<
   </tr>
 >>
 
-total(stats) ::= <<
-  <tr>
-  <td>Total</td><td>$stats.visits$</td><td>$stats.newVisitors$</td><td>$stats.pageViews$</td><td>$stats.uniquePageViews$</td>
-  </tr>
-
->>
-
-bycountry(stats) ::= <<
+byidentifier(stats) ::= <<
   <tr>
       <td>$stats.groupedBy$</td>
       <td>$stats.visits$</td><td>$stats.newVisitors$</td><td>$stats.pageViews$</td><td>$stats.uniquePageViews$</td>
+  </tr>
+>>
+
+total(stats) ::= <<
+  <tr>
+  <td>Total</td><td>$stats.visits$</td><td>$stats.newVisitors$</td><td>$stats.pageViews$</td><td>$stats.uniquePageViews$</td>
   </tr>
 >>
 
