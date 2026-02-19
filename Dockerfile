@@ -1,6 +1,6 @@
 # Run `mvn clean package` before building the docker image 
 
-FROM openjdk:21-jdk-buster
+FROM eclipse-temurin:21-noble
 
 EXPOSE 9080
 
