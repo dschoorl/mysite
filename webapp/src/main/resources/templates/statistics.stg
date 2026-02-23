@@ -49,7 +49,14 @@ statistics(model, report) ::= <<
     $report.latestMonth:total()$
     </tbody>
     </table>
-    
+    $if(report.visitorsByRefererLatestMonth)$
+        <h5>Opvragingen per referer $report.title$<h5>
+        <table class="table"><thead><th>url</th><th>Bezoeken</th><th>Waarvan nieuw *)</th><th>Pagina's</th><th>Unieke pagina's per sessie</th></thead>
+        <tbody>
+        $report.visitorsByRefererLatestMonth:byidentifier()$
+        </tbody>
+        </table>
+    $endif$
   $endif$
 </section>
 $if(model.copyrightNotice)$
