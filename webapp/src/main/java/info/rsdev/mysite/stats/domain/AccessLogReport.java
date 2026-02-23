@@ -6,16 +6,15 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-//import java.util.Locale;
+// import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import info.rsdev.mysite.common.domain.accesslog.AccessLogEntry;
 
 /**
- * This class is responsible to preprocess the log entries, meaning: complete
- * the line when necessary related by adding E.g. country, os type and browser
- * type and maybe other derived information, depending on the version of the log
+ * This class is responsible to preprocess the log entries, meaning: complete the line when necessary related by adding
+ * E.g. country, os type and browser type and maybe other derived information, depending on the version of the log
  * entry.
  */
 public class AccessLogReport {
@@ -26,8 +25,8 @@ public class AccessLogReport {
 
     private Set<String> browserUserAgents = new HashSet<>();
 
-    private static final String[] months = { "januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus",
-            "september", "oktober", "november", "december" };
+    private static final String[] months = {"januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus",
+            "september", "oktober", "november", "december"};
 
     public AccessLogReport(String targetSite) {
         this.targetWebsite = targetSite;
@@ -52,6 +51,7 @@ public class AccessLogReport {
 
     /**
      * Best effort to determine if the request is done by a user or by a crawler, based on the User Agent String
+     * 
      * @param userAgentString
      * @return true if the request is likely done by a crawler, false otherwise
      */
@@ -138,6 +138,18 @@ public class AccessLogReport {
         Collections.sort(visitors);
 
         List<VisitorsAndPageViews<String>> latestMonth = new ArrayList<>(visitors.get(0).getByContent());
+        Collections.sort(latestMonth, SortOnPageViews.INSTANCE);
+        return latestMonth;
+    }
+
+    public List<VisitorsAndPageViews<String>> getVisitorsByRefererLatestMonth() {
+        if (visitorsByMonth.isEmpty()) {
+            return Collections.emptyList();
+        }
+        ArrayList<VisitorsByMonth> visitors = new ArrayList<>(visitorsByMonth.values());
+        Collections.sort(visitors);
+
+        List<VisitorsAndPageViews<String>> latestMonth = new ArrayList<>(visitors.get(0).getByReferer());
         Collections.sort(latestMonth, SortOnPageViews.INSTANCE);
         return latestMonth;
     }

@@ -36,11 +36,13 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
 
     private Map<String, VisitorsAndPageViews<String>> visitorsByUrl = new HashMap<>();
 
+    private Map<String, VisitorsAndPageViews<String>> visitorsByReferer = new HashMap<>();
+
     /**
-     * This set contains the unique identifiers of the visitors that have been already counted for this month, to prevent
-     * double counting of visitors that have visited the website multiple times during the month. The unique identifier is
-     * currently based on the hash of the requester IP address, but in future versions it could be based on a combination
-     * of IP address and user agent string, or even on a cookie value if available.
+     * This set contains the unique identifiers of the visitors that have been already counted for this month, to
+     * prevent double counting of visitors that have visited the website multiple times during the month. The unique
+     * identifier is currently based on the hash of the requester IP address, but in future versions it could be based
+     * on a combination of IP address and user agent string, or even on a cookie value if available.
      */
     private Set<String> previouslyVisitedFrom = new HashSet<>();
 
@@ -127,7 +129,8 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
         boolean isNewByDay = processDayStats(logEntry, this.previouslyVisitedFrom);
         boolean isNewByCountry = processCountryStats(logEntry, this.previouslyVisitedFrom);
         boolean isNewByUrl = processVisitedUrlStats(logEntry, this.previouslyVisitedFrom);
-        if (isNewByDay || isNewByCountry || isNewByUrl) {
+        boolean isNewByReferer = processRefererStats(logEntry, this.previouslyVisitedFrom);
+        if (isNewByDay || isNewByCountry || isNewByUrl || isNewByReferer) {
             this.previouslyVisitedFrom.add(logEntry.getRequesterIpHash());
         }
     }
@@ -158,6 +161,19 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
             visitorsByUrl.put(contentId, visitors);
         }
         return visitors.process(logEntry, previouslyVisitedFrom);
+    }
+
+    private boolean processRefererStats(AccessLogEntry logEntry, Set<String> previouslyVisitedFrom) {
+        String referer = logEntry.getReferer();
+        if (referer != null && !referer.isEmpty()) {
+            VisitorsAndPageViews<String> visitors = visitorsByReferer.get(referer);
+            if (visitors == null) {
+                visitors = new VisitorsAndPageViews<String>(referer);
+                visitorsByReferer.put(referer, visitors);
+            }
+            return visitors.process(logEntry, previouslyVisitedFrom);
+        }
+        return false;
     }
 
     public int getNewVisitors() {
@@ -213,7 +229,7 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
     }
 
     public Collection<VisitorsAndPageViews<String>> getByCountry() {
-        //filter out empty entries and sort on page views
+        // filter out empty entries and sort on page views
         return visitorsByCountry.values().stream().filter(val -> val.hasData()).sorted(SortOnPageViews.INSTANCE).toList();
     }
 
@@ -224,4 +240,9 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
     public Collection<VisitorsAndPageViews<String>> getByContent() {
         return visitorsByUrl.values().stream().filter(val -> val.hasData()).sorted(SortOnPageViews.INSTANCE).toList();
     }
+    
+    public Collection<VisitorsAndPageViews<String>> getByReferer() {
+        return visitorsByReferer.values().stream().filter(val -> val.hasData()).sorted(SortOnPageViews.INSTANCE).toList();
+    }
+
 }

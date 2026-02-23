@@ -36,7 +36,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         public int TIME = 2;
         public int DURATION = 3;
         /*
-         * TODO: do not log IP but a hash from the IP. This allows us to: (1) simplify
+         * do not log IP but a hash from the IP. This allows us to: (1) simplify
          * AVG compliance and (2) still detect previous visits from same IP
          */
         public int IP_MD5_HASH = 4;
@@ -53,6 +53,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         public int USER_AGENT_STRING = 15;
         public int OS_TYPE = 16;
         public int BROWSER_TYPE = 17;
+        public int REFERER = 18;
     }
 
     private Calendar timestampRequestReceived = GregorianCalendar.getInstance();
@@ -99,6 +100,8 @@ public class AccessLogEntryV1 implements AccessLogEntry {
     private String osVersion = EMPTY; // derived from userAgentString
 
     private String browserVersion = EMPTY; // derived from userAgentString
+    
+    private String referer = EMPTY; // derived from http header "Referer"
 
     /**
      * Create an empty {@link AccessLogEntryV1} for the purpose of writing a line to
@@ -119,7 +122,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         if (rawLogdata == null) {
             throw new IllegalArgumentException("Logdata cannot be null");
         }
-        if ((rawLogdata.length != 18) || !rawLogdata[V1.VERSION_ID].equals(LOG_VERSION)) {
+        if ((rawLogdata.length != 19) || !rawLogdata[V1.VERSION_ID].equals(LOG_VERSION)) {
             throw new IllegalArgumentException("logdata does not represent a valid V1 access log entry");
         }
 
@@ -148,6 +151,7 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         this.userAgentString = rawLogdata[V1.USER_AGENT_STRING];
         this.osVersion = rawLogdata[V1.OS_TYPE];
         this.browserVersion = rawLogdata[V1.BROWSER_TYPE];
+        this.referer = rawLogdata[V1.REFERER];
     }
 
     public AccessLogEntryV1 feedModuleConfig(ModuleConfig config) {
@@ -176,13 +180,14 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         // http://www.useragentstring.com/pages/api.php
         // TODO: derive isCrawler from User-Agent string
         userAgentString = request.getHeader("User-Agent");
+        referer = request.getHeader("Referer");
         if (request.getRequestURI() != null) {
             path = request.getRequestURI();
         }
 
         if (request.getQueryString() != null) {
-            path = path.concat("?").concat(request.getQueryString()); // URL
-                                                                      // encoded
+            //URL encoded
+            path = path.concat("?").concat(request.getQueryString());
         }
         return this;
     }
@@ -222,26 +227,18 @@ public class AccessLogEntryV1 implements AccessLogEntry {
         if ((quotable == null) || quotable.isEmpty()) {
             return EMPTY;
         }
-        return "\"".concat(quotable.replaceAll("\"", "\"\"")).concat("\""); // escape
-                                                                            // double
-                                                                            // quotes
-                                                                            // within
-                                                                            // the
-                                                                            // string
-                                                                            // value
-
-        // escape every double quote within the string with two double quotes
-//        return "\"".concat(quotable.replace("\"", "\"\"")).concat("\"");
+        // escape double quotes within the string value
+        return "\"".concat(quotable.replaceAll("\"", "\"\"")).concat("\"");
     }
 
     @Override
     public String toString() {
-        return String.format("%s,%tF,%tT,%d,%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s", quote(LOG_VERSION),
+        return String.format("%s,%tF,%tT,%d,%s,%s,%s,%s,%s,%s,%d,%s,%s,%s,%s,%s,%s,%s,%s", quote(LOG_VERSION),
                 timestampRequestReceived, timestampRequestReceived, durationInMs, quote(requesterIpHash), quote(countryRequester),
                 quote(httpMethod), quote(serverHostname), quote(website), quote(path), statusCode, quote(sessionId),
                 quote(mountpoint), quote(templateName), quote(contentId), quote(userAgentString),
                 // EMPTY, //placeholder for boolean value 'isCrawler'
-                quote(osVersion), quote(browserVersion));
+                quote(osVersion), quote(browserVersion), quote(referer));
     }
 
     @Override
@@ -321,6 +318,14 @@ public class AccessLogEntryV1 implements AccessLogEntry {
     @Override
     public boolean ignoreMe() {
         return getContentId() == null;
+    }
+
+    @Override
+    public String getReferer() {
+        if ((this.referer != null) && !this.referer.isEmpty()) {
+            return this.referer;
+        }
+        return null;
     }
 
 }

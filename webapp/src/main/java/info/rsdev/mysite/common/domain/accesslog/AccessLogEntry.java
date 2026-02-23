@@ -42,6 +42,8 @@ public interface AccessLogEntry {
 
     public String getTemplateName();
     
+    public String getReferer();
+    
     public boolean ignoreMe();
     
 }
