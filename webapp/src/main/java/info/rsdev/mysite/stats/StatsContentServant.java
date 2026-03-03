@@ -57,7 +57,7 @@ public class StatsContentServant implements RequestHandler, DefaultConfigKeys {
         String period = extractPeriod(path);
         int targetYear = getTargetYear(period);
         int targetMonth = getTargetMonth(period);
-        AccessLogReport report = new AccessLogReport(config.getString(SITENAME_KEY));
+        AccessLogReport report = new AccessLogReport(config.getString(SITENAME_KEY), statsConfig.getSiteAliases());
         AccessLogIterator logItems = new AccessLogIterator(statsConfig.getAccessLogFile());
         while (logItems.hasNext()) {
             AccessLogEntry logEntry = logItems.next();

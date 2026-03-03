@@ -5,6 +5,7 @@ import info.rsdev.mysite.common.DefaultConfigKeys;
 import info.rsdev.mysite.common.RequestHandler;
 
 import java.util.Properties;
+import java.util.Set;
 
 public class StatsModuleConfig extends AbstractModuleConfig implements DefaultConfigKeys {
 
@@ -14,8 +15,8 @@ public class StatsModuleConfig extends AbstractModuleConfig implements DefaultCo
      */
     private final StatsContentServant requestHandler = new StatsContentServant();
 
-    public StatsModuleConfig(Properties configProperties) {
-        super(configProperties);
+    public StatsModuleConfig(Properties configProperties, Set<String> siteAliases) {
+        super(configProperties, siteAliases);
     }
 
     @Override

@@ -2,6 +2,7 @@ package info.rsdev.mysite.text;
 
 import java.io.File;
 import java.util.Properties;
+import java.util.Set;
 
 import info.rsdev.mysite.common.AbstractModuleConfig;
 import info.rsdev.mysite.common.RequestHandler;
@@ -15,8 +16,8 @@ public class DocumentModuleConfig extends AbstractModuleConfig implements Config
      */
     private final DocumentContentServant requestHandler;
 
-    public DocumentModuleConfig(Properties configProperties) {
-        super(configProperties);
+    public DocumentModuleConfig(Properties configProperties, Set<String> siteAliases) {
+        super(configProperties, siteAliases);
         String servletPath =
                 ServletUtils.concatenatePaths(properties.getProperty(CONTEXTPATH_KEY), properties.getProperty(MOUNTPOINT_KEY));
         this.requestHandler = new DocumentContentServant(new File(getString(SITE_DATA_DIR_KEY)), getString(COLLECTION_PATH_KEY), servletPath, getLocale());

@@ -9,12 +9,13 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URLDecoder;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
-
-import jakarta.inject.Inject;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,6 +24,7 @@ import info.rsdev.mysite.common.startup.PropertiesModule.ContentRoot;
 import info.rsdev.mysite.common.startup.PropertiesModule.ContextPath;
 import info.rsdev.mysite.exception.ConfigurationException;
 import info.rsdev.mysite.fixed.ConfigKeys;
+import jakarta.inject.Inject;
 
 /**
  * This implementation of {@link ConfigDAI} reads configuration from the filesystem at the location pointed to
@@ -60,7 +62,7 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
         } catch (IOException e) {
             logger.error(String.format("Problem loading site aliases from %s", aliasesFile.getAbsolutePath()), e);
         }
-        
+
         //verify that the target directories from the mappings exist
         for (Entry<Object, Object> aliasMapping: aliases.entrySet()) {
             String alias = ((String)aliasMapping.getKey()).trim().toLowerCase();
@@ -73,7 +75,8 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
             }
             SiteConfig siteConfig = getConfig(subdirectory, siteConfigByAlias.values());
             if (siteConfig == null) {
-                siteConfig = new DefaultSiteConfig(subdirectory, readmoduleConfig(location), location);
+                Set<String> siteAliases = getAliases(aliases, subdirectory);
+                siteConfig = new DefaultSiteConfig(subdirectory, readmoduleConfig(location, siteAliases), location);
             }
             if (siteConfigByAlias.containsKey(alias)) {
                 String previousName = this.siteConfigByAlias.get(alias).getSiteName();
@@ -85,6 +88,16 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
             siteConfigByAlias.put(alias, siteConfig);
         }
         return siteConfigByAlias;
+    }
+    
+    private Set<String> getAliases(Properties aliases, String sitename) {
+        Set<String> aliasesForSitename = new HashSet<>();
+        for (Entry<Object, Object> aliasMapping: aliases.entrySet()) {
+            if (aliasMapping.getValue().equals(sitename)) {
+                aliasesForSitename.add(aliasMapping.getKey().toString().toLowerCase());
+            }
+        }
+        return Collections.unmodifiableSet(aliasesForSitename);
     }
 
     private SiteConfig getConfig(String subdirectory, Collection<SiteConfig> values) {
@@ -98,7 +111,7 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
         return null;
     }
 
-    private Map<String, ModuleConfig> readmoduleConfig(File location) {
+    private Map<String, ModuleConfig> readmoduleConfig(File location, Set<String> siteAliases) {
         Map<String, ModuleConfig> configByMountpoint = new HashMap<>();
         File[] moduleProperties = location.listFiles(new FileFilter() {
             @Override
@@ -130,8 +143,8 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
                     }
                     @SuppressWarnings("unchecked")
                     Class<? extends ModuleConfig> configClass = (Class<? extends ModuleConfig>) Class.forName(configType);
-                    Constructor<? extends ModuleConfig> constructor = configClass.getConstructor(Properties.class);
-                    ModuleConfig config = constructor.newInstance(properties);
+                    Constructor<? extends ModuleConfig> constructor = configClass.getConstructor(Properties.class, Set.class);
+                    ModuleConfig config = constructor.newInstance(properties, siteAliases);
                     configByMountpoint.put(mountpoint, config);
                     logger.info(String.format("[%s]: mounted module %s on mountpoint '%s'", location.getName(), 
                             config, mountpoint));
@@ -144,7 +157,7 @@ public class FileConfigDAO implements ConfigDAI, ConfigKeys {
         
         return configByMountpoint;
     }
-    
+
     private Properties getGeneralProperties(File location) {
         Properties generalProperties = new Properties();
         File generalPropertiesFile = new File(location, ".properties");

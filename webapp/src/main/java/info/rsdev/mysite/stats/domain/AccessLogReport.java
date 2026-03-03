@@ -6,7 +6,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-// import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,12 +23,18 @@ public class AccessLogReport {
     private final Map<String, VisitorsByMonth> visitorsByMonth = new HashMap<>();
 
     private Set<String> browserUserAgents = new HashSet<>();
+    private final Set<String> websiteAliases;
 
     private static final String[] months = {"januari", "februari", "maart", "april", "mei", "juni", "juli", "augustus",
             "september", "oktober", "november", "december"};
 
-    public AccessLogReport(String targetSite) {
+    /**
+     * Create a new report instance that will collect visitor statistics for the given target site
+     * @param targetSite the logical sitename of the website. It may be hosted under multiple different aliases
+     */
+    public AccessLogReport(String targetSite, Set<String> siteAliases) {
         this.targetWebsite = targetSite;
+        this.websiteAliases = siteAliases;
     }
 
     public void process(AccessLogEntry logEntry) {
@@ -39,7 +44,7 @@ public class AccessLogReport {
         String mapKey = String.format("%4d-%2d-%s", logEntry.getYear(), logEntry.getMonth(), logEntry.getWebsite());
         VisitorsByMonth monthStats = visitorsByMonth.get(mapKey);
         if (monthStats == null) {
-            monthStats = new VisitorsByMonth(logEntry.getWebsite(), logEntry.getMonth(), logEntry.getYear());
+            monthStats = new VisitorsByMonth(logEntry.getWebsite(), websiteAliases, logEntry.getMonth(), logEntry.getYear());
             visitorsByMonth.put(mapKey, monthStats);
         }
         monthStats.process(logEntry);

@@ -43,7 +43,7 @@ public class DefaultSiteConfig implements SiteConfig {
 
     /**
      * when there are multiple candidates, select the one with the most path
-     * segments in the mountpoint, because mountpoint takes precendence over content
+     * segments in the mount point, because mount point takes precedence over content
      * path when there is overlap
      * 
      * @param candidates
@@ -89,5 +89,4 @@ public class DefaultSiteConfig implements SiteConfig {
     public SiteTranslations getTranslations() {
         return this.translations;
     }
-
 }

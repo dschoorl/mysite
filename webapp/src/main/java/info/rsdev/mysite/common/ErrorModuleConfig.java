@@ -3,6 +3,7 @@ package info.rsdev.mysite.common;
 import info.rsdev.mysite.exception.ConfigurationException;
 
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * An implementation of {@link ModuleConfig} that communicates a {@link ConfigurationException} when it is accessed, informing the
@@ -13,7 +14,7 @@ public class ErrorModuleConfig extends AbstractModuleConfig {
     private ConfigurationException error = null;
     
     public ErrorModuleConfig(String mountPoint, Throwable error) {
-        super(new Properties());
+        super(new Properties(), Set.of());
         this.properties.put(MOUNTPOINT_KEY, mountPoint);
         this.error = new ConfigurationException(String.format("Module configuration at mount point %s could not be loaded", mountPoint), error);
     }

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
@@ -24,12 +25,15 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
     protected final Properties properties;
 
     protected final boolean isDevModeOn;
+    
+    protected final Set<String> siteAliases;
 
     private ConcurrentHashMap<String, STGroup> cachedTemplateGroupByTemplateName = new ConcurrentHashMap<>();
 
-    public AbstractModuleConfig(Properties configProperties) {
+    public AbstractModuleConfig(Properties configProperties, Set<String> siteAliases) {
         this.isDevModeOn = Boolean.parseBoolean(System.getProperty(MySiteStarter.DEVMODE_SYSPROP_KEY, "false"));
         this.properties = configProperties;
+        this.siteAliases = siteAliases;
     }
 
     @Override
@@ -213,4 +217,7 @@ public abstract class AbstractModuleConfig implements ModuleConfig, DefaultConfi
         return this.isDevModeOn;
     }
 
+    public Set<String> getSiteAliases() {
+        return this.siteAliases;
+    }
 }

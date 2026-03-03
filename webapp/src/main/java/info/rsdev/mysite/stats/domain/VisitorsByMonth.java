@@ -21,6 +21,8 @@ import info.rsdev.mysite.stats.Ip2CountryService;
 public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
 
     private final String website;
+    
+    private final Set<String> websiteAliases;
 
     private final int month;
 
@@ -46,11 +48,16 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
      */
     private Set<String> previouslyVisitedFrom = new HashSet<>();
 
-    public VisitorsByMonth(String website, int month, int year) {
+    public VisitorsByMonth(String website, Set<String> aliases, int month, int year) {
         if (website.isEmpty()) {
             website = null;
         }
+        if (aliases == null) {
+            throw new IllegalStateException("Aliases should not be null");
+//            aliases = Set.of();
+        }
         this.website = website;
+        this.websiteAliases = aliases;
         this.month = month;
         this.year = year;
 
@@ -165,13 +172,28 @@ public class VisitorsByMonth implements Comparable<VisitorsByMonth> {
 
     private boolean processRefererStats(AccessLogEntry logEntry, Set<String> previouslyVisitedFrom) {
         String referer = logEntry.getReferer();
-        if (referer != null && !referer.isEmpty()) {
-            VisitorsAndPageViews<String> visitors = visitorsByReferer.get(referer);
+        String contentId = logEntry.getContentId();
+        if (contentId == null) {
+            contentId = "";
+        }
+        if (referer != null && !referer.isEmpty() && !isReferrerAWebsiteAlias(referer)) {
+            String key = contentId.concat(" via ").concat(referer);
+            VisitorsAndPageViews<String> visitors = visitorsByReferer.get(key);
             if (visitors == null) {
-                visitors = new VisitorsAndPageViews<String>(referer);
-                visitorsByReferer.put(referer, visitors);
+                visitors = new VisitorsAndPageViews<String>(key);
+                visitorsByReferer.put(key, visitors);
             }
             return visitors.process(logEntry, previouslyVisitedFrom);
+        }
+        return false;
+    }
+
+    private boolean isReferrerAWebsiteAlias(String referer) {
+        referer = referer.toLowerCase();
+        for (var alias: websiteAliases) {
+            if (referer.contains(alias)) {
+                return true;
+            }
         }
         return false;
     }

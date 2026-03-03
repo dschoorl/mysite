@@ -2,6 +2,7 @@ package info.rsdev.mysite.singlepage;
 
 import java.io.File;
 import java.util.Properties;
+import java.util.Set;
 
 import info.rsdev.mysite.common.AbstractModuleConfig;
 import info.rsdev.mysite.common.RequestHandler;
@@ -10,8 +11,8 @@ public class SinglePageModuleConfig extends AbstractModuleConfig implements Conf
     
     private final SinglePageContentServant requestHandler;
     
-    public SinglePageModuleConfig(Properties configProperties) {
-        super(configProperties);
+    public SinglePageModuleConfig(Properties configProperties, Set<String> siteAliases) {
+        super(configProperties, siteAliases);
         String servletPath = properties.getProperty(CONTEXTPATH_KEY).concat(properties.getProperty(MOUNTPOINT_KEY));
         this.requestHandler = new SinglePageContentServant(new File(getString(SITE_DATA_DIR_KEY)), getString(PAGECOLLECTION_PATH_KEY), servletPath);
     }

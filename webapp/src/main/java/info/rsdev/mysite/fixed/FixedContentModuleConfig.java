@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 
 public class FixedContentModuleConfig extends AbstractModuleConfig implements ConfigKeys {
     
@@ -19,9 +20,9 @@ public class FixedContentModuleConfig extends AbstractModuleConfig implements Co
     
     private Path siteRoot = null;
     
-    public FixedContentModuleConfig(Properties configProperties) {
+    public FixedContentModuleConfig(Properties configProperties, Set<String> siteAliases) {
         //TODO: validate presence and correctness of important properties
-        super(configProperties);
+        super(configProperties, siteAliases);
         this.requestHandler = new FixedContentServant();
     }
     

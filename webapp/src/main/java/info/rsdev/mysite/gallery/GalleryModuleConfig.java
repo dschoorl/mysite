@@ -6,6 +6,7 @@ import info.rsdev.mysite.util.ServletUtils;
 
 import java.io.File;
 import java.util.Properties;
+import java.util.Set;
 
 public class GalleryModuleConfig extends AbstractModuleConfig implements ConfigKeys {
     
@@ -14,8 +15,8 @@ public class GalleryModuleConfig extends AbstractModuleConfig implements ConfigK
      */
     private final GalleryContentServant requestHandler;
     
-    public GalleryModuleConfig(Properties configProperties) {
-        super(configProperties);
+    public GalleryModuleConfig(Properties configProperties, Set<String> siteAliases) {
+        super(configProperties, siteAliases);
         String servletPath = ServletUtils.concatenatePaths(properties.getProperty(CONTEXTPATH_KEY), properties.getProperty(MOUNTPOINT_KEY));
         this.requestHandler = new GalleryContentServant(new File(getString(SITE_DATA_DIR_KEY)), getString(COLLECTION_PATH_KEY), servletPath);
     }

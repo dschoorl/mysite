@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -27,8 +28,8 @@ public class LanguageRedirectModuleConfig extends AbstractModuleConfig implement
      */
     private final LanguageRedirectServant requestHandler;
 
-    public LanguageRedirectModuleConfig(Properties configProperties) {
-        super(configProperties);
+    public LanguageRedirectModuleConfig(Properties configProperties, Set<String> siteAliases) {
+        super(configProperties, siteAliases);
         requestHandler = new LanguageRedirectServant();
         this.localeToPathMapping = readLocaleToPathMapping();
     }

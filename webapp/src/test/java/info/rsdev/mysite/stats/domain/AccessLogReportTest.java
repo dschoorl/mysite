@@ -1,9 +1,11 @@
 package info.rsdev.mysite.stats.domain;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -16,7 +18,7 @@ public class AccessLogReportTest {
     @Test
     public void detectCrawlers() {
         //crawlers are in the logfile, but we do not want to see them in the report
-        AccessLogReport sut = new AccessLogReport("not relevant site name");
+        AccessLogReport sut = new AccessLogReport("not relevant site name", Set.of());
         assertEquals(true, sut.isCrawler("Mozilla/5.0 (compatible; Yahoo! Slurp; http://help.yahoo.com/help/us/ysearch/slurp)"));
         assertEquals(0, sut.getBrowserAgentStrings().size());
     }
@@ -29,7 +31,7 @@ public class AccessLogReportTest {
         Long startTime = System.currentTimeMillis();
 
         // code copied and adjusted from StatsContentServant
-        AccessLogReport report = new AccessLogReport("sylviaborst.nl");
+        AccessLogReport report = new AccessLogReport("sylviaborst.nl", Set.of());
         AccessLogIterator logItems = new AccessLogIterator(logFile);
         int entryCount = 0;
         while (logItems.hasNext()) {

@@ -1,11 +1,12 @@
 package info.rsdev.mysite.common;
 
+import static org.junit.Assert.assertFalse;
+
 import java.util.Properties;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class AbstractModuleConfigTest {
     
@@ -16,7 +17,7 @@ public class AbstractModuleConfigTest {
     @Before
     public void setup() {
         this.properties = new Properties();
-        this.configUnderTest = new AbstractModuleConfig(properties) {
+        this.configUnderTest = new AbstractModuleConfig(properties, Set.of()) {
             @Override
             public boolean hasHandlerFor(String requestPath) {
                 return false;

@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.stringtemplate.v4.ST;
@@ -94,4 +95,10 @@ public interface ModuleConfig {
      * @return true when turned on, false otherwise
      */
     public boolean isDevModeEnabled();
+    
+    /**
+     * A collection of all the host name aliases that resolve to the site this module is bound to
+     * @return a collection of applicable host name aliases
+     */
+    public Set<String> getSiteAliases();
 }
